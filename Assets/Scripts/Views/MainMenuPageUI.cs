@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 using UnityEngine.UI;
 
 public class MainMenuPageUI : MonoBehaviour // Fardin
@@ -56,6 +55,7 @@ public class MainMenuPageUI : MonoBehaviour // Fardin
 
     void ClickedExit()
         {
+            SaveGame.Instance.SaveGame();
             GameManager.Instance.LoadGameState(GameState.WelcomePage);
         }
 } // Fardin

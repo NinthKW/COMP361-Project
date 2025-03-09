@@ -5,20 +5,25 @@ using UnityEngine.UI;
 
 public class WelcomePageUI : MonoBehaviour // Fardin
 {
-    public Button playButton;
+    public Button newGameButton;
+    public Button loadGameButton;
     public Button quitButton;
 
     void Start()
     {
-        playButton.onClick.AddListener(ClickedPlay);
+        newGameButton.onClick.AddListener(ClickedPlay);
         quitButton.onClick.AddListener(ClickedQuit);
     }
 
-    void ClickedPlay()
+    void ClickedNewGame()
     {
-        GameManager.Instance.LoadGameState(GameState.MainMenuPage)();
+        GameManager.Instance.LoadGameState(GameState.MainMenuPage);
     }
     
+    void ClickedLoadGame()
+    {
+        GameManager.Instance.LoadGame();
+    }
     void ClickedQuit()
     {
         GameManager.Instance.QuitGame();
