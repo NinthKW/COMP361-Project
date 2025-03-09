@@ -4,7 +4,7 @@ using UnityEngine;
 
 using UnityEngine.UI;
 
-public class MainMenuPageUI : MonoBehaviour
+public class MainMenuPageUI : MonoBehaviour // Fardin
 {
     public Button baseButton;
     public Button staffButton;
@@ -23,26 +23,26 @@ public class MainMenuPageUI : MonoBehaviour
 
     void ClickedBase()
     {
-        GameManager.Instance.LoadBasePage();
+        GameManager.Instance.LoadGameState(GameState.BasePage);
     }
 
     void ClickedStaff()
     {
-        GameManager.Instance.LoadStaffPage();
+        GameManager.Instance.LoadGameState(GameState.StaffPage);
     }
 
     void ClickedMission()
     {
-        GameManager.Instance.LoadMissionPage();
+        GameManager.Instance.LoadGameState(GameState.MissionPage);
     }
 
     void ClickedTech()
     {
-        GameManager.Instance.LoadTechPage();
+        GameManager.Instance.LoadGameState(GameState.TechPage);
     }
 
     void ClickedExit()
     {
-        GameManager.Instance.LoadWelcomePage();
+        GameManager.Instance.LoadGameState(GameState.WelcomePage);
     }
-}
+} // Fardin

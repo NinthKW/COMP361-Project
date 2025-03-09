@@ -5,11 +5,13 @@ using UnityEngine.SceneManagement;
 
 public enum GameState
 {
-    MainMenu,
-    MissionSelect,
-    InMission,
-    Combat,
-    GameOver
+    WelcomePage, //Fardin
+    MainMenuPage,
+    TechPage,
+    MissionPage,
+    BasePage,
+    StaffPage,
+    ResearchPage, //Fardin
 }
 
 public class GameManager : MonoBehaviour
@@ -32,61 +34,51 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        if (SceneManager.GetActiveScene().name != "MainMenu")
+        if (SceneManager.GetActiveScene().name != "WelcomePage")
         {
-            LoadMainMenu();
+            LoadGameState(WelcomePage);
         }
     }
 
     public void ChangeState(GameState newState)
     {
-        currentState = newState;
         Debug.Log("Game State changed to: " + currentState);
     }
 
-    private void LoadSceneIfNotLoaded(string sceneName)
+    public void LoadGameState(GameState newState)
     {
-        if (SceneManager.GetActiveScene().name != sceneName)
+        currentState = newState;
+
+        switch (newState)
         {
-            SceneManager.LoadScene(sceneName);
+            case WelcomePage:
+                SceneManager.LoadScene("WelcomePage");
+                break;
+            case MainMenuPage:
+                 SceneManager.LoadScene("MainMenuPage");
+                 break;
+            case TechPage:
+                 SceneManager.LoadScene("TechPage");
+                 break;
+            case MissionPage:
+                 SceneManager.LoadScene("MissionPage");
+                 break;
+            case BasePage:
+                 SceneManager.LoadScene("BasePage");
+                 break;
+            case StaffPage:
+                 SceneManager.LoadScene("StaffPage");
+                 break;
+            case ResearchPage:
+                 SceneManager.LoadScene("ResearchPage");
+                 break;
         }
+
+        ChangeState(newState);
     }
 
-    public void LoadMainMenu()
+    public void QuitGame()
     {
-        ChangeState(GameState.MainMenu);
-        LoadSceneIfNotLoaded("MainMenu");
-    }
-    public void LoadMissionSelect()
-    {
-        ChangeState(GameState.MissionSelect);
-        LoadSceneIfNotLoaded("MissionSelect");
-    }
-    public void StartMission(int missionID)
-    {
-        ChangeState(GameState.InMission);
-        LoadSceneIfNotLoaded("MissionScene");
-    }
-
-    public void StartCombat()
-    {
-        ChangeState(GameState.Combat);
-        LoadSceneIfNotLoaded("CombatScene");
-    }
-
-    public void EndCombat(bool playerWon)
-    {
-        if (playerWon)
-        {
-            Debug.Log("Mission Success!");
-            ChangeState(GameState.MissionSelect);
-            LoadSceneIfNotLoaded("MissionSelect");
-        }
-        else
-        {
-            Debug.Log("Game Over!");
-            ChangeState(GameState.MainMenu);
-            LoadSceneIfNotLoaded("MainMenu");
-        }
+        Application.Quit();
     }
 }
