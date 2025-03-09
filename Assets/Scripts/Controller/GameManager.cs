@@ -11,7 +11,8 @@ public enum GameState
     MissionPage,
     BasePage,
     StaffPage,
-    ResearchPage, //Fardin
+    ResearchPage,
+    InventoryPage//Fardin
 }
 
 public class GameManager : MonoBehaviour
@@ -71,6 +72,9 @@ public class GameManager : MonoBehaviour
                  break;
             case ResearchPage:
                  SceneManager.LoadScene("ResearchPage");
+                 break;
+            case ResearchPage:
+                 SceneManager.LoadScene("InventoryPage");
                  break;
         }
 

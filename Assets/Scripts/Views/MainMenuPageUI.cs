@@ -10,7 +10,10 @@ public class MainMenuPageUI : MonoBehaviour // Fardin
     public Button staffButton;
     public Button missionButton;
     public Button techButton;
+    public Button researchButton;
+    public Button inventoryButton;
     public Button exitButton;
+
 
     void Start()
     {
@@ -41,8 +44,18 @@ public class MainMenuPageUI : MonoBehaviour // Fardin
         GameManager.Instance.LoadGameState(GameState.TechPage);
     }
 
-    void ClickedExit()
+    void ClickedResearch()
     {
-        GameManager.Instance.LoadGameState(GameState.WelcomePage);
+        GameManager.Instance.LoadGameState(GameState.ResearchPage);
     }
+
+    void ClickedInventory()
+        {
+            GameManager.Instance.LoadGameState(GameState.InventoryPage);
+        }
+
+    void ClickedExit()
+        {
+            GameManager.Instance.LoadGameState(GameState.WelcomePage);
+        }
 } // Fardin
