@@ -2,12 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class GameData 
+
+namespace Model
 {
-    public Staff staffData;
-    public Resources resourcesData;
-    public Missions missionsData;
-    public Tech techData;
-    public Bases basesData;
+    [System.Serializable]
+    public class GameData 
+    {
+        public Staff staffData;
+        public Resources resourcesData;
+        public Mission missionData;
+        public Tech techData;
+        public Base baseData;
+    }
 }

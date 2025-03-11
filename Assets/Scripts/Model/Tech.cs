@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TechData 
-{
-    
+namespace Model {
+    [System.Serializable]
+    public class Tech {
+        
+    }
 }

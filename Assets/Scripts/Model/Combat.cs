@@ -2,28 +2,32 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Combat
+namespace Model
 {
-    public int playerHealth = 100;
-    public int enemyHealth = 50;
-
-    public void AttackEnemy(int damage)
+    [System.Serializable]
+    public class Combat
     {
-        enemyHealth -= damage;
-        if (enemyHealth <= 0)
+        public int playerHealth = 100;
+        public int enemyHealth = 50;
+
+        public void AttackEnemy(int damage)
         {
-            enemyHealth = 0;
-            Debug.Log("Enemy Defeated!");
+            enemyHealth -= damage;
+            if (enemyHealth <= 0)
+            {
+                enemyHealth = 0;
+                Debug.Log("Enemy Defeated!");
+            }
         }
-    }
 
-    public void ReceiveDamage(int damage)
-    {
-        playerHealth -= damage;
-        if (playerHealth <= 0)
+        public void ReceiveDamage(int damage)
         {
-            playerHealth = 0;
-            Debug.Log("Game Over!");
+            playerHealth -= damage;
+            if (playerHealth <= 0)
+            {
+                playerHealth = 0;
+                Debug.Log("Game Over!");
+            }
         }
     }
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Model;
 
 public class MainMenuPageUI : MonoBehaviour // Fardin
 {
@@ -49,13 +50,13 @@ public class MainMenuPageUI : MonoBehaviour // Fardin
     }
 
     void ClickedInventory()
-        {
-            GameManager.Instance.LoadGameState(GameState.InventoryPage);
-        }
+    {
+        GameManager.Instance.LoadGameState(GameState.InventoryPage);
+    }
 
     void ClickedExit()
-        {
-            SaveGame.Instance.SaveGame();
-            GameManager.Instance.LoadGameState(GameState.WelcomePage);
-        }
+    {
+        GameManager.Instance.SaveGame();
+        GameManager.Instance.LoadGameState(GameState.WelcomePage);
+    }
 } // Fardin
