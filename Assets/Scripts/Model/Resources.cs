@@ -2,52 +2,66 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class ResourcesData 
+
+namespace Model
 {
-    int wood;
-    int iron;
-    int gas;
-    int food;
-    int chemicals;
-    int leather;
-    int gun;
-    int bomb;
-    int ak47;
-    int ammo;
-    int boots;
-    int vest;
-
-    public ResourcesData() 
+    [System.Serializable]
+    public class Resources
     {
-        wood = 100;
-        iron = 100;
-        gas = 100;
-        food = 100;
-        chemicals = 100;
-        leather = 100;
-        gun = 5;
-        bomb = 0;
-        ak47 = 1;
-        ammo = 5;
-        boots = 5;
-        vest = 5;
-    }
+        private ResourcesType resourcesType;
+        private int amount;
+        private static readonly string[] validResourceNames = new string[] { "Food", "Wood", "Stone", "Metal", "Fuel", "Ammo", "Medicine" };
+        
+        public class ResourcesType {
+            private int id;
+            private string name;
+            private string description;
+            private int level;
+        
+            public ResourcesType (int id, string name, string description, int level)
+            {
+                this.id = id;
+                if (System.Array.IndexOf(Resources.validResourceNames, name) == -1)
+                {
+                    throw new System.ArgumentException("Invalid resource name: " + name);
+                }
+                this.name = name;
+                this.description = description;
+                this.level = level;
+            }
+        }
 
-    public ResourcesData(int wood, int iron, int gas, int food, int chemicals, int leather)
-    {
-        this.wood = wood;
-        this.iron = iron;
-        this.gas = gas;
-        this.food = food;
-        this.chemicals = chemicals;
-        this.leather = leather;
-        this.gun = gun
-        this.bomb = bomb
-        this.ak47 = ak47
-        this.sniperifle = sniperifle;
-        this.boots = boots;
-        this.vest = vest;
+        public Resources (ResourcesType resourcesType, int amount)
+        {
+            this.resourcesType = resourcesType;
+            this.amount = amount;
+        }
+
+        public ResourcesType GetResourcesType()
+        {
+            return resourcesType;
+        }
+
+        public int GetAmount()
+        {
+            return amount;
+        }
+
+        public void SetAmount(int amount)
+        {
+            this.amount = amount;
+        }
+
+        public void AddAmount(int amount)
+        {
+            this.amount += amount;
+        }
+
+        public void SubtractAmount(int amount)
+        {
+            this.amount -= amount;
+        }
     }
 }
+
 

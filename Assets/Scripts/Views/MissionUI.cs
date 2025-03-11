@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Model;
 
 public class MissionSelectUI : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class MissionSelectUI : MonoBehaviour
 
     void Start()
     {
-        mission1Button.onClick.AddListener(() => GameManager.Instance.StartMission(1));
-        mission2Button.onClick.AddListener(() => GameManager.Instance.StartMission(2));
+        mission1Button.onClick.AddListener(() => MissionManager.Instance.StartMission(1));
+        mission2Button.onClick.AddListener(() => MissionManager.Instance.StartMission(2));
     }
 }

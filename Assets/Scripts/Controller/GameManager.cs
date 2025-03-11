@@ -2,17 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Model;
 
-public enum GameState
-{
-    WelcomePage, //Fardin
-    MainMenuPage,
-    TechPage,
-    MissionPage,
-    BasePage,
-    StaffPage,
-    InventoryPage//Fardin
-}
 
 public class GameManager : MonoBehaviour
 {
@@ -36,13 +27,13 @@ public class GameManager : MonoBehaviour
     {
         if (SceneManager.GetActiveScene().name != "WelcomePage")
         {
-            LoadGameState(WelcomePage);
+            LoadGameState(GameState.WelcomePage);
         }
     }
 
     public void ChangeState(GameState newState)
     {
-        Debug.Log("Game State changed to: " + currentState);
+        Debug.Log("Game State changed to: " + newState);
     }
 
     public void LoadGameState(GameState newState)
@@ -51,26 +42,29 @@ public class GameManager : MonoBehaviour
 
         switch (newState)
         {
-            case WelcomePage:
+            case GameState.WelcomePage:
                 SceneManager.LoadScene("WelcomePage");
                 break;
-            case MainMenuPage:
+            case GameState.MainMenuPage:
                  SceneManager.LoadScene("MainMenuPage");
                  break;
-            case TechPage:
+            case GameState.TechPage:
                  SceneManager.LoadScene("TechPage");
                  break;
-            case MissionPage:
+            case GameState.MissionPage:
                  SceneManager.LoadScene("MissionPage");
                  break;
-            case BasePage:
+            case GameState.BasePage:
                  SceneManager.LoadScene("BasePage");
                  break;
-            case StaffPage:
+            case GameState.StaffPage:
                  SceneManager.LoadScene("StaffPage");
                  break;
-            case InventoryPage:
+            case GameState.InventoryPage:
                  SceneManager.LoadScene("InventoryPage");
+                 break;
+            case GameState.CombatPage:
+                 SceneManager.LoadScene("CombatPage");
                  break;
         }
 
@@ -78,6 +72,11 @@ public class GameManager : MonoBehaviour
     }
 
     public void LoadGame()
+    {
+
+    }
+
+    public void SaveGame()
     {
 
     }

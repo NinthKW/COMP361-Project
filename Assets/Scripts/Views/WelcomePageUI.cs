@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Model;
 
 public class WelcomePageUI : MonoBehaviour // Fardin
 {
@@ -13,6 +14,11 @@ public class WelcomePageUI : MonoBehaviour // Fardin
     {
         newGameButton.onClick.AddListener(ClickedPlay);
         quitButton.onClick.AddListener(ClickedQuit);
+    }
+
+    void ClickedPlay() 
+    {
+        Debug.Log("Clicked Play");
     }
 
     void ClickedNewGame()

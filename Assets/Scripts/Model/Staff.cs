@@ -2,23 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class StaffData
+namespace Model
 {
-    public List<Staff> staffList;
-
-    public StaffData()
+    [System.Serializable]
+    public class Staff
     {
-        staffList = new List<Staff>();
+        public List<Staff> staffList;
 
-        for (int i = 0; i < 5; i++)
+        public Staff()
         {
-            staffList.Add(new Soldier());
-        }
-    }
+            staffList = new List<Staff>();
 
-    public StaffData(List<Staff> stafflist)
-    {
-        this.staffList = staffList;
+            for (int i = 0; i < 5; i++)
+            {
+                staffList.Add(new Soldier());
+            }
+        }
+
+        public Staff(List<Staff> staff_list)
+        {
+            this.staffList = staff_list;
+        }
     }
 }
