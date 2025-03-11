@@ -2,14 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Model;
+using Assets.Scripts.Model;
 
 public class CombatUI : MonoBehaviour
 {
     public Button attackButton;
 
     void Start()
-    {
+    {  
+        attackButton.name = "Attack";
         attackButton.onClick.AddListener(PlayerAttack);
     }
 

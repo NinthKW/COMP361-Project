@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace Model
+namespace Assets.Scripts.Model
 {
     [System.Serializable]
-    public class GameData 
+    public class Game
     {
         public Staff staffData;
         public Resources resourcesData;

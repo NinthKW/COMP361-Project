@@ -1,46 +1,48 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Model;
-
-public class CombatManager : MonoBehaviour
+using Assets.Scripts.Model;
+namespace Assets.Scripts.Controller 
 {
-    public static CombatManager Instance;
-    public Combat combatData;
-
-    void Awake()
+    public class CombatManager : MonoBehaviour
     {
-        if (Instance == null)
+        public static CombatManager Instance;
+        public Combat combatData;
+
+        void Awake()
         {
-            Instance = this;
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            // TODO: Player select soldiers
+
+            // TODO: Select enemies based on Player select Mission
+
+            List<Soldier> soldiers = new();
+            List<Enemy> enemies = new();
+
+            soldiers.Add(new Soldier(new Role(RoleType.Snipper)));
+            soldiers.Add(new Soldier(new Role(RoleType.Medic)));
+            soldiers.Add(new Soldier(new Role(RoleType.Army)));
+            soldiers.Add(new Soldier(new Role(RoleType.Engineer)));
+            soldiers.Add(new Soldier(new Role(RoleType.Scott)));
+
+            enemies.Add(new Enemy("Goblin", 10, 2, 1));
+            enemies.Add(new Enemy("Orc", 20, 5, 2));
+            enemies.Add(new Enemy("Dragon", 50, 10, 3));
+
+            combatData = new Combat(enemies, soldiers);
         }
-        combatData = new Combat();
-    }
 
-    public void PlayerAttack()
-    {
-        combatData.AttackEnemy(20);
-    }
-
-    public void EnemyAttack()
-    {
-        combatData.ReceiveDamage(10);
-        CheckBattleEnd();
-    }
-
-    void CheckBattleEnd()
-    {
-        if (combatData.enemyHealth <= 0)
+        public bool StartCombat()
         {
-            Debug.Log("Enemy Defeated! Returning to Mission Select...");
-            GameManager.Instance.ChangeState(GameState.MissionSelectPage);
-            UnityEngine.SceneManagement.SceneManager.LoadScene("MissionSelect");
-        }
-        else if (combatData.playerHealth <= 0)
-        {
-            Debug.Log("Game Over! Returning to Main Menu...");
-            GameManager.Instance.ChangeState(GameState.MainMenuPage);
-            UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
+            if (combatData != null)
+            {
+                Debug.Log("Starting Combat");
+                return combatData.CombatStart();
+            }
+            throw new System.Exception("Combat data is null");
         }
     }
 }

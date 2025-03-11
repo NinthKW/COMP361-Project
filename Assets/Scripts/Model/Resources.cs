@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace Model
+namespace Assets.Scripts.Model
 {
     [System.Serializable]
     public class Resources

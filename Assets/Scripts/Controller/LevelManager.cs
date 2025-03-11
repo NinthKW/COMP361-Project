@@ -1,23 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Assets.Scripts.Model;
 
-public class LevelManager : MonoBehaviour
-{
-    public static LevelManager Instance;
-    public GameObject[] levels;
-
-    void Awake()
+namespace Assets.Scripts.Controller 
     {
-        if (Instance == null)
+    public class LevelManager : MonoBehaviour
+    {
+        public static LevelManager Instance;
+        public GameObject[] levels;
+
+        void Awake()
         {
-            Instance = this;
+            if (Instance == null)
+            {
+                Instance = this;
+            }
         }
-    }
 
-    public void LoadLevel(int levelIndex)
-    {
-        Instantiate(levels[levelIndex], Vector3.zero, Quaternion.identity);
-        Debug.Log("Level " + levelIndex + " loaded.");
+        public void LoadLevel(int levelIndex)
+        {
+            Instantiate(levels[levelIndex], Vector3.zero, Quaternion.identity);
+            Debug.Log("Level " + levelIndex + " loaded.");
+        }
     }
 }
