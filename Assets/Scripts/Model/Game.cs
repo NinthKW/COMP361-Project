@@ -13,5 +13,7 @@ namespace Assets.Scripts.Model
         public Mission missionData;
         public Tech techData;
         public Base baseData;
+        
     }
+
 }

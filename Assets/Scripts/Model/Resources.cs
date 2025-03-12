@@ -6,22 +6,22 @@ using UnityEngine;
 namespace Assets.Scripts.Model
 {
     [System.Serializable]
-    public class Resources
+    public class Resource
     {
-        private ResourcesType resourcesType;
+        private ResourceType resourceType;
         private int amount;
         private static readonly string[] validResourceNames = new string[] { "Food", "Wood", "Stone", "Metal", "Fuel", "Ammo", "Medicine" };
         
-        public class ResourcesType {
+        public class ResourceType {
             private int id;
             private string name;
             private string description;
             private int level;
         
-            public ResourcesType (int id, string name, string description, int level)
+            public ResourceType (int id, string name, string description, int level)
             {
                 this.id = id;
-                if (System.Array.IndexOf(Resources.validResourceNames, name) == -1)
+                if (System.Array.IndexOf(Resource.validResourceNames, name) == -1)
                 {
                     throw new System.ArgumentException("Invalid resource name: " + name);
                 }
@@ -31,15 +31,15 @@ namespace Assets.Scripts.Model
             }
         }
 
-        public Resources (ResourcesType resourcesType, int amount)
+        public Resource (ResourceType resourceType, int amount)
         {
-            this.resourcesType = resourcesType;
+            this.resourceType = resourceType;
             this.amount = amount;
         }
 
-        public ResourcesType GetResourcesType()
+        public ResourceType GetResourceType()
         {
-            return resourcesType;
+            return resourceType;
         }
 
         public int GetAmount()

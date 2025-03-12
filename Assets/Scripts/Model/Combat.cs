@@ -24,10 +24,10 @@ namespace Assets.Scripts.Model
                 // Player Turn
                 foreach (Soldier soldier in soldiers)
                 {
-                    // TODO: Player select movemnet
+                    // TODO: Player select movement
                     // ...
 
-                    // Choose a random enemy to attack
+                    // Choose a random enemy to attack (should be replaced by human interaction)
                     int randomIndex = Random.Range(0, enemies.Count);
                     Enemy targetEnemy = enemies[randomIndex];
                     targetEnemy.TakeDamage(soldier.GetAttack());
@@ -42,7 +42,7 @@ namespace Assets.Scripts.Model
                 // Enemy Turn
                 foreach (Enemy enemy in enemies)
                 {
-                    // Choose a random soldier to attack
+                    // Choose a random soldier to attack (To be replaced AI logic)
                     int randomIndex = Random.Range(0, soldiers.Count);
                     Soldier targetSoldier = soldiers[randomIndex];
 
