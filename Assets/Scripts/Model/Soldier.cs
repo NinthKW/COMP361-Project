@@ -27,7 +27,7 @@ namespace Assets.Scripts.Model
 
         public Soldier(Role role)
         {
-            this.name = nameList[UnityEngine.Random.Range(0, 12)];
+            this.name = nameList[UnityEngine.Random.Range(0, 11)];
             this.gun = false;
             this.bomb = 0;
             this.ammo = 0;
@@ -45,7 +45,7 @@ namespace Assets.Scripts.Model
 
         public Soldier()
         {
-            this.name = nameList[UnityEngine.Random.Range(0, 12)];
+            this.name = nameList[UnityEngine.Random.Range(0, 11)];
             this.gun = false;
             this.bomb = 0;
             this.ammo = 0;
