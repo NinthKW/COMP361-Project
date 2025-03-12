@@ -1228,5 +1228,21 @@
     <ProjectCapability Remove="AssemblyReferences" />
     <ProjectCapability Remove="ReferenceManagerAssemblies" />
     <Content Include="Assets\Scripts\Model\Combat.cs" />
+    <Content Include="Assets\Scripts\Model\Base.cs" />
+    <Content Include="Assets\Scripts\Model\Enemy.cs" />
+    <Content Include="Assets\Scripts\Model\Game.cs" />
+    <Content Include="Assets\Scripts\Model\GameState.cs" />
+    <Content Include="Assets\Scripts\Model\Mission.cs" />
+    <Content Include="Assets\Scripts\Model\Resources.cs" />
+    <Content Include="Assets\Scripts\Model\Role.cs" />
+    <Content Include="Assets\Scripts\Model\RoleType.cs" />
+    <Content Include="Assets\Scripts\Model\Skill.cs" />
+    <Content Include="Assets\Scripts\Model\Soldier.cs" />
+    <Content Include="Assets\Scripts\Model\Staff.cs" />
+    <Content Include="Assets\Scripts\Model\Tech.cs" />
+    <Content Include="Assets\Scripts\Controller\MissionManager.cs" />
+    <Content Include="Assets\Scripts\Controller\LevelManager.cs" />
+    <Content Include="Assets\Scripts\Controller\GameManager.cs" />
+    <Content Include="Assets\Scripts\Controller\CombatManager.cs" />
   </ItemGroup>
 </Project>
