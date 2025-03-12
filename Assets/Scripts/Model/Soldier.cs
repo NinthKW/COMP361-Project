@@ -43,6 +43,24 @@ namespace Assets.Scripts.Model
             this.defense = role.base_defense;
         }
 
+        public Soldier()
+        {
+            this.name = nameList[UnityEngine.Random.Range(0, 12)];
+            this.gun = false;
+            this.bomb = 0;
+            this.ammo = 0;
+            this.boots = false;
+            this.vest = false;
+            this.role = new Role(RoleType.Army);
+            this.health = role.maxHealth;
+            this.maxHealth = role.maxHealth;
+            this.exp = 0;
+            this.level = 1;
+            this.maxLevel = role.maxLevel;
+            this.attack = role.base_attack;
+            this.defense = role.base_defense;
+        }
+
         public void SetGun(bool value)
         {
             this.gun = value;

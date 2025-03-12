@@ -25,7 +25,7 @@ namespace Assets.Scripts.Model
 
             switch (type)
             {
-                case RoleType.Warrior:
+                case RoleType.Army:
                     maxHealth = 100;
                     maxLevel = 10;
                     base_attack = 10;

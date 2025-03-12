@@ -15,7 +15,7 @@ namespace Assets.Scripts.Model
 
             for (int i = 0; i < 5; i++)
             {
-                staffList.Add(new Soldier());
+                staffList.Add(new Soldier ());
             }
         }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Assets.Scripts.Model;
+using Assets.Scripts.Controller;
 
 public class CombatUI : MonoBehaviour
 {
@@ -16,6 +17,6 @@ public class CombatUI : MonoBehaviour
 
     void PlayerAttack()
     {
-        CombatManager.Instance.PlayerAttack();
+        CombatManager.Instance.StartCombat();
     }
 }
