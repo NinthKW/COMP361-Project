@@ -26,7 +26,7 @@ namespace Assets.Scripts.Controller
             soldiers.Add(new Soldier(new Role(RoleType.Medic)));
             soldiers.Add(new Soldier(new Role(RoleType.Army)));
             soldiers.Add(new Soldier(new Role(RoleType.Engineer)));
-            soldiers.Add(new Soldier(new Role(RoleType.Scott)));
+            //soldiers.Add(new Soldier(new Role(RoleType.Scott)));
 
             enemies.Add(new Enemy("Goblin", 10, 2, 1));
             enemies.Add(new Enemy("Orc", 20, 5, 2));

@@ -10,10 +10,18 @@ public class MissionSelectUI : MonoBehaviour
 {
     public Button mission1Button;
     public Button mission2Button;
+    public Button backButton;
 
     void Start()
     {
         mission1Button.onClick.AddListener(() => MissionManager.Instance.StartMission(1));
         mission2Button.onClick.AddListener(() => MissionManager.Instance.StartMission(2));
+        backButton.onClick.AddListener(Clickedback);
+    }
+
+    void Clickedback()
+    {
+        GameManager.Instance.LoadGameState(GameState.MainMenuPage);
+
     }
 }

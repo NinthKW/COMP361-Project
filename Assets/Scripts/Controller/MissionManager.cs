@@ -10,13 +10,16 @@ namespace Assets.Scripts.Controller
         public static MissionManager Instance;
         public List<Mission> missions = new List<Mission>();
 
-        void Awake()
+    void Awake()
+    {
+        if (Instance == null)
         {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
+            DontDestroyOnLoad(gameObject);
         }
+        {
+            Destroy(gameObject);
+        }
+    }
 
         void Start()
         {

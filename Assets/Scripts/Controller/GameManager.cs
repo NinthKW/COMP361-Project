@@ -22,17 +22,17 @@ namespace Assets.Scripts.Controller
             {
                 Destroy(gameObject);
             }
-            // Initialize combat manager to sleep state when game starts
-            if (CombatManager.Instance.gameObject.activeSelf)
-            {
-                CombatManager.Instance.gameObject.SetActive(false);
-            }
+            //// Initialize combat manager to sleep state when game starts
+            //if (CombatManager.Instance.gameObject.activeSelf)
+            //{
+            //    CombatManager.Instance.gameObject.SetActive(false);
+            //}
 
-            // Initialize mission manager to sleep state when game starts
-            if (MissionManager.Instance.gameObject.activeSelf)
-            {
-                MissionManager.Instance.gameObject.SetActive(false);
-            }
+            //// Initialize mission manager to sleep state when game starts
+            //if (MissionManager.Instance.gameObject.activeSelf)
+            //{
+            //    MissionManager.Instance.gameObject.SetActive(false);
+            //}
         }
 
         void Start()

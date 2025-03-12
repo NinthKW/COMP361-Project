@@ -14,7 +14,8 @@ public class WelcomePageUI : MonoBehaviour // Fardin
 
     void Start()
     {
-        newGameButton.onClick.AddListener(ClickedPlay);
+        newGameButton.onClick.AddListener(ClickedNewGame);
+        loadGameButton.onClick.AddListener(ClickedLoadGame);
         quitButton.onClick.AddListener(ClickedQuit);
     }
 
@@ -25,6 +26,7 @@ public class WelcomePageUI : MonoBehaviour // Fardin
 
     void ClickedNewGame()
     {
+        GameManager.Instance.ChangeState(GameState.MainMenuPage);
         GameManager.Instance.LoadGameState(GameState.MainMenuPage);
     }
     

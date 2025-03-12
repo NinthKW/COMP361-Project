@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Assets.Scripts.Model
 {
     [System.Serializable]
-    public class Soldier : Staff
+    public class Soldier 
     {
         readonly string name;
         bool gun;
