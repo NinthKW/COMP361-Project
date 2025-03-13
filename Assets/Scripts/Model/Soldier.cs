@@ -18,13 +18,40 @@ namespace Assets.Scripts.Model
         int maxHealth;
         int exp;
         int level;
-        int maxLevel;
+        readonly int maxLevel;
         int attack;
         int defense;
         Role role;
 
         private static readonly string[] nameList = { "Messi", "Ronaldo", "Joseph.Vyb", "Trump", "Trudeau", "Poilievre", "Legault", "Jagmeet", "Faker", "Zeus", "Drake", "Obama" };
 
+        // Reference to the GameObject that represents this soldier in the scene
+        private GameObject gameObject;
+
+        public void SetGameObject(GameObject gameObject)
+        {
+            this.gameObject = gameObject;
+            SetSoldierTag();
+        }
+
+        public GameObject GetGameObject()
+        {
+            return this.gameObject;
+        }
+
+
+        private void SetSoldierTag()
+        {
+            if (this.gameObject != null)
+            {
+                this.gameObject.tag = "Soldier";
+            }
+        }
+
+        public void UpdateSoldierTag()
+        {
+            SetSoldierTag();
+        }
         public Soldier(Role role)
         {
             this.name = nameList[UnityEngine.Random.Range(0, 11)];

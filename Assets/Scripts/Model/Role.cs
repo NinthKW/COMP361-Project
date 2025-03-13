@@ -50,6 +50,12 @@ namespace Assets.Scripts.Model
                     base_attack = 6;
                     base_defense = 7;
                     break;
+                case RoleType.Scott:
+                    maxHealth = 90;
+                    maxLevel = 10;
+                    base_attack = 8;
+                    base_defense = 9;
+                    break;
                 default:
                     throw new ArgumentException($"Invalid role type: {type}", nameof(type));
             }
