@@ -415,6 +415,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fc36b7d4c4391a45ae39d495fcf578d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxSoldiersAllowed: 5
+  isCombatActive: 0
+  combatCanvas: {fileID: 0}
+  soldierPrefab: {fileID: 0}
+  enemyPrefab: {fileID: 0}
 --- !u!4 &1044390040
 Transform:
   m_ObjectHideFlags: 0
