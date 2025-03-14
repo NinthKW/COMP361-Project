@@ -57,3 +57,6 @@ crashlytics-build.properties
 !ProjectSettings/
 !Packages/
 
+# ==== random test files ===== #
+test*
+*.sln
