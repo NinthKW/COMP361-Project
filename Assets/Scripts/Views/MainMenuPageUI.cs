@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Model;
+using Assets.Scripts.Model;
+using Assets.Scripts.Controller;
+
 
 public class MainMenuPageUI : MonoBehaviour // Fardin
 {
@@ -22,6 +24,8 @@ public class MainMenuPageUI : MonoBehaviour // Fardin
         missionButton.onClick.AddListener(ClickedMission);
         techButton.onClick.AddListener(ClickedTech);
         exitButton.onClick.AddListener(ClickedExit);
+        researchButton.onClick.AddListener(ClickedResearch);
+        inventoryButton.onClick.AddListener(ClickedInventory);
     }
 
     void ClickedBase()
@@ -59,4 +63,5 @@ public class MainMenuPageUI : MonoBehaviour // Fardin
         GameManager.Instance.SaveGame();
         GameManager.Instance.LoadGameState(GameState.WelcomePage);
     }
-} // Fardin
+
+} // Fardin,Ziyuan Wang

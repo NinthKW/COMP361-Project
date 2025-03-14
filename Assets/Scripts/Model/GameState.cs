@@ -1,4 +1,4 @@
-namespace Model
+namespace Assets.Scripts.Model
 {
     public enum GameState
     {

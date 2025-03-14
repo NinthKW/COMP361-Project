@@ -6,15 +6,18 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/WelcomePageUI.unity
+    path: Assets/Scenes/WelcomePage.unity
+    guid: c1be794d500e78541b3f15f94617b818
+  - enabled: 1
+    path: Assets/Scenes/MainMenuPage.unity
     guid: 6585e3269711c14479499a12f3aed810
   - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 1
-    path: Assets/Scenes/MissionSelect.unity
+    path: Assets/Scenes/MissionPage.unity
     guid: 6169c744c02c7374db57be4ed378517f
   - enabled: 1
-    path: Assets/Scenes/Combat.unity
+    path: Assets/Scenes/CombatPage.unity
     guid: 9bde016214afacd40bef6a2f06fa8c25
   m_configObjects: {}
