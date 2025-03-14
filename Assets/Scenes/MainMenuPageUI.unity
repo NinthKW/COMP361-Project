@@ -243,7 +243,7 @@ GameObject:
   - component: {fileID: 107372892}
   - component: {fileID: 107372891}
   m_Layer: 5
-  m_Name: QuitButton
+  m_Name: exitButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1044,7 +1044,7 @@ GameObject:
   - component: {fileID: 570012373}
   - component: {fileID: 570012372}
   m_Layer: 5
-  m_Name: Tech tree button
+  m_Name: techButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1361,7 +1361,7 @@ GameObject:
   - component: {fileID: 659426642}
   - component: {fileID: 659426641}
   m_Layer: 5
-  m_Name: Inventory Button
+  m_Name: inventoryButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2150,7 +2150,7 @@ GameObject:
   - component: {fileID: 968295572}
   - component: {fileID: 968295571}
   m_Layer: 5
-  m_Name: BaseButton (2)
+  m_Name: baseButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2271,7 +2271,7 @@ GameObject:
   - component: {fileID: 1158616751}
   - component: {fileID: 1158616750}
   m_Layer: 5
-  m_Name: MissionButton (1)
+  m_Name: missionButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
