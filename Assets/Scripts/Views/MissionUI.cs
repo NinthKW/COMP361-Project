@@ -10,22 +10,22 @@ using TMPro;
 
 public class MissionSelectUI : MonoBehaviour
 {
-    public Transform missionButtonContainer; // ÈÝÆ÷½Úµã
-    public GameObject missionButtonPrefab;   // ÈÎÎñ°´Å¥ Prefab
+    public Transform missionButtonContainer; // ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½
+    public GameObject missionButtonPrefab;   // ï¿½ï¿½ï¿½ï¿½Å¥ Prefab
 
     public TextMeshProUGUI missionNameText;
     public TextMeshProUGUI missionDescriptionText;
 
-    public Button startButton;               // Æô¶¯ÈÎÎñ°´Å¥
+    public Button startButton;               // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å¥
     public Button backButton;
 
-    private Mission selectedMission;         // µ±Ç°Ñ¡ÔñµÄÈÎÎñ
+    private Mission selectedMission;         // ï¿½ï¿½Ç°Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
     void Start()
     {
         PopulateMissionList();
         startButton.onClick.AddListener(OnStartButtonClicked);
-        backButton.onClick.AddListener(backButtonClicked);
+        backButton.onClick.AddListener(OnBackButtonClicked);
     }
 
     void PopulateMissionList()
@@ -85,9 +85,13 @@ public class MissionSelectUI : MonoBehaviour
         {
             MissionManager.Instance.StartMission(selectedMission.id);
         }
+        else
+        {
+            Debug.LogWarning("No mission selected");
+        }
     }
 
-    void backButtonClicked()
+    void OnBackButtonClicked()
     {
         GameManager.Instance.ChangeState(GameState.MainMenuPage);
         GameManager.Instance.LoadGameState(GameState.MainMenuPage);

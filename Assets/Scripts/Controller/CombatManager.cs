@@ -17,19 +17,6 @@ namespace Assets.Scripts.Controller
         
         public bool isCombatActive = false;
         private bool isPlayerTurn = true;
-
-        [Header("Combat Visuals")]
-        [SerializeField] private Canvas combatCanvas;
-        [SerializeField] private GameObject soldierPrefab = default;   // Circle prefab
-        [SerializeField] private GameObject enemyPrefab = default;   // Triangle prefab
-
-        // Dictionaries linking visual objects to their data models
-        private Dictionary<GameObject, Soldier> soldierVisuals = new();
-        private Dictionary<GameObject, Enemy> enemyVisuals = new();
-
-        // Currently selected game objects
-        private GameObject selectedSoldierVisual;
-        private GameObject selectedEnemyVisual;
         
         void Awake()
         {
@@ -69,6 +56,11 @@ namespace Assets.Scripts.Controller
         public List<Soldier> GetAvailableSoldiers()
         {
             return availableSoldiers;
+        }
+
+        public List<Enemy> GetAvailableEnemies()
+        {
+            return availableEnemies;
         }
         
         public bool SelectSoldier(Soldier soldier)
@@ -126,6 +118,18 @@ namespace Assets.Scripts.Controller
                 return false;
             }
             return isPlayerTurn;
+        }
+
+        bool IsSoldier(GameObject obj)
+        {
+            // Implement logic to check if object is a soldier
+            return obj.CompareTag("Soldier");
+        }
+        
+        bool IsEnemy(GameObject obj)
+        {
+            // Implement logic to check if object is an enemy
+            return obj.CompareTag("Enemy");
         }
 
         public void Attack(object attacker, object target, bool endTurn = true)
@@ -241,7 +245,7 @@ namespace Assets.Scripts.Controller
             return isCombatActive && selectedSoldiers.Count == 0;
         }
         
-        private void EndCombat(bool victory)
+        public void EndCombat(bool victory)
         {
             isCombatActive = false;
             Debug.Log(victory ? "Combat ended with victory!" : "Combat ended with defeat!");

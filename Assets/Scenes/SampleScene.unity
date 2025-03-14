@@ -418,8 +418,8 @@ MonoBehaviour:
   maxSoldiersAllowed: 5
   isCombatActive: 0
   combatCanvas: {fileID: 0}
-  soldierPrefab: {fileID: 0}
-  enemyPrefab: {fileID: 0}
+  soldierPrefab: {fileID: 2558090580845036208, guid: ea0a3e3d2a2604fd18c2df5c32e22466, type: 3}
+  enemyPrefab: {fileID: 3657941230014728273, guid: aab869988da3d43edaed8ac5e3b64ff8, type: 3}
 --- !u!4 &1044390040
 Transform:
   m_ObjectHideFlags: 0

@@ -45,7 +45,7 @@ namespace Assets.Scripts.Controller
         {
             missions.Clear();
 
-            // Ê¾ÀýÈÎÎñ 1
+            // Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 1
             missions.Add(new Mission(
                 1,
                 "Rescue the Scientists",
@@ -58,7 +58,7 @@ namespace Assets.Scripts.Controller
                 weatherId: 3     // e.g., foggy
             ));
 
-            // Ê¾ÀýÈÎÎñ 2
+            // Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 2
             missions.Add(new Mission(
                 2,
                 "Destroy the Alien Base",
@@ -71,7 +71,7 @@ namespace Assets.Scripts.Controller
                 weatherId: 1     // e.g., clear
             ));
 
-            // Ê¾ÀýÈÎÎñ 3
+            // Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 3
             missions.Add(new Mission(
                 3,
                 "Escort the Convoy",
@@ -84,7 +84,7 @@ namespace Assets.Scripts.Controller
                 weatherId: 2     // e.g., rain
             ));
 
-            // Ê¾ÀýÈÎÎñ 4
+            // Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 4
             missions.Add(new Mission(
                 4,
                 "Investigate the Crash Site",
@@ -106,7 +106,6 @@ namespace Assets.Scripts.Controller
             if (selectedMission != null)
             {
                 Debug.Log("Starting Mission: " + selectedMission.name);
-                GameManager.Instance.ChangeState(GameState.MissionPage);
                 Invoke(nameof(StartCombat), 2f);
             }
         }
@@ -118,8 +117,8 @@ namespace Assets.Scripts.Controller
             {
                 CombatManager.Instance.gameObject.SetActive(true);
             }
-            CombatManager.Instance.StartCombat();
-            GameManager.Instance.ChangeState(GameState.CombatPage);
+            // GameManager.Instance.ChangeState(GameState.CombatPage);
+            GameManager.Instance.LoadGameState(GameState.CombatPage);
         }
     }
 }

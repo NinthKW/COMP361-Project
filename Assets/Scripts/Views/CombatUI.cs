@@ -4,31 +4,78 @@ using UnityEngine;
 using UnityEngine.UI;
 using Assets.Scripts.Model;
 using Assets.Scripts.Controller;
+using TMPro;
 
 public class CombatUI : MonoBehaviour
 {
+    // UI elements
+    public Transform combatUnitContainer;
+    public GameObject soldierPrefab;
+    public GameObject enemyPrefab;
+    public TextMeshProUGUI turnText;
+    public Transform actionPanel;
     public Button attackButton;
-    
+    public Button endTurnButton;
+    public Button startCombatButton;
+    public Button backButton;
     // Selection state variables
     private enum SelectionState { None, SelectingSoldier, SelectingEnemy }
     private SelectionState currentState = SelectionState.None;
     private GameObject selectedSoldier = null;
     
+    // Method to create soldier and enemy game objects
+    void CreateCombatUnits()
+    {
+        List<Soldier> soldiers = CombatManager.Instance.GetAvailableSoldiers();
+        List<Enemy> enemies = CombatManager.Instance.GetAvailableEnemies();
+        
+        for (int i = 0; i < soldiers.Count; i++)
+        {
+            Vector3 position = new Vector3(-10.0f, i * 100, i * 5.0f);
+            GameObject soldier = CreateSoldier(position);
+            soldiers[i].SetGameObject(soldier);
+        }
+    }
+
+    GameObject CreateSoldier(Vector3 position)
+    {
+        GameObject soldier = GameObject.Instantiate(soldierPrefab, combatUnitContainer);
+        soldier.name = "Soldier_" + Random.Range(1000, 9999);
+        soldier.tag = "Soldier";
+        soldier.transform.position = position;
+        
+        return soldier;
+    }
+
+    GameObject CreateEnemy(Vector3 position)
+    {
+        GameObject enemy = GameObject.Instantiate(enemyPrefab, combatUnitContainer);
+        enemy.name = "Enemy_" + Random.Range(1000, 9999);
+        enemy.tag = "Enemy";
+        enemy.transform.position = position;
+        
+        return enemy;
+    }
+
     void Start()
     {
-        // 检查CombatManager是否存在，不存在则创建
         if (CombatManager.Instance == null)
         {
-            GameObject combatManagerObj = new GameObject("CombatManager");
-            combatManagerObj.AddComponent<CombatManager>();
+            Debug.LogError("CombatManager.Instance is NULL, creating new instance");
+            CombatManager.Instance = gameObject.AddComponent<CombatManager>();
         }
-        
-        attackButton.name = "Attack";
-        attackButton.onClick.AddListener(OnAttackButtonClicked);
-        CombatManager.Instance.StartCombat();
+        // attackButton.gameObject.SetActive(false);
+        // endTurnButton.gameObject.SetActive(false);
+        // startCombatButton.gameObject.SetActive(true);
+        // backButton.gameObject.SetActive(true);
+        CreateCombatUnits();
+        Debug.Log(message: "Combat UI initialized");
+
+        startCombatButton.onClick.AddListener(OnStartCombatButtonClicked);
+        backButton.onClick.AddListener(OnRetreatButtonClicked);
+                
         UpdateUI();
     }
-    
     void Update()
     {
         // Handle mouse input for selecting units
@@ -36,6 +83,16 @@ public class CombatUI : MonoBehaviour
         {
             HandleSelection();
         }
+    }
+
+    void OnStartCombatButtonClicked()
+    {
+        // Start the combat
+        CombatManager.Instance.StartCombat();
+        startCombatButton.gameObject.SetActive(false);
+        endTurnButton.gameObject.SetActive(true);
+        attackButton.gameObject.SetActive(true);
+        UpdateUI();
     }
     
     void OnAttackButtonClicked()
@@ -45,6 +102,13 @@ public class CombatUI : MonoBehaviour
         Debug.Log("Select a soldier to attack with");
         HighlightSoldiers(true);
         UpdateUI();
+    }
+
+    void OnRetreatButtonClicked()
+    {
+        // Implement retreat logic
+        Debug.Log("Retreat button clicked");
+        CombatManager.Instance.EndCombat(false);
     }
     
     void HandleSelection()
