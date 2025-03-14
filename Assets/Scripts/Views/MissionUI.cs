@@ -51,19 +51,7 @@ public class MissionSelectUI : MonoBehaviour
 
             GameObject buttonObj = Instantiate(missionButtonPrefab, missionButtonContainer);
 
-            if (buttonObj == null)
-            {
-                Debug.LogError("MissionButtonPrefab failed to instantiate!");
-                return;
-            }
-
             TextMeshProUGUI buttonText = buttonObj.GetComponentInChildren<TextMeshProUGUI>();
-
-            if (buttonText == null)
-            {
-                Debug.LogError("No TextMeshProUGUI found in MissionButtonPrefab!");
-                return;
-            }
 
             buttonText.text = mission.name;
 

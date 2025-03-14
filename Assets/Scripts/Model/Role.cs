@@ -32,7 +32,7 @@ namespace Assets.Scripts.Model
                     base_defense = 8;
                     skills.Add(new Skill("Skill1", 10, 0, 1));
                     break;
-                case RoleType.Snipper:
+                case RoleType.Sniper:
                     maxHealth = 70;
                     maxLevel = 10;
                     base_attack = 15;

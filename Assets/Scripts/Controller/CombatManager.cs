@@ -1,23 +1,26 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Assets.Scripts.Model;
+
 namespace Assets.Scripts.Controller 
 {
     public class CombatManager : MonoBehaviour
     {
         public static CombatManager Instance;
         
+        [Header("Combat Settings")]
         [SerializeField] private int maxSoldiersAllowed = 5;
+        [SerializeField] private float enemyTurnDelay = 1f;
         
-        private List<Soldier> availableSoldiers = new();
-        private List<Enemy> availableEnemies = new();
-        private List<Soldier> selectedSoldiers = new();
-        private List<Enemy> missionEnemies = new();
+        private List<Soldier> _availableSoldiers = new();
+        private List<Enemy> _availableEnemies = new();
+        private List<Character> _selectedCharacters = new();
+        private List<Character> _enemyCharacters = new();
         
-        public bool isCombatActive = false;
-        private bool isPlayerTurn = true;
-        
+        public bool IsCombatActive { get; private set; }
+        public bool IsPlayerTurn { get; private set; }
+        public System.Action<bool> OnCombatEnd;
+
         void Awake()
         {
             if (Instance == null)
@@ -31,228 +34,209 @@ namespace Assets.Scripts.Controller
                 return;
             }
             
-            InitializeAvailableSoldiers();
-            InitializeAvailableEnemies();
-
-        }
-        
-        private void InitializeAvailableSoldiers()
-        {
-            availableSoldiers.Add(new Soldier(new Role(RoleType.Snipper)));
-            availableSoldiers.Add(new Soldier(new Role(RoleType.Medic)));
-            availableSoldiers.Add(new Soldier(new Role(RoleType.Army)));
-            availableSoldiers.Add(new Soldier(new Role(RoleType.Engineer)));
-            availableSoldiers.Add(new Soldier(new Role(RoleType.Scott)));
-        }
-        
-        private void InitializeAvailableEnemies()
-        {
-            availableEnemies.Add(new Enemy("Goblin", 10, 2, 1));
-            availableEnemies.Add(new Enemy("Orc", 20, 5, 2));
-            availableEnemies.Add(new Enemy("Dragon", 50, 10, 3));
+            InitializeAvailableUnits();
         }
 
-        
-        public List<Soldier> GetAvailableSoldiers()
+        private void InitializeAvailableUnits()
         {
-            return availableSoldiers;
+            // Soldier initialization
+            _availableSoldiers.Add(new Soldier(new Role(RoleType.Sniper)));
+            _availableSoldiers.Add(new Soldier(new Role(RoleType.Medic)));
+            _availableSoldiers.Add(new Soldier(new Role(RoleType.Army)));
+            _availableSoldiers.Add(new Soldier(new Role(RoleType.Engineer)));
+            _availableSoldiers.Add(new Soldier(new Role(RoleType.Scott)));
+
+            // Enemy initialization
+            _availableEnemies.Add(new Enemy("Goblin", 30, 5, 1, 10));
+            _availableEnemies.Add(new Enemy("Orc", 60, 10, 2, 20));
+            _availableEnemies.Add(new Enemy("Dragon", 150, 20, 5, 50));
         }
 
-        public List<Enemy> GetAvailableEnemies()
+        public void StartCombat(List<Soldier> selectedSoldiers, List<Enemy> missionEnemies)
         {
-            return availableEnemies;
+            _selectedCharacters.Clear();
+            _enemyCharacters.Clear();
+
+            _selectedCharacters.AddRange(selectedSoldiers);
+            _enemyCharacters.AddRange(missionEnemies);
+
+            if (_selectedCharacters.Count == 0 || _enemyCharacters.Count == 0)
+            {
+                Debug.LogError("Cannot start combat with empty units");
+                return;
+            }
+
+            IsCombatActive = true;
+            IsPlayerTurn = true;
+            Debug.Log($"Combat started: {_selectedCharacters.Count} vs {_enemyCharacters.Count}");
         }
-        
-        public bool SelectSoldier(Soldier soldier)
+
+        public void ProcessAttack(Character attacker, Character target)
         {
-            if (selectedSoldiers.Count >= maxSoldiersAllowed)
+            if (!ValidateAttack(attacker, target)) return;
+
+            // Execute attack
+            attacker.Attack(target);
+            
+            // Handle experience
+            if (target.IsDead() && attacker is Soldier soldier)
+            {
+                soldier.GainExp((target as Enemy)?.ExperienceReward ?? 0);
+            }
+
+            // Cleanup dead units
+            CleanupDeadUnits();
+
+            // Check combat status
+            if (CheckCombatEnd()) return;
+
+            // Auto switch turns
+            if (ShouldSwitchTurn(attacker))
+            {
+                StartCoroutine(SwitchTurnRoutine());
+            }
+        }
+
+        private bool ValidateAttack(Character attacker, Character target)
+        {
+            if (!IsCombatActive)
+            {
+                Debug.LogWarning("Combat is not active");
                 return false;
-                
-            selectedSoldiers.Add(soldier);
+            }
+
+            if (attacker.IsDead() || target.IsDead())
+            {
+                Debug.LogWarning("Cannot attack with/on dead character");
+                return false;
+            }
+
+            if (IsPlayerTurn && !_selectedCharacters.Contains(attacker))
+            {
+                Debug.LogWarning("Not a valid player character");
+                return false;
+            }
+
+            if (!IsPlayerTurn && !_enemyCharacters.Contains(attacker))
+            {
+                Debug.LogWarning("Not a valid enemy character");
+                return false;
+            }
+
             return true;
         }
-        
-        public void SetMissionEnemies(List<Enemy> enemies)
+
+        private void CleanupDeadUnits()
         {
-            missionEnemies.Clear();
-            missionEnemies.AddRange(enemies);
-            Debug.Log($"Mission enemies set: {missionEnemies.Count} enemies");
-        }
-        
-        public void PrepareForCombat()
-        {
-            if (selectedSoldiers.Count == 0)
-            {
-                // Use all available soldiers if none selected (for testing)
-                selectedSoldiers.AddRange(availableSoldiers);
-            }
-            
-            if (missionEnemies.Count == 0)
-            {
-                // Use default enemies if none selected
-                missionEnemies.AddRange(availableEnemies);
-            }
-            
-            Debug.Log($"Combat prepared with {selectedSoldiers.Count} soldiers and {missionEnemies.Count} enemies");
+            _selectedCharacters.RemoveAll(c => c.IsDead());
+            _enemyCharacters.RemoveAll(c => c.IsDead());
         }
 
-        public bool StartCombat()
+        private bool CheckCombatEnd()
         {
-            if (selectedSoldiers.Count == 0 || missionEnemies.Count == 0)
-            {
-                PrepareForCombat();
-            }
-            
-            isCombatActive = true;
-            isPlayerTurn = true; // Player starts first
-            Debug.Log("Starting Combat");
-            
-            return isCombatActive;
-        }
-
-        public bool IsPlayerTurn()
-        {
-            if (!isCombatActive)
-            {
-                Debug.LogWarning("No active combat");
-                return false;
-            }
-            return isPlayerTurn;
-        }
-
-        bool IsSoldier(GameObject obj)
-        {
-            // Implement logic to check if object is a soldier
-            return obj.CompareTag("Soldier");
-        }
-        
-        bool IsEnemy(GameObject obj)
-        {
-            // Implement logic to check if object is an enemy
-            return obj.CompareTag("Enemy");
-        }
-
-        public void Attack(object attacker, object target, bool endTurn = true)
-        {
-            // Validate combat state
-            if (!isCombatActive) {
-                Debug.LogWarning("No active combat");
-                return;
-            }
-            
-            // Handle Soldier attacking Enemy
-            if (attacker is Soldier soldier && target is Enemy enemy)
-            {
-                if (!isPlayerTurn) {
-                    Debug.LogWarning("Not player's turn");
-                    return;
-                }
-                
-                // Perform attack
-                enemy.TakeDamage(soldier.GetAttack());
-                Debug.Log($"Soldier attacks enemy for {soldier.GetAttack()} damage. Enemy health: {enemy.health}");
-                
-                // Handle defeated enemy
-                if (enemy.health <= 0) {
-                    Debug.Log($"Enemy {enemy.name} defeated!");
-                    missionEnemies.Remove(enemy);
-                }
-                
-                // Switch turn if requested
-                if (endTurn) {
-                    isPlayerTurn = false;
-                }
-            }
-            // Handle Enemy attacking Soldier
-            else if (attacker is Enemy enemyAttacker && target is Soldier soldierTarget)
-            {
-                if (isPlayerTurn) {
-                    Debug.LogWarning("Not enemy's turn");
-                    return;
-                }
-                
-                // Perform attack
-                enemyAttacker.Attack(soldierTarget);
-                Debug.Log($"{enemyAttacker.name} attacks soldier for {enemyAttacker.damage} damage. Soldier health: {soldierTarget.GetHealth()}");
-                
-                // Handle defeated soldier
-                if (soldierTarget.GetHealth() <= 0) {
-                    Debug.Log($"Soldier defeated!");
-                    selectedSoldiers.Remove(soldierTarget);
-                }
-                
-                // Switch turn if requested
-                if (endTurn) {
-                    isPlayerTurn = true;
-                }
-            }
-            else {
-                Debug.LogWarning("Invalid attacker/target combination");
-                return;
-            }
-            
-            // Check if combat should end
-            CheckCombatStatus();
-        }
-
-        // Convenience methods that use the unified Attack function
-        public void PlayerAttack(int attackingSoldierIndex = 0, int targetEnemyIndex = 0)
-        {
-            if (attackingSoldierIndex >= 0 && attackingSoldierIndex < selectedSoldiers.Count &&
-                targetEnemyIndex >= 0 && targetEnemyIndex < missionEnemies.Count)
-            {
-                Attack(selectedSoldiers[attackingSoldierIndex], missionEnemies[targetEnemyIndex]);
-            }
-        }
-
-        public void EnemyAttack()
-        {
-            if (!isCombatActive || isPlayerTurn) {
-                Debug.LogWarning("Not enemy's turn or no active combat");
-                return;
-            }
-            
-            foreach (Enemy enemy in new List<Enemy>(missionEnemies))
-            {
-                if (selectedSoldiers.Count == 0) break;
-                
-                int targetIndex = Random.Range(0, selectedSoldiers.Count);
-                bool isLastEnemy = enemy == missionEnemies[missionEnemies.Count - 1];
-                
-                Attack(enemy, selectedSoldiers[targetIndex], isLastEnemy);
-            }
-        }
-        
-        private void CheckCombatStatus()
-        {
-            if (IsVictory())
-            {
-                EndCombat(true);
-            }
-            else if (IsDefeat())
+            if (_selectedCharacters.Count == 0)
             {
                 EndCombat(false);
+                return true;
+            }
+
+            if (_enemyCharacters.Count == 0)
+            {
+                EndCombat(true);
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool ShouldSwitchTurn(Character attacker)
+        {
+            if (IsPlayerTurn)
+            {
+                // Player completes all actions before switching
+                return attacker == _selectedCharacters[^1];
+            }
+            else
+            {
+                // Enemies act sequentially
+                return attacker == _enemyCharacters[^1];
             }
         }
-        
-        public bool IsVictory()
+
+        private IEnumerator<WaitForSeconds> SwitchTurnRoutine()
         {
-            return isCombatActive && missionEnemies.Count == 0;
+            yield return new WaitForSeconds(enemyTurnDelay);
+            
+            IsPlayerTurn = !IsPlayerTurn;
+            Debug.Log($"Turn switched to: {(IsPlayerTurn ? "Player" : "Enemy")}");
+
+            if (!IsPlayerTurn)
+            {
+                StartEnemyTurn();
+            }
         }
-        
-        public bool IsDefeat()
+
+        private void StartEnemyTurn()
         {
-            return isCombatActive && selectedSoldiers.Count == 0;
+            foreach (Enemy enemy in _enemyCharacters)
+            {
+                if (enemy.IsDead()) continue;
+                
+                Soldier target = GetRandomSoldier();
+                if (target != null)
+                {
+                    ProcessAttack(enemy, target);
+                }
+            }
         }
-        
+
+        private Soldier GetRandomSoldier()
+        {
+            if (_selectedCharacters.Count == 0) return null;
+            return (Soldier)_selectedCharacters[Random.Range(0, _selectedCharacters.Count)];
+        }
+
         public void EndCombat(bool victory)
         {
-            isCombatActive = false;
-            Debug.Log(victory ? "Combat ended with victory!" : "Combat ended with defeat!");
+            IsCombatActive = false;
+            Debug.Log($"Combat ended with {(victory ? "victory" : "defeat")}");
             
-            // Reset combat state
-            selectedSoldiers.Clear();
-            missionEnemies.Clear();
+            // Reward experience
+            if (victory)
+            {
+                _selectedCharacters.ForEach(c => {
+                    if (c is Soldier soldier) soldier.GainExp(50);
+                });
+            }
+
+            OnCombatEnd?.Invoke(victory);
+            CleanupCombat();
         }
+
+        private void CleanupCombat()
+        {
+            _selectedCharacters.Clear();
+            _enemyCharacters.Clear();
+        }
+
+        public void EndCurrentTurn()
+        {
+            if (IsPlayerTurn)
+            {
+                IsPlayerTurn = false;
+                StartCoroutine(SwitchTurnRoutine());
+            }
+        }
+
+        #region Helper Methods
+        public List<Soldier> GetAvailableSoldiers() => new(_availableSoldiers);
+        public List<Enemy> GetAvailableEnemies() => new(_availableEnemies);
+        
+        public bool IsAlly(Character character) => 
+            _selectedCharacters.Contains(character);
+
+        public bool IsEnemy(Character character) => 
+            _enemyCharacters.Contains(character);
+        #endregion
     }
 }
