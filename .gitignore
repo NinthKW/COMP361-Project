@@ -57,3 +57,14 @@ crashlytics-build.properties
 !ProjectSettings/
 !Packages/
 
+
+Assembly-CSharp.csproj
+
+# ==== random test files ===== #
+test*
+*.sln
+
+Assembly-CSharp.csproj# 
+==== random test files ===== #
+test*
+*.sln
