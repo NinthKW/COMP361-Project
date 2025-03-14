@@ -21,7 +21,7 @@ public class db_test : MonoBehaviour
                 using (IDataReader reader  = command.ExecuteReader())
                 {
                     while (reader.Read()) {
-                        Debug.Log("Name: " + reader["name"]);
+                        Debug.Log("Name: " + reader["hp"]);
                     }
 
                     reader.Close();

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Model;
 
 public class MissionManager : MonoBehaviour
 {
@@ -32,13 +33,13 @@ public class MissionManager : MonoBehaviour
         if (selectedMission != null)
         {
             Debug.Log("Starting Mission: " + selectedMission.name);
-            GameManager.Instance.StartMission(missionID);
-            Invoke("StartCombat", 2f);  // 模拟任务进入战斗
+            GameManager.Instance.ChangeState(GameState.MissionPage);
+            Invoke("StartCombat", 2f);
         }
     }
 
     void StartCombat()
     {
-        GameManager.Instance.StartCombat();
+        GameManager.Instance.ChangeState(GameState.CombatPage);
     }
 }

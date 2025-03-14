@@ -9,6 +9,7 @@
 [Uu]ser[Ss]ettings/
 MemoryCaptures/
 Recordings/
+.history/
 
 # Unity 自动生成的 VS Rider 插件
 [Aa]ssets/Plugins/Editor/JetBrains*
