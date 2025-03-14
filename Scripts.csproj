@@ -95,10 +95,6 @@
       <HintPath>/Users/joe/Applications/2022.3.45f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Unity.TextMeshPro">
-      <HintPath>Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="UnityEngine.AIModule">
       <HintPath>/Users/joe/Applications/2022.3.45f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>
       <Private>False</Private>
@@ -965,6 +961,10 @@
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>/Users/joe/Applications/2022.3.45f1/Unity.app/Contents/NetStandard/compat/2.1.0/shims/netfx/mscorlib.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEditor.UI">
