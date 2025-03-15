@@ -49,7 +49,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         attackButton.onClick.AddListener(OnAttackButton);
         endTurnButton.onClick.AddListener(OnEndTurnButton);
 
-        combatLog.text = "Combat Ready!";
+        combatLog.text = "Combat Ready! Select a soldier to begin.";
         turnText.text = "Player's Turn";
         turnText.color = Color.blue;
         Update();
@@ -118,7 +118,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         selectedAlly = soldier;
         selectedEnemy = null;
         Update();
-        combatLog.text = $"Selected {soldier.Name}";
+        combatLog.text = $"Selected {soldier.Name}, now select a target.";
     }
 
     void HandleEnemySelection(Character enemy)
@@ -127,7 +127,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
         selectedEnemy = enemy;
         Update();
-        combatLog.text = $"Targeting {enemy.Name}";
+        combatLog.text = $"Targeting {enemy.Name}, ready to attack!";
     }
 
     void UpdateSelectionVisual()
