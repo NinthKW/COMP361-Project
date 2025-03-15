@@ -68,3 +68,7 @@ Assembly-CSharp.csproj#
 ==== random test files ===== #
 test*
 *.sln
+
+# Unity Test Files (explicitly include)
+!Assets/Tests/
+!Assets/Tests/**/*
