@@ -55,7 +55,14 @@ namespace Assets.Scripts.Model
             UpdateTag();
         }
 
-        public bool IsDead() => Health <= 0;
+        public bool IsDead() {
+            if (Health <= 0) {
+                MaxAttacksPerTurn = 0;
+                AttackChances = 0;
+                return true;
+            }
+            return false;
+        }
 
         protected virtual void UpdateTag()
         {

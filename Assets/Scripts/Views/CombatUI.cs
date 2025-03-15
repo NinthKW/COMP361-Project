@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 using TMPro;
 using Assets.Scripts.Model;
 using Assets.Scripts.Controller;
+using System;
 
 public class CombatUI : MonoBehaviour, IPointerClickHandler
 {
@@ -35,6 +36,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             Debug.Log("Debugging Scene");
             CombatManager.Instance = new GameObject().AddComponent<CombatManager>();
         }
+        CombatManager.Instance.StartCombat(CombatManager.Instance.GetAvailableSoldiers(), CombatManager.Instance.GetAvailableEnemies());
         CombatManager.Instance.OnCombatEnd += OnCombatEnd;
         InitializeUI();
     }
@@ -42,8 +44,15 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     void InitializeUI()
     {
         CreateCharacterDisplays();
-        UpdateButtonStates();
+        Update();
+
+        attackButton.onClick.AddListener(OnAttackButton);
+        endTurnButton.onClick.AddListener(OnEndTurnButton);
+
         combatLog.text = "Combat Ready!";
+        turnText.text = "Player's Turn";
+        turnText.color = Color.blue;
+        Update();
     }
 
     void CreateCharacterDisplays()
@@ -82,6 +91,8 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         if (eventData.pointerCurrentRaycast.gameObject == null)
         {
             ClearSelection();
+            UpdateSelectionVisual();
+            Update();
         }
     }
 
@@ -97,6 +108,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         {
             HandleEnemySelection(character);
         }
+        Update();
     }
 
     void HandleAllySelection(Soldier soldier)
@@ -105,7 +117,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
         selectedAlly = soldier;
         selectedEnemy = null;
-        UpdateSelectionVisual();
+        Update();
         combatLog.text = $"Selected {soldier.Name}";
     }
 
@@ -114,7 +126,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         if (selectedAlly == null || enemy.IsDead()) return;
 
         selectedEnemy = enemy;
-        UpdateSelectionVisual();
+        Update();
         combatLog.text = $"Targeting {enemy.Name}";
     }
 
@@ -122,7 +134,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     {
         Destroy(selectionFrame);
         
-        var target = selectedEnemy != null ? selectedEnemy : selectedAlly;
+        var target = selectedEnemy ?? selectedAlly;
         if (target != null && target.GameObject != null)
         {
             selectionFrame = Instantiate(selectionFramePrefab, target.GameObject.transform);
@@ -142,26 +154,27 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     {
         if (!CanAttack()) return;
         
-        StartCoroutine(ExecuteAttackRoutine());
+        StartCoroutine(ExecuteAttackRoutine(selectedAlly, selectedEnemy));
+
+        Update();
     }
 
-    IEnumerator ExecuteAttackRoutine()
+    IEnumerator ExecuteAttackRoutine(Character attacker, Character target)
     {
         isAttackExecuting = true;
-        UpdateButtonStates();
+        Update();
 
-        var soldier = selectedAlly as Soldier;
-        soldier.AttackChances--;
+        attacker.AttackChances--;
         
-        // Show attack animation
-        yield return StartCoroutine(PlayAttackAnimation(soldier, selectedEnemy));
-        
-        CombatManager.Instance.ProcessAttack(soldier, selectedEnemy);
-        combatLog.text = $"{soldier.Name} attacks {selectedEnemy.Name}!";
+        // TODO: Show attack animation
+        // yield return StartCoroutine(PlayAttackAnimation(attacker, target));
+        combatLog.text = $"{attacker.Name} attacks {target.Name}!";
+        yield return new WaitForSeconds(attackDelay);
+        CombatManager.Instance.ProcessAttack(attacker, target);
         
         ClearSelection();
         isAttackExecuting = false;
-        UpdateButtonStates();
+        Update();
         CheckTurnEnd();
     }
 
@@ -202,6 +215,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
     void CheckTurnEnd()
     {
+        Update();
         bool allExhausted = true;
         foreach (var soldier in CombatManager.Instance.GetAvailableSoldiers())
         {
@@ -213,18 +227,21 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         }
 
         endTurnButton.image.color = allExhausted ? Color.red : Color.white;
+        Update();
     }
 
     public void OnEndTurnButton()
     {
+        endTurnButton.image.color = endTurnButton.image.color == Color.red ? Color.white : endTurnButton.image.color;
         StartCoroutine(EndTurnRoutine());
+        Update();
     }
 
     IEnumerator EndTurnRoutine()
     {
         isAttackExecuting = true;
-        UpdateButtonStates();
-        
+        Update();
+
         yield return new WaitForSeconds(attackDelay);
         
         CombatManager.Instance.EndCurrentTurn();
@@ -232,7 +249,33 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         ClearSelection();
         
         isAttackExecuting = false;
-        UpdateButtonStates();
+        bool isPlayerTurn = CombatManager.Instance.IsPlayerTurn;
+        if (!isPlayerTurn)
+        {
+            turnText.text = "Enemy's Turn";
+            turnText.color = Color.red;
+            OnEnemyTurn();
+            turnText.text = "Player's Turn";
+            turnText.color = Color.blue;
+        }
+        Update();
+    }
+
+    private void OnEnemyTurn()
+    {
+        foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
+        {
+            if (enemy.IsDead()) continue;
+            
+            var attacker = enemy as Enemy;
+            var target = CombatManager.Instance.GetRandomSoldier();
+            if (target != null)
+            {
+                StartCoroutine(ExecuteAttackRoutine(attacker, target));
+            }
+        }
+        ResetAttackChances();
+        Update();
     }
 
     void ResetAttackChances()
@@ -240,6 +283,11 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         foreach (var soldier in CombatManager.Instance.GetAvailableSoldiers())
         {
             soldier.AttackChances = soldier.MaxAttacksPerTurn;
+        }
+
+        foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
+        {
+            enemy.AttackChances = enemy.MaxAttacksPerTurn;
         }
     }
 
@@ -249,10 +297,8 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         endTurnButton.interactable = !isAttackExecuting;
         
         bool isPlayerTurn = CombatManager.Instance.IsPlayerTurn;
-        turnText.text = isPlayerTurn ? "Player's Turn" : "Enemy's Turn";
         attackButton.gameObject.SetActive(isPlayerTurn);
         endTurnButton.gameObject.SetActive(isPlayerTurn);
-        turnText.color = isPlayerTurn ? Color.blue : Color.red;
     }
 
     void ClearSelection()
@@ -260,19 +306,24 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         selectedAlly = null;
         selectedEnemy = null;
         Destroy(selectionFrame);
-        UpdateButtonStates();
+        Update();
     }
 
     void OnCombatEnd(bool victory)
     {
-        combatLog.text = victory ? "Victory!" : "Defeat!";
-        StartCoroutine(ReturnToBaseAfterDelay(2f));
+        string resultMessage = victory ? "Victory!" : "Defeat!";
+        combatLog.fontSize = 36; // Make text larger
+        combatLog.color = victory ? Color.blue : Color.red; // Change color based on result
+        combatLog.text = resultMessage;
+        StartCoroutine(ReturnToBaseAfterDelay(5f)); // Increased delay to see the message
     }
 
     IEnumerator ReturnToBaseAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
         // Load other scene or reset UI
+        Debug.Log("Returning to base...");
+        GameManager.Instance.LoadGameState(GameState.MissionPage);
     }
 
     void Update()
@@ -285,9 +336,13 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             {
                 ui.UpdateState(
                     isSelected: ui.Character == selectedAlly || ui.Character == selectedEnemy,
-                    isExhausted: (ui.Character is Soldier s) && s.AttackChances <= 0
+                    isExhausted: (ui.Character is Soldier s) && s.AttackChances <= 0,
+                    isAlly: CombatManager.Instance.IsAlly(ui.Character),
+                    isDead: ui.Character.IsDead()
                 );
             }
         }
+        UpdateButtonStates();
+        UpdateSelectionVisual();
     }
 }
