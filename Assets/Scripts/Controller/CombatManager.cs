@@ -9,7 +9,7 @@ namespace Assets.Scripts.Controller
         public static CombatManager Instance;
         
         [Header("Combat Settings")]
-        [SerializeField] private int maxSoldiersAllowed = 5;
+        // [SerializeField] private int maxSoldiersAllowed = 5;
         [SerializeField] private float enemyTurnDelay = 1f;
         
         private List<Soldier> _availableSoldiers = new();
@@ -132,7 +132,7 @@ namespace Assets.Scripts.Controller
             _enemyCharacters.RemoveAll(c => c.IsDead());
         }
 
-        private bool CheckCombatEnd()
+        public bool CheckCombatEnd()
         {
             if (_selectedCharacters.Count == 0)
             {
@@ -151,46 +151,22 @@ namespace Assets.Scripts.Controller
 
         private bool ShouldSwitchTurn(Character attacker)
         {
-            if (IsPlayerTurn)
-            {
-                // Player completes all actions before switching
-                return attacker == _selectedCharacters[^1];
-            }
-            else
+            if (!IsPlayerTurn)
             {
                 // Enemies act sequentially
                 return attacker == _enemyCharacters[^1];
             }
+            return false;
         }
 
         private IEnumerator<WaitForSeconds> SwitchTurnRoutine()
         {
-            yield return new WaitForSeconds(enemyTurnDelay);
-            
             IsPlayerTurn = !IsPlayerTurn;
             Debug.Log($"Turn switched to: {(IsPlayerTurn ? "Player" : "Enemy")}");
-
-            if (!IsPlayerTurn)
-            {
-                StartEnemyTurn();
-            }
+            yield return new WaitForSeconds(enemyTurnDelay);
         }
 
-        private void StartEnemyTurn()
-        {
-            foreach (Enemy enemy in _enemyCharacters)
-            {
-                if (enemy.IsDead()) continue;
-                
-                Soldier target = GetRandomSoldier();
-                if (target != null)
-                {
-                    ProcessAttack(enemy, target);
-                }
-            }
-        }
-
-        private Soldier GetRandomSoldier()
+        public Soldier GetRandomSoldier()
         {
             if (_selectedCharacters.Count == 0) return null;
             return (Soldier)_selectedCharacters[Random.Range(0, _selectedCharacters.Count)];
@@ -221,11 +197,8 @@ namespace Assets.Scripts.Controller
 
         public void EndCurrentTurn()
         {
-            if (IsPlayerTurn)
-            {
-                IsPlayerTurn = false;
-                StartCoroutine(SwitchTurnRoutine());
-            }
+            // IsPlayerTurn = !IsPlayerTurn;
+            StartCoroutine(SwitchTurnRoutine());
         }
 
         #region Helper Methods
