@@ -31,19 +31,16 @@ public class CharacterUI : MonoBehaviour
     {
         nameText.text = _character.Name;
         characterImage.color = isAlly ? Color.blue : Color.red;
-        UpdateState(false, false);
+        UpdateState(false, false, isAlly, false);
     }
 
-    public void UpdateState(bool isSelected, bool isExhausted)
+    public void UpdateState(bool isSelected, bool isExhausted, bool isAlly, bool isDead)
     {
         healthBar.value = (float)_character.Health / _character.MaxHealth;
         
-        if (_character is Soldier soldier)
-        {
-            attackChanceText.text = $"{soldier.AttackChances}/{soldier.MaxAttacksPerTurn}";
-        }
+        attackChanceText.text = $"{_character.AttackChances}/{_character.MaxAttacksPerTurn}";
         
         exhaustedOverlay.SetActive(isExhausted);
-        GetComponent<Image>().color = isSelected ? Color.yellow : Color.white;
+        characterImage.color = isDead? Color.black : (isSelected ? Color.white : (isAlly ? Color.blue : Color.red));
     }
 }
