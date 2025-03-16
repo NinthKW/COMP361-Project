@@ -80,7 +80,6 @@
     <Compile Include="Assets\Scripts\Views\ResourcesPageUI.cs" />
     <Compile Include="Assets\Scripts\Model\Base.cs" />
     <Compile Include="Assets\Scripts\db_test.cs" />
-    <Compile Include="Assets\Scripts\Spin.cs" />
     <Compile Include="Assets\Scripts\Model\RoleType.cs" />
     <Compile Include="Assets\Scripts\Model\Resources.cs" />
     <Compile Include="Assets\Scripts\Model\GameState.cs" />
