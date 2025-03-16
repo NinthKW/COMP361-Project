@@ -6,7 +6,7 @@ using Assets.Scripts.Model;
 using Assets.Scripts.Controller;
 
 
-public class MainMenuPageUI : MonoBehaviour // Fardin
+public class MainMenuPageUI : MonoBehaviour // Fardin, Ziyuan Wang
 {
     public Button baseButton;
     public Button staffButton;
