@@ -2,29 +2,36 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Assets.Scripts.Model;
+using System.Data;
+using Mono.Data.Sqlite;
 
-namespace Assets.Scripts.Controller 
+namespace Assets.Scripts.Controller
 {
     public class MissionManager : MonoBehaviour
     {
         public static MissionManager Instance;
         public List<Mission> missions = new List<Mission>();
 
-    void Awake()
-    {
-        Debug.Log("MissionManager Awake: " + gameObject.scene.name);
+        private string dbPath;
 
-        if (Instance == null)
+        void Awake()
         {
+            Debug.Log("MissionManager Awake: " + gameObject.scene.name);
+
+            if (Instance == null)
+            {
                 Instance = this;
                 DontDestroyOnLoad(gameObject);
-                Debug.Log("MissionManager Instance set");
-        }
-        else {
+
+                dbPath = "URI=file:" + Application.streamingAssetsPath + "/database.db";
+                Debug.Log("Database path: " + dbPath);
+            }
+            else
+            {
                 Debug.LogWarning("MissionManager duplicate detected, destroying this one");
                 Destroy(gameObject);
+            }
         }
-    }
 
         void Start()
         {
@@ -45,59 +52,59 @@ namespace Assets.Scripts.Controller
         {
             missions.Clear();
 
-            // ʾ������ 1
-            missions.Add(new Mission(
-                1,
-                "Rescue the Scientists",
-                "A group of scientists is being held hostage in a secret alien facility. Rescue them before it's too late!",
-                difficulty: 2,
-                rewardMoney: 5000,
-                rewardResourceId: 1,
-                rewardTechId: 2,
-                terrainId: 1,    // e.g., forest
-                weatherId: 3     // e.g., foggy
-            ));
+            using (var connection = new SqliteConnection(dbPath))
+            {
+                try
+                {
+                    connection.Open();
 
-            // ʾ������ 2
-            missions.Add(new Mission(
-                2,
-                "Destroy the Alien Base",
-                "Intel has located an alien base in the desert. Destroy it to stop the invasion!",
-                difficulty: 4,
-                rewardMoney: 10000,
-                rewardResourceId: 2,
-                rewardTechId: 3,
-                terrainId: 2,    // e.g., desert
-                weatherId: 1     // e.g., clear
-            ));
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = "SELECT * FROM Mission;";
 
-            // ʾ������ 3
-            missions.Add(new Mission(
-                3,
-                "Escort the Convoy",
-                "Protect the convoy carrying vital supplies through dangerous alien territory.",
-                difficulty: 3,
-                rewardMoney: 7000,
-                rewardResourceId: 3,
-                rewardTechId: 4,
-                terrainId: 3,    // e.g., mountains
-                weatherId: 2     // e.g., rain
-            ));
+                        using (IDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                int id = reader.GetInt32(0);
+                                string name = reader.GetString(1);
+                                string description = reader.GetString(2);
+                                int difficulty = reader.GetInt32(3);
+                                int rewardMoney = reader.GetInt32(4);
+                                int rewardResourceId = reader.GetInt32(5);
+                                int rewardTechId = reader.GetInt32(6);
+                                int terrainId = reader.GetInt32(7);
+                                int weatherId = reader.GetInt32(8);
 
-            // ʾ������ 4
-            missions.Add(new Mission(
-                4,
-                "Investigate the Crash Site",
-                "An unidentified object has crashed nearby. Investigate the site and recover any useful technology.",
-                difficulty: 1,
-                rewardMoney: 3000,
-                rewardResourceId: 1,
-                rewardTechId: 1,
-                terrainId: 4,    // e.g., tundra
-                weatherId: 4     // e.g., snowstorm
-            ));
+                                Mission newMission = new Mission(
+                                    id,
+                                    name,
+                                    description,
+                                    difficulty,
+                                    rewardMoney,
+                                    rewardResourceId,
+                                    rewardTechId,
+                                    terrainId,
+                                    weatherId
+                                );
 
-            Debug.Log("Missions Loaded: " + missions.Count);
+                                missions.Add(newMission);
+                                Debug.Log($"Loaded Mission: {name}");
+                            }
+
+                            reader.Close();
+                        }
+                    }
+
+                    connection.Close();
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogError($"Failed to load missions from DB: {ex.Message}");
+                }
+            }
+
+            Debug.Log("Missions Loaded from database: " + missions.Count);
         }
 
         public void StartMission(int missionID)
@@ -112,12 +119,11 @@ namespace Assets.Scripts.Controller
 
         void StartCombat()
         {
-            // Make sure the CombatManager is active
             if (!CombatManager.Instance.gameObject.activeSelf)
             {
                 CombatManager.Instance.gameObject.SetActive(true);
             }
-            // GameManager.Instance.ChangeState(GameState.CombatPage);
+
             GameManager.Instance.LoadGameState(GameState.CombatPage);
         }
     }
