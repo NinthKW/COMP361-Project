@@ -68,3 +68,4 @@ Assembly-CSharp.csproj#
 ==== random test files ===== #
 test*
 *.sln
+Scripts.csproj
