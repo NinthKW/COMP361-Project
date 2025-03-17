@@ -74,3 +74,4 @@ test*
 !Assets/Tests/**/*
 EditModeTests.csproj
 Scripts.csproj
+*csproj
