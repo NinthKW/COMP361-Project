@@ -71,8 +71,10 @@
     <Compile Include="Assets\Scripts\Views\MainMenuPageUI.cs" />
     <Compile Include="Assets\Scripts\Views\CombatUI.cs" />
     <Compile Include="Assets\Scripts\Controller\GameManager.cs" />
+    <Compile Include="Assets\Scripts\Views\ConfirmationPageUI.cs" />
     <Compile Include="Assets\Scripts\Model\Mission.cs" />
     <Compile Include="Assets\Scripts\Model\Game.cs" />
+    <Compile Include="Assets\Scripts\Views\TechUI.cs" />
     <Compile Include="Assets\Scripts\Views\WelcomePageUI.cs" />
     <Compile Include="Assets\Scripts\Views\MissionUI.cs" />
     <Compile Include="Assets\Scripts\Model\Tech.cs" />
