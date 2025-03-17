@@ -63,21 +63,25 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
     void CreateCharacterDisplays()
     {
+        int midX = Screen.width / 2;
+        int midY = Screen.height / 2;
+        int midAllyX = midX - 250;
+        int midEnemyX = midX + 200;
         List<Vector2> allyPositions = new List<Vector2>
         {
-            new(500, 400),
-            new(500, 600),
-            new(500, 800),
-            new(700, 500),
-            new(700, 700),
-            new(900, 600)
+            new(midAllyX - 200, midY - 200),
+            new(midAllyX - 200, midY),
+            new(midAllyX - 200, midY + 200),
+            new(midAllyX, midY - 100),
+            new(midAllyX, midY + 100),
+            new(midAllyX + 200, midY)
         };
 
         List<Vector2> enemyPositions = new List<Vector2>
         {
-            new(1200, 500),
-            new(1200, 700),
-            new(1400, 600),
+            new(midEnemyX, midY - 100),
+            new(midEnemyX, midY + 100),
+            new(midEnemyX + 200, midY),
             new(700, 300),
             new(700, 500),
         };
