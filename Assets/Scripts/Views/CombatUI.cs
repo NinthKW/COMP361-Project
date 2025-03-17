@@ -54,7 +54,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         endTurnButton.onClick.AddListener(OnEndTurnButton);
         retreatButton.onClick.AddListener(OnRetreatButton);
 
-        combatLog.text = "Combat Ready!";
+        combatLog.text = "Combat Ready! Selet your soldier to begin";
         turnText.text = "Player's Turn";
         turnText.color = Color.blue;
         Update();
@@ -239,13 +239,16 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     void OnRetreatButton()
     {
         DisableAll();
-        Debug.Log($"{retreatButton.interactable}");
+
+        // 添加Canvas Group阻断点击
+        GameObject confirmWindow = Instantiate(retreatConfirmationPrefab, transform);
+        CanvasGroup group = confirmWindow.AddComponent<CanvasGroup>();
+        group.blocksRaycasts = true;
+        group.interactable = true;
 
         // 暂停战斗
         Time.timeScale = 0;
         
-        // 创建确认窗口
-        GameObject confirmWindow = Instantiate(retreatConfirmationPrefab, transform);
         confirmWindow.GetComponent<RetreatConfirmation>().Initialize(
             onConfirm: () => {
                 Destroy(confirmWindow);
@@ -256,6 +259,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
                 Destroy(confirmWindow);
                 Time.timeScale = 1;
                 isAttackExecuting = false;
+                EnableAll();
                 Update();
             }
         );
@@ -332,7 +336,8 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         bool isPlayerTurn = CombatManager.Instance.IsPlayerTurn;
         attackButton.gameObject.SetActive(isPlayerTurn);
         endTurnButton.gameObject.SetActive(isPlayerTurn);
-        retreatButton.interactable = true;
+        
+        retreatButton.interactable = !isAttackExecuting && isPlayerTurn;
     }
 
     void ClearSelection()
@@ -380,13 +385,31 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         UpdateSelectionVisual();
     }
 
+    void EnableAll()
+    {
+        isAttackExecuting = false; // 重置战斗状态
+        
+        // 启用所有角色按钮
+        foreach (Transform child in combatUnitContainer)
+        {
+            var button = child.GetComponent<Button>();
+            if (button != null)
+            {
+                button.interactable = true;
+            }
+        }
+        
+        UpdateButtonStates(); // 强制刷新按钮状态
+    }
+
     void DisableAll()
     {
-         // Disable all UI elements and interactions
-        isAttackExecuting = true; // Prevents new selections/actions
-        ClearSelection();
-
-        // Disable all character UI buttons
+        attackButton.interactable = false;
+        endTurnButton.interactable = false;
+        retreatButton.interactable = false; // 这行可以保留
+        
+        isAttackExecuting = true;
+        
         foreach (Transform child in combatUnitContainer)
         {
             var button = child.GetComponent<Button>();
@@ -395,8 +418,5 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
                 button.interactable = false;
             }
         }
-        attackButton.interactable = false;
-        endTurnButton.interactable = false;
-        retreatButton.interactable = false;
     }
 }
