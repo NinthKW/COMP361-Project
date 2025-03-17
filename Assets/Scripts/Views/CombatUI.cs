@@ -51,31 +51,31 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
         combatLog.text = "Combat Ready! Select a soldier to begin.";
         turnText.text = "Player's Turn";
-        turnText.color = Color.blue;
+        turnText.color = Color.white;
         Update();
     }
 
     void CreateCharacterDisplays()
     {
-        float allyY = 800; // Starting Y position for allies
+        float allyY = 495; // Starting Y position for allies
         foreach (var soldier in CombatManager.Instance.GetAvailableSoldiers())
         {
             CreateCharacterCard(soldier, isAlly: true, allyY);
-            allyY -= 175; // Decrease Y for next ally
+            allyY -= 100; // Decrease Y for next ally
         }
 
-        float enemyY = 600; // Starting Y position for enemies
+        float enemyY = 460; // Starting Y position for enemies
         foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
         {
             CreateCharacterCard(enemy, isAlly: false, enemyY);
-            enemyY -= 175; // Decrease Y for next enemy
+            enemyY -= 160; // Decrease Y for next enemy
         }
     }
 
     GameObject CreateCharacterCard(Character character, bool isAlly, float yPosition)
     {
         var card = Instantiate(characterUIPrefab, combatUnitContainer);
-        float xPosition = isAlly ? 200 : 700; // Allies at x=200, enemies at x=700
+        float xPosition = isAlly ? 350 : 600; // Allies at x=200, enemies at x=700
         card.transform.position = new Vector3(xPosition, yPosition, 0);
         var ui = card.GetComponent<CharacterUI>();
         ui.Initialize(character, isAlly);
@@ -256,7 +256,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             turnText.color = Color.red;
             OnEnemyTurn();
             turnText.text = "Player's Turn";
-            turnText.color = Color.blue;
+            turnText.color = Color.white;
         }
         Update();
     }
@@ -313,7 +313,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     {
         string resultMessage = victory ? "Victory!" : "Defeat!";
         combatLog.fontSize = 36; // Make text larger
-        combatLog.color = victory ? Color.blue : Color.red; // Change color based on result
+        combatLog.color = victory ? Color.white : Color.red; // Change color based on result
         combatLog.text = resultMessage;
         StartCoroutine(ReturnToBaseAfterDelay(5f)); // Increased delay to see the message
     }

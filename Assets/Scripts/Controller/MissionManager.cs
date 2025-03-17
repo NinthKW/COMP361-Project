@@ -2,102 +2,95 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Assets.Scripts.Model;
+using System.Data;
+using Mono.Data.Sqlite;
 
-namespace Assets.Scripts.Controller 
+namespace Assets.Scripts.Controller
 {
     public class MissionManager : MonoBehaviour
     {
         public static MissionManager Instance;
         public List<Mission> missions = new List<Mission>();
 
-    void Awake()
-    {
-        Debug.Log("MissionManager Awake: " + gameObject.scene.name);
+        // 数据库文件名
+        private string dbPath;
 
-        if (Instance == null)
+        void Awake()
         {
+            if (Instance == null)
+            {
                 Instance = this;
                 DontDestroyOnLoad(gameObject);
-                Debug.Log("MissionManager Instance set");
-        }
-        else {
-                Debug.LogWarning("MissionManager duplicate detected, destroying this one");
-                Destroy(gameObject);
-        }
-    }
 
-        void Start()
-        {
-            Debug.Log("MissionManager Start in scene: " + gameObject.scene.name);
-            Init();
-        }
-
-        private void Init()
-        {
-            Debug.Log("Loading Missions...");
-            if (missions == null || missions.Count == 0)
+                // 这里是重点：StreamingAssets 路径
+                dbPath = "URI=file:" + Application.streamingAssetsPath + "/database.db";
+                Debug.Log("Database path: " + dbPath);
+            }
+            else
             {
-                LoadMissions();
+                Destroy(gameObject);
             }
         }
 
-        void LoadMissions()
+        void Start()
+        {
+            LoadMissionsFromDatabase();
+        }
+
+        void LoadMissionsFromDatabase()
         {
             missions.Clear();
 
-            // ʾ������ 1
-            missions.Add(new Mission(
-                1,
-                "Rescue the Scientists",
-                "A group of scientists is being held hostage in a secret alien facility. Rescue them before it's too late!",
-                difficulty: 2,
-                rewardMoney: 5000,
-                rewardResourceId: 1,
-                rewardTechId: 2,
-                terrainId: 1,    // e.g., forest
-                weatherId: 3     // e.g., foggy
-            ));
+            Debug.Log("Trying to open DB at: " + dbPath);
 
-            // ʾ������ 2
-            missions.Add(new Mission(
-                2,
-                "Destroy the Alien Base",
-                "Intel has located an alien base in the desert. Destroy it to stop the invasion!",
-                difficulty: 4,
-                rewardMoney: 10000,
-                rewardResourceId: 2,
-                rewardTechId: 3,
-                terrainId: 2,    // e.g., desert
-                weatherId: 1     // e.g., clear
-            ));
+            using (var connection = new SqliteConnection(dbPath))
+            {
+                connection.Open();
+                Debug.Log("Database Opened Successfully!");
 
-            // ʾ������ 3
-            missions.Add(new Mission(
-                3,
-                "Escort the Convoy",
-                "Protect the convoy carrying vital supplies through dangerous alien territory.",
-                difficulty: 3,
-                rewardMoney: 7000,
-                rewardResourceId: 3,
-                rewardTechId: 4,
-                terrainId: 3,    // e.g., mountains
-                weatherId: 2     // e.g., rain
-            ));
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT * FROM Mission;";
 
-            // ʾ������ 4
-            missions.Add(new Mission(
-                4,
-                "Investigate the Crash Site",
-                "An unidentified object has crashed nearby. Investigate the site and recover any useful technology.",
-                difficulty: 1,
-                rewardMoney: 3000,
-                rewardResourceId: 1,
-                rewardTechId: 1,
-                terrainId: 4,    // e.g., tundra
-                weatherId: 4     // e.g., snowstorm
-            ));
+                    using (IDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int id = reader.GetInt32(0);
+                            string missionName = reader.GetString(1);
+                            string description = reader.GetString(2);
+                            int difficulty = reader.GetInt32(3);
+                            int rewardMoney = reader.GetInt32(4);
+                            int rewardAmount = reader.GetInt32(5); 
+                            int rewardResourceId = reader.GetInt32(6);
+                            string terrain = reader.GetString(7);   
+                            string weather = reader.GetString(8);   
 
-            Debug.Log("Missions Loaded: " + missions.Count);
+                            // 创建 Mission 对象
+                            Mission mission = new Mission(
+                                id,
+                                missionName,
+                                description,
+                                difficulty,
+                                rewardMoney,
+                                rewardAmount,
+                                rewardResourceId,
+                                terrain,
+                                weather
+                            );
+
+                            missions.Add(mission);
+
+                            Debug.Log($"Loaded Mission: {missionName} (Difficulty: {difficulty}, Terrain: {terrain}, Weather: {weather})");
+                        }
+
+                        reader.Close();
+                    }
+                }
+
+                connection.Close();
+                Debug.Log($"Total Missions Loaded: {missions.Count}");
+            }
         }
 
         public void StartMission(int missionID)
@@ -108,16 +101,19 @@ namespace Assets.Scripts.Controller
                 Debug.Log("Starting Mission: " + selectedMission.name);
                 Invoke(nameof(StartCombat), 2f);
             }
+            else
+            {
+                Debug.LogWarning("Mission not found: " + missionID);
+            }
         }
 
         void StartCombat()
         {
-            // Make sure the CombatManager is active
             if (!CombatManager.Instance.gameObject.activeSelf)
             {
                 CombatManager.Instance.gameObject.SetActive(true);
             }
-            // GameManager.Instance.ChangeState(GameState.CombatPage);
+
             GameManager.Instance.LoadGameState(GameState.CombatPage);
         }
     }
