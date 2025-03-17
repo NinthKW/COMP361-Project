@@ -15,7 +15,7 @@ public class BaseUI : MonoBehaviour
     private Base selectedBuilding;
 
     // Hardcoded grid dimensions
-    private int rows = 8;         // 7 rows (y-axis)
+    private int rows = 7;         // 7 rows (y-axis)
     private int columns = 12;     // 12 columns (x-axis)
     private float cellSize = 110f; // Smaller cell size for a reduced overall grid
     private Color lineColor = Color.black;
@@ -73,47 +73,67 @@ public class BaseUI : MonoBehaviour
         
     }
 
-    //Create all selectable building objects
     void PopulateBuildingList()
+{
+    
+    Debug.Log("PopulateBuildingList called");
+    if (BaseManager.Instance == null)
     {
-        Debug.Log("PopulateBuildingList called");
-        if (BaseManager.Instance == null)
-        {
-            Debug.LogError("BaseManager.Instance is NULL");
-            return;
-        }
-
-        if (BaseManager.Instance.buildingList == null)
-        {
-            Debug.LogError("building list is NULL");
-            return;
-        }
-
-        Debug.Log("Building count: " + BaseManager.Instance.buildingList.Count);
-
-        foreach (var building in BaseManager.Instance.buildingList)
-        {
-            Debug.Log("Adding building: " + building.name);
-
-            GameObject buttonObj = Instantiate(missionButtonPrefab, missionButtonContainer);
-            Sprite buttonTexture = Resources.Load<Sprite>("base_" + building.name.ToLower());
-            buttonObj.GetComponent<Image>().sprite = buttonTexture;
-
-            if (buttonTexture == null)
-            {
-                Debug.LogError("Sprite not found: " + "base_" + building.name.ToLower());
-            }
-
-            TextMeshProUGUI buttonText = buttonObj.GetComponentInChildren<TextMeshProUGUI>();
-
-            buttonText.text = building.name;
-
-            Button btn = buttonObj.GetComponent<Button>();
-            btn.onClick.AddListener(() => OnSelectedBuilding(building));
-
-            buttonObj.SetActive(true);
-        }
+        Debug.LogError("BaseManager.Instance is NULL");
+        return;
     }
+
+    if (BaseManager.Instance.buildingList == null)
+    {
+        Debug.LogError("building list is NULL");
+        return;
+    }
+
+    Debug.Log("Building count: " + BaseManager.Instance.buildingList.Count);
+
+    foreach (var building in BaseManager.Instance.buildingList)
+    {
+        Debug.Log("Adding building: " + building.name);
+
+        GameObject buttonObj = Instantiate(missionButtonPrefab, missionButtonContainer);
+        
+        // Adjust the button's RectTransform to increase its height
+        RectTransform buttonRect = buttonObj.GetComponent<RectTransform>();
+        // For example, double the current height:
+        buttonRect.sizeDelta = new Vector2(buttonRect.sizeDelta.x, buttonRect.sizeDelta.y * 2);
+        
+        // If your prefab has a LayoutElement component that controls its size, update it too:
+        LayoutElement layoutElement = buttonObj.GetComponent<LayoutElement>();
+        if (layoutElement != null)
+        {
+            layoutElement.preferredHeight = buttonRect.sizeDelta.y;
+        }
+        
+        Sprite buttonTexture = Resources.Load<Sprite>("base_" + building.name.ToLower());
+        buttonObj.GetComponent<Image>().sprite = buttonTexture;
+
+        if (buttonTexture == null)
+        {
+            Debug.LogError("Sprite not found: " + "base_" + building.name.ToLower());
+        }
+
+        TextMeshProUGUI buttonText = buttonObj.GetComponentInChildren<TextMeshProUGUI>();
+        buttonText.text = building.name;
+
+        Button btn = buttonObj.GetComponent<Button>();
+        btn.onClick.AddListener(() => OnSelectedBuilding(building));
+
+        buttonObj.SetActive(true);
+    }
+
+    // If missionButtonContainer has a GridLayoutGroup that is forcing cell sizes, adjust it as well:
+    GridLayoutGroup grid = missionButtonContainer.GetComponent<GridLayoutGroup>();
+    if (grid != null)
+    {
+        grid.cellSize = new Vector2(grid.cellSize.x, grid.cellSize.y * 2);
+    }
+}
+
 
     //Update selected building attribute
     void OnSelectedBuilding(Base building)
