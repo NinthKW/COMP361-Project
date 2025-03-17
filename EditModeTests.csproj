@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="Assets\Tests\EditMode\RoleTests.cs" />
     <Compile Include="Assets\Tests\EditMode\CharacterTests.cs" />
+    <Compile Include="Assets\Tests\EditMode\CombatManagerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Tests\EditMode\EditModeTests.asmdef" />
