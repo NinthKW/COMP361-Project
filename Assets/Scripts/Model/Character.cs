@@ -114,6 +114,7 @@ namespace Assets.Scripts.Model
         private int _experience;
         private bool _hasGun;
         private int _defense;
+        private Role _role;
 
         public Soldier(Role role) : base(
             name: NameGenerator.GetRandomName(),
@@ -124,6 +125,7 @@ namespace Assets.Scripts.Model
             MaxAttacksPerTurn = 1;
             _experience = 0;
             ObjectTag = "Soldier";
+            _role = role;
         }
 
         protected override int CalculateDamage()
@@ -131,6 +133,11 @@ namespace Assets.Scripts.Model
             int baseDamage = 10;  // 基础伤害
             if (_hasGun) baseDamage += 15;
             return baseDamage + Level * 3;
+        }
+
+        public string GetRoleName()
+        {
+            return _role.GetRoleName();
         }
 
         public void GainExp(int amount)

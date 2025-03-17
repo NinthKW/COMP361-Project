@@ -65,6 +65,11 @@ namespace Assets.Scripts.Model
         {
             skills.Add(skill);
         }
+
+        public string GetRoleName()
+        {
+            return roleType.ToString();
+        }
     }
 
 }

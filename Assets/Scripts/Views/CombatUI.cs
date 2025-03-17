@@ -11,13 +11,17 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 {
     // UI Elements
     [Header("UI Components")]
-    public Transform combatUnitContainer;
-    public GameObject characterUIPrefab;
-    public TextMeshProUGUI turnText;
-    public TextMeshProUGUI combatLog;
-    public Button attackButton;
-    public Button endTurnButton;
-    public GameObject selectionFramePrefab;
+    [SerializeField] private Transform combatUnitContainer;
+    [SerializeField] private GameObject characterUIPrefab;
+    [SerializeField] private TextMeshProUGUI turnText;
+    [SerializeField] private TextMeshProUGUI combatLog;
+    [SerializeField] private Button attackButton;
+    [SerializeField] private Button endTurnButton;
+    [SerializeField] private GameObject selectionFramePrefab;
+    [SerializeField] private TextMeshProUGUI unitName;
+    [SerializeField] private TextMeshProUGUI unitRole;
+    [SerializeField] private Button retreatButton;
+    [SerializeField] private GameObject retreatConfirmationPrefab;
 
     [Header("Settings")]
     [SerializeField] private float attackDelay = 0.5f;
@@ -48,6 +52,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
         attackButton.onClick.AddListener(OnAttackButton);
         endTurnButton.onClick.AddListener(OnEndTurnButton);
+        retreatButton.onClick.AddListener(OnRetreatButton);
 
         combatLog.text = "Combat Ready!";
         turnText.text = "Player's Turn";
@@ -92,7 +97,6 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         {
             ClearSelection();
             UpdateSelectionVisual();
-            Update();
         }
     }
 
@@ -103,11 +107,13 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         if (CombatManager.Instance.IsAlly(character))
         {
             HandleAllySelection(character as Soldier);
+            unitRole.text = $"Soldier - {(character as Soldier).GetRoleName()} \n Level: {character.Level}";
         }
         else if (CombatManager.Instance.IsEnemy(character))
         {
             HandleEnemySelection(character);
         }
+        unitName.text = character.Name;
         Update();
     }
 
@@ -230,8 +236,37 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         Update();
     }
 
+    void OnRetreatButton()
+    {
+        DisableAll();
+        Debug.Log($"{retreatButton.interactable}");
+
+        // 暂停战斗
+        Time.timeScale = 0;
+        
+        // 创建确认窗口
+        GameObject confirmWindow = Instantiate(retreatConfirmationPrefab, transform);
+        confirmWindow.GetComponent<RetreatConfirmation>().Initialize(
+            onConfirm: () => {
+                Destroy(confirmWindow);
+                Time.timeScale = 1;
+                OnCombatEnd(false); // 触发战斗失败
+            },
+            onCancel: () => {
+                Destroy(confirmWindow);
+                Time.timeScale = 1;
+                isAttackExecuting = false;
+                Update();
+            }
+        );
+        confirmWindow.GetComponent<RetreatConfirmation>().SetMessage("Are you sure you want to retreat?");
+    }
+
+
     public void OnEndTurnButton()
     {
+        turnText.text = "Enemy's Turn";
+        turnText.color = Color.red;
         endTurnButton.image.color = endTurnButton.image.color == Color.red ? Color.white : endTurnButton.image.color;
         StartCoroutine(EndTurnRoutine());
         Update();
@@ -252,8 +287,6 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         bool isPlayerTurn = CombatManager.Instance.IsPlayerTurn;
         if (!isPlayerTurn)
         {
-            turnText.text = "Enemy's Turn";
-            turnText.color = Color.red;
             OnEnemyTurn();
             turnText.text = "Player's Turn";
             turnText.color = Color.blue;
@@ -299,6 +332,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         bool isPlayerTurn = CombatManager.Instance.IsPlayerTurn;
         attackButton.gameObject.SetActive(isPlayerTurn);
         endTurnButton.gameObject.SetActive(isPlayerTurn);
+        retreatButton.interactable = true;
     }
 
     void ClearSelection()
@@ -306,11 +340,11 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         selectedAlly = null;
         selectedEnemy = null;
         Destroy(selectionFrame);
-        Update();
     }
 
     void OnCombatEnd(bool victory)
     {
+        DisableAll();
         string resultMessage = victory ? "Victory!" : "Defeat!";
         combatLog.fontSize = 36; // Make text larger
         combatLog.color = victory ? Color.blue : Color.red; // Change color based on result
@@ -344,5 +378,25 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         }
         UpdateButtonStates();
         UpdateSelectionVisual();
+    }
+
+    void DisableAll()
+    {
+         // Disable all UI elements and interactions
+        isAttackExecuting = true; // Prevents new selections/actions
+        ClearSelection();
+
+        // Disable all character UI buttons
+        foreach (Transform child in combatUnitContainer)
+        {
+            var button = child.GetComponent<Button>();
+            if (button != null)
+            {
+                button.interactable = false;
+            }
+        }
+        attackButton.interactable = false;
+        endTurnButton.interactable = false;
+        retreatButton.interactable = false;
     }
 }
