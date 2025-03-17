@@ -2,7 +2,7 @@ namespace Assets.Scripts.Model
 {
     public enum RoleType
     {
-        Snipper,
+        Sniper,
         Medic,
         Engineer,
         Scott,
