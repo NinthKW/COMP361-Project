@@ -10,7 +10,6 @@ public class BaseUI : MonoBehaviour
 {
     public Transform missionButtonContainer;
     public GameObject missionButtonPrefab;
-    [SerializeField] int size;
 
     public TextMeshProUGUI buildingName;
     private Base selectedBuilding;
@@ -97,6 +96,13 @@ public class BaseUI : MonoBehaviour
             Debug.Log("Adding building: " + building.name);
 
             GameObject buttonObj = Instantiate(missionButtonPrefab, missionButtonContainer);
+            Sprite buttonTexture = Resources.Load<Sprite>("base_" + building.name.ToLower());
+            buttonObj.GetComponent<Image>().sprite = buttonTexture;
+
+            if (buttonTexture == null)
+            {
+                Debug.LogError("Sprite not found: " + "base_" + building.name.ToLower());
+            }
 
             TextMeshProUGUI buttonText = buttonObj.GetComponentInChildren<TextMeshProUGUI>();
 
@@ -104,6 +110,8 @@ public class BaseUI : MonoBehaviour
 
             Button btn = buttonObj.GetComponent<Button>();
             btn.onClick.AddListener(() => OnSelectedBuilding(building));
+
+            buttonObj.SetActive(true);
         }
     }
 

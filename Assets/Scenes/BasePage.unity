@@ -158,7 +158,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -686.8574, y: -23.210571}
+  m_AnchoredPosition: {x: -686.8575, y: 80.189125}
   m_SizeDelta: {x: -1560.0016, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &13296012
@@ -428,7 +428,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   missionButtonContainer: {fileID: 13296011}
   missionButtonPrefab: {fileID: 2153828838381728940, guid: 80c1e8878dd05bd41877e2d0af6cbc02, type: 3}
-  size: 0
   buildingName: {fileID: 401995426}
 --- !u!114 &211542983
 MonoBehaviour:
