@@ -6,6 +6,7 @@ using TMPro;
 using Assets.Scripts.Model;
 using Assets.Scripts.Controller;
 using System;
+using System.Collections.Generic;
 
 public class CombatUI : MonoBehaviour, IPointerClickHandler
 {
@@ -62,26 +63,41 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
     void CreateCharacterDisplays()
     {
-        float allyY = 495; // Starting Y position for allies
+        List<Vector2> allyPositions = new List<Vector2>
+        {
+            new(500, 400),
+            new(500, 600),
+            new(500, 800),
+            new(700, 500),
+            new(700, 700),
+            new(900, 600)
+        };
+
+        List<Vector2> enemyPositions = new List<Vector2>
+        {
+            new(1200, 500),
+            new(1200, 700),
+            new(1400, 600),
+            new(700, 300),
+            new(700, 500),
+        };
         foreach (var soldier in CombatManager.Instance.GetAvailableSoldiers())
         {
-            CreateCharacterCard(soldier, isAlly: true, allyY);
-            allyY -= 100; // Decrease Y for next ally
+            int index = CombatManager.Instance.GetAvailableSoldiers().IndexOf(soldier);
+            CreateCharacterCard(soldier, isAlly: true, allyPositions[index]);
         }
-
-        float enemyY = 460; // Starting Y position for enemies
         foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
         {
-            CreateCharacterCard(enemy, isAlly: false, enemyY);
-            enemyY -= 160; // Decrease Y for next enemy
+            int index = CombatManager.Instance.GetAvailableEnemies().IndexOf(enemy);
+            CreateCharacterCard(enemy, isAlly: false, enemyPositions[index]);
         }
     }
 
-    GameObject CreateCharacterCard(Character character, bool isAlly, float yPosition)
+    GameObject CreateCharacterCard(Character character, bool isAlly, Vector2 position)
     {
         var card = Instantiate(characterUIPrefab, combatUnitContainer);
-        float xPosition = isAlly ? 350 : 600; // Allies at x=200, enemies at x=700
-        card.transform.position = new Vector3(xPosition, yPosition, 0);
+        float xPosition = isAlly ? 350 : 600;
+        card.transform.position = (Vector3)position;
         var ui = card.GetComponent<CharacterUI>();
         ui.Initialize(character, isAlly);
 
@@ -240,20 +256,20 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     {
         DisableAll();
 
-        // 添加Canvas Group阻断点击
+        // Add Canvas Group to block clicks
         GameObject confirmWindow = Instantiate(retreatConfirmationPrefab, transform);
         CanvasGroup group = confirmWindow.AddComponent<CanvasGroup>();
         group.blocksRaycasts = true;
         group.interactable = true;
 
-        // 暂停战斗
+        // Pause combat
         Time.timeScale = 0;
 
         confirmWindow.GetComponent<RetreatConfirmation>().Initialize(
             onConfirm: () => {
                 Destroy(confirmWindow);
                 Time.timeScale = 1;
-                OnCombatEnd(false); // 触发战斗失败
+                OnCombatEnd(false); // Trigger combat failure
             },
             onCancel: () => {
                 Destroy(confirmWindow);
@@ -387,9 +403,9 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
     void EnableAll()
     {
-        isAttackExecuting = false; // 重置战斗状态
+        isAttackExecuting = false; // Reset combat state
 
-        // 启用所有角色按钮
+        // Enable all character buttons
         foreach (Transform child in combatUnitContainer)
         {
             var button = child.GetComponent<Button>();
@@ -399,14 +415,14 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             }
         }
 
-        UpdateButtonStates(); // 强制刷新按钮状态
+        UpdateButtonStates(); // Force refresh button states
     }
 
     void DisableAll()
     {
         attackButton.interactable = false;
         endTurnButton.interactable = false;
-        retreatButton.interactable = false; // 这行可以保留
+        retreatButton.interactable = false; // This line can be kept
 
         isAttackExecuting = true;
 
