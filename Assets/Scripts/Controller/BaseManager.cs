@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 using UnityEngine;
-using System.Data;
-using Mono.Data.Sqlite;
 
 namespace Assets.Scripts.Controller
 {
