@@ -66,7 +66,7 @@ CREATE TABLE Infrastructure (
     description VARCHAR(1000),
     level int, 
     cost int, 
-    resource_amount,
+    resource_amount int,
     resource_type int,
     FOREIGN KEY (resource_type) REFERENCES Resource(resource_id)
 );
