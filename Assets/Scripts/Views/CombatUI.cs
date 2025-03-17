@@ -54,37 +54,37 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         endTurnButton.onClick.AddListener(OnEndTurnButton);
         retreatButton.onClick.AddListener(OnRetreatButton);
 
-        combatLog.text = "Combat Ready! Selet your soldier to begin";
+        combatLog.text = "Combat Ready! Select a soldier to begin.";
         turnText.text = "Player's Turn";
-        turnText.color = Color.blue;
+        turnText.color = Color.white;
         Update();
     }
 
     void CreateCharacterDisplays()
     {
-        float allyY = 800; // Starting Y position for allies
+        float allyY = 495; // Starting Y position for allies
         foreach (var soldier in CombatManager.Instance.GetAvailableSoldiers())
         {
             CreateCharacterCard(soldier, isAlly: true, allyY);
-            allyY -= 175; // Decrease Y for next ally
+            allyY -= 100; // Decrease Y for next ally
         }
 
-        float enemyY = 600; // Starting Y position for enemies
+        float enemyY = 460; // Starting Y position for enemies
         foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
         {
             CreateCharacterCard(enemy, isAlly: false, enemyY);
-            enemyY -= 175; // Decrease Y for next enemy
+            enemyY -= 160; // Decrease Y for next enemy
         }
     }
 
     GameObject CreateCharacterCard(Character character, bool isAlly, float yPosition)
     {
         var card = Instantiate(characterUIPrefab, combatUnitContainer);
-        float xPosition = isAlly ? 200 : 700; // Allies at x=200, enemies at x=700
+        float xPosition = isAlly ? 350 : 600; // Allies at x=200, enemies at x=700
         card.transform.position = new Vector3(xPosition, yPosition, 0);
         var ui = card.GetComponent<CharacterUI>();
         ui.Initialize(character, isAlly);
-        
+
         // Add click handler
         var button = card.GetComponent<Button>();
         button.onClick.AddListener(() => OnCharacterClicked(character));
@@ -124,7 +124,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         selectedAlly = soldier;
         selectedEnemy = null;
         Update();
-        combatLog.text = $"Selected {soldier.Name}";
+        combatLog.text = $"Selected {soldier.Name}, now select a target.";
     }
 
     void HandleEnemySelection(Character enemy)
@@ -133,25 +133,25 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
         selectedEnemy = enemy;
         Update();
-        combatLog.text = $"Targeting {enemy.Name}";
+        combatLog.text = $"Targeting {enemy.Name}, ready to attack!";
     }
 
     void UpdateSelectionVisual()
     {
         Destroy(selectionFrame);
-        
+
         var target = selectedEnemy ?? selectedAlly;
         if (target != null && target.GameObject != null)
         {
             selectionFrame = Instantiate(selectionFramePrefab, target.GameObject.transform);
         }
-        
+
         attackButton.interactable = CanAttack();
     }
 
     bool CanAttack()
     {
-        return selectedAlly != null && 
+        return selectedAlly != null &&
                selectedEnemy != null &&
                (selectedAlly as Soldier).AttackChances > 0;
     }
@@ -159,7 +159,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     public void OnAttackButton()
     {
         if (!CanAttack()) return;
-        
+
         StartCoroutine(ExecuteAttackRoutine(selectedAlly, selectedEnemy));
 
         Update();
@@ -171,13 +171,13 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         Update();
 
         attacker.AttackChances--;
-        
+
         // TODO: Show attack animation
         // yield return StartCoroutine(PlayAttackAnimation(attacker, target));
         combatLog.text = $"{attacker.Name} attacks {target.Name}!";
         yield return new WaitForSeconds(attackDelay);
         CombatManager.Instance.ProcessAttack(attacker, target);
-        
+
         ClearSelection();
         isAttackExecuting = false;
         Update();
@@ -195,8 +195,8 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         while (elapsed < duration)
         {
             attacker.GameObject.transform.position = Vector3.Lerp(
-                originalPos, 
-                targetPos - new Vector3(1,0,0), 
+                originalPos,
+                targetPos - new Vector3(1,0,0),
                 elapsed/duration
             );
             elapsed += Time.deltaTime;
@@ -248,7 +248,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
         // 暂停战斗
         Time.timeScale = 0;
-        
+
         confirmWindow.GetComponent<RetreatConfirmation>().Initialize(
             onConfirm: () => {
                 Destroy(confirmWindow);
@@ -282,18 +282,18 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         Update();
 
         yield return new WaitForSeconds(attackDelay);
-        
+
         CombatManager.Instance.EndCurrentTurn();
         ResetAttackChances();
         ClearSelection();
-        
+
         isAttackExecuting = false;
         bool isPlayerTurn = CombatManager.Instance.IsPlayerTurn;
         if (!isPlayerTurn)
         {
             OnEnemyTurn();
             turnText.text = "Player's Turn";
-            turnText.color = Color.blue;
+            turnText.color = Color.white;
         }
         Update();
     }
@@ -303,7 +303,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
         {
             if (enemy.IsDead()) continue;
-            
+
             var attacker = enemy as Enemy;
             var target = CombatManager.Instance.GetRandomSoldier();
             if (target != null)
@@ -332,11 +332,11 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     {
         attackButton.interactable = CanAttack() && !isAttackExecuting;
         endTurnButton.interactable = !isAttackExecuting;
-        
+
         bool isPlayerTurn = CombatManager.Instance.IsPlayerTurn;
         attackButton.gameObject.SetActive(isPlayerTurn);
         endTurnButton.gameObject.SetActive(isPlayerTurn);
-        
+
         retreatButton.interactable = !isAttackExecuting && isPlayerTurn;
     }
 
@@ -352,7 +352,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         DisableAll();
         string resultMessage = victory ? "Victory!" : "Defeat!";
         combatLog.fontSize = 36; // Make text larger
-        combatLog.color = victory ? Color.blue : Color.red; // Change color based on result
+        combatLog.color = victory ? Color.white : Color.red; // Change color based on result
         combatLog.text = resultMessage;
         StartCoroutine(ReturnToBaseAfterDelay(5f)); // Increased delay to see the message
     }
@@ -388,7 +388,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     void EnableAll()
     {
         isAttackExecuting = false; // 重置战斗状态
-        
+
         // 启用所有角色按钮
         foreach (Transform child in combatUnitContainer)
         {
@@ -398,7 +398,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
                 button.interactable = true;
             }
         }
-        
+
         UpdateButtonStates(); // 强制刷新按钮状态
     }
 
@@ -407,9 +407,9 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         attackButton.interactable = false;
         endTurnButton.interactable = false;
         retreatButton.interactable = false; // 这行可以保留
-        
+
         isAttackExecuting = true;
-        
+
         foreach (Transform child in combatUnitContainer)
         {
             var button = child.GetComponent<Button>();

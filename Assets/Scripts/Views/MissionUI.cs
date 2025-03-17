@@ -10,16 +10,16 @@ using TMPro;
 
 public class MissionSelectUI : MonoBehaviour
 {
-    public Transform missionButtonContainer; // �����ڵ�
-    public GameObject missionButtonPrefab;   // ����ť Prefab
+    public Transform missionButtonContainer; 
+    public GameObject missionButtonPrefab;   
 
     public TextMeshProUGUI missionNameText;
     public TextMeshProUGUI missionDescriptionText;
 
-    public Button startButton;               // ��������ť
+    public Button startButton;              
     public Button backButton;
 
-    private Mission selectedMission;         // ��ǰѡ�������
+    private Mission selectedMission;         
 
     void Start()
     {
@@ -64,7 +64,18 @@ public class MissionSelectUI : MonoBehaviour
     {
         selectedMission = mission;
         missionNameText.text = mission.name;
-        missionDescriptionText.text = mission.description;
+
+        
+        string details = $"Description: {mission.description}\n" +
+                         $"Difficulty: {mission.difficulty}\n\n" +
+                         $"Rewards:\n" +
+                         $"- Money: {mission.rewardMoney}\n" +
+                         $"- Resources (ID): {mission.rewardResourceId} (Amount: {mission.rewardAmount})\n" +
+                         $"Terrain: {mission.terrain}\n" +
+                         $"Weather: {mission.weather}";
+
+
+        missionDescriptionText.text = details;
     }
 
     void OnStartButtonClicked()

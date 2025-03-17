@@ -12,24 +12,23 @@ namespace Assets.Scripts.Model
         public string description;
         public int difficulty;
         public int rewardMoney;
+        public int rewardAmount;
         public int rewardResourceId;
-        public int rewardTechId;
-        public int terrainId;
-        public int weatherId;
+        public string terrain;
+        public string weather;
         public bool isCompleted;
 
-        public Mission(int id, string name, string description, int difficulty, int rewardMoney,
-                       int rewardResourceId, int rewardTechId, int terrainId, int weatherId)
+        public Mission(int id, string name, string description, int difficulty, int rewardMoney, int rewardAmount, int rewardResourceId, string terrain, string weather)
         {
             this.id = id;
             this.name = name;
             this.description = description;
             this.difficulty = difficulty;
             this.rewardMoney = rewardMoney;
+            this.rewardAmount = rewardAmount;
             this.rewardResourceId = rewardResourceId;
-            this.rewardTechId = rewardTechId;
-            this.terrainId = terrainId;
-            this.weatherId = weatherId;
+            this.terrain = terrain;
+            this.weather = weather;
             this.isCompleted = false;
         }
     }
