@@ -77,5 +77,13 @@ namespace Assets.Scripts.Model
                 throw new ArgumentException("Invalid resource id: " + id);
             }
         }
+
+        public void UpdateAllResources(Dictionary<int, int> newAmounts)
+        {
+            foreach (var amount in newAmounts)
+            {
+                SetAmount(amount.Key, amount.Value);
+            }
+        }
     }
 }
