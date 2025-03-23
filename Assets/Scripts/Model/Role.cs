@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -7,69 +8,65 @@ namespace Assets.Scripts.Model
 {
     public class Role
     {
-        public RoleType roleType;
-        public int maxHealth;
-        public int exp;
-        public int level;
-        public int maxLevel;
-        public int base_attack;
-        public int base_defense;
-        List<Skill> skills = new List<Skill>();
-        List<Skill> availableSkills = new List<Skill>();
-
-        public Role(RoleType type)
+        public enum RoleType
         {
-            this.roleType = type;
-            exp = 0;
-            level = 1;
+            Tank,
+            Engineer,
+            Medic,
+            Sniper,
+            Scout
+        }
 
-            switch (type)
+        public RoleType Type { get; }
+        public int MaxHealth { get; }
+        public int BaseAtk { get; }
+        public int BaseDef { get; }
+        public int BaseAttackChance { get; }
+
+        public Role(string roleType)
+        {
+            switch (roleType.ToLower())
             {
-                case RoleType.Army:
-                    maxHealth = 100;
-                    maxLevel = 10;
-                    base_attack = 10;
-                    base_defense = 8;
-                    skills.Add(new Skill("Skill1", 10, 0, 1));
+                case "tank":
+                    Type = RoleType.Tank;
+                    MaxHealth = 100;
+                    BaseAtk = 10;
+                    BaseDef = 8;
+                    BaseAttackChance = 1;
                     break;
-                case RoleType.Sniper:
-                    maxHealth = 70;
-                    maxLevel = 10;
-                    base_attack = 15;
-                    base_defense = 5;
+                case "engineer":
+                    Type = RoleType.Engineer;
+                    MaxHealth = 70;
+                    BaseAtk = 15;
+                    BaseDef = 5;
+                    BaseAttackChance = 2;
                     break;
-                case RoleType.Engineer:
-                    maxHealth = 80;
-                    maxLevel = 10;
-                    base_attack = 12;
-                    base_defense = 6;
+                case "medic":
+                    Type = RoleType.Medic;
+                    MaxHealth = 80;
+                    BaseAtk = 12;
+                    BaseDef = 6;
+                    BaseAttackChance = 1;
                     break;
-                case RoleType.Medic:
-                    maxHealth = 75;
-                    maxLevel = 10;
-                    base_attack = 6;
-                    base_defense = 7;
+                case "sniper":
+                    Type = RoleType.Sniper;
+                    MaxHealth = 75;
+                    BaseAtk = 18;
+                    BaseDef = 4;
+                    BaseAttackChance = 1;
                     break;
-                case RoleType.Scott:
-                    maxHealth = 90;
-                    maxLevel = 10;
-                    base_attack = 8;
-                    base_defense = 9;
+                case "scout":
+                    Type = RoleType.Scout;
+                    MaxHealth = 90;
+                    BaseAtk = 8;
+                    BaseDef = 9;
+                    BaseAttackChance = 2;
                     break;
                 default:
-                    throw new ArgumentException($"Invalid role type: {type}", nameof(type));
+                    throw new ArgumentException($"Invalid role type: {roleType}");
             }
         }
 
-        public void AddSkill(Skill skill)
-        {
-            skills.Add(skill);
-        }
-
-        public string GetRoleName()
-        {
-            return roleType.ToString();
-        }
+        public string GetRoleName() => Type.ToString();
     }
-
 }

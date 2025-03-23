@@ -13,18 +13,22 @@ namespace Assets.Scripts.Model
         public string Name { get; protected set; }
         public int Health { get; protected set; }
         public int MaxHealth { get; protected set; }
+        public int Atk { get; protected set; }
+        public int Def { get; protected set; }
         public int Level { get; protected set; }
         public int AttackChances { get; set; }
         public int MaxAttacksPerTurn { get; protected set; }
         public GameObject GameObject { get; private set; }
         public string ObjectTag { get; protected set; }
 
-        protected Character(string name, int health, int level)
+        protected Character(string name, int health, int level, int attack, int defense)
         {
             Name = name;
             Health = health;
             MaxHealth = health;
             Level = level;
+            Atk = attack;
+            Def = defense;
         }
 
         public virtual void TakeDamage(int damage)
@@ -85,7 +89,7 @@ namespace Assets.Scripts.Model
         public int ExperienceReward { get; private set; }
 
         public Enemy(string name, int health, int damage, int level, int expReward) 
-            : base(name, health, level)
+            : base(name, health, level, damage, 0)
         {
             BaseDamage = damage;
             ExperienceReward = expReward;
@@ -110,22 +114,19 @@ namespace Assets.Scripts.Model
 
     public class Soldier : Character
     {
-        // 保留原有属性...
         private int _experience;
         private bool _hasGun;
         private int _defense;
         private Role _role;
 
-        public Soldier(Role role) : base(
-            name: NameGenerator.GetRandomName(),
-            health: role.maxHealth,
-            level: 1)
+        public Soldier(string name, Role role, int level, int health, int attack, int defense) 
+        : base(name, health, level, attack, defense)
         {
-            AttackChances = 1;
-            MaxAttacksPerTurn = 1;
+            _role = role;
+            AttackChances = role.BaseAttackChance;
+            MaxAttacksPerTurn = role.BaseAttackChance;
             _experience = 0;
             ObjectTag = "Soldier";
-            _role = role;
         }
 
         protected override int CalculateDamage()
