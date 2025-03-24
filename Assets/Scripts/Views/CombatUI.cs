@@ -5,7 +5,6 @@ using UnityEngine.EventSystems;
 using TMPro;
 using Assets.Scripts.Model;
 using Assets.Scripts.Controller;
-using System;
 using System.Collections.Generic;
 
 public class CombatUI : MonoBehaviour, IPointerClickHandler

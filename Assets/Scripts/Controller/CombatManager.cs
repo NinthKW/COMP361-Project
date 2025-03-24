@@ -15,11 +15,11 @@ namespace Assets.Scripts.Controller
         // [SerializeField] private int maxSoldiersAllowed = 5;
         [SerializeField] private float enemyTurnDelay = 1f;
         
-        private List<Soldier> _availableSoldiers = new();
-        private List<Enemy> _availableEnemies = new();
-        private List<Character> _selectedCharacters = new();
-        private List<Character> _enemyCharacters = new();
-        private string dbName = "URI=file:database.db"; 
+        [SerializeField] private List<Soldier> _availableSoldiers = new();
+        [SerializeField] private List<Enemy> _availableEnemies = new();
+        [SerializeField] private List<Character> _selectedCharacters = new();
+        [SerializeField] private List<Character> _enemyCharacters = new();
+        [SerializeField] private string dbName = "URI=file:database.db"; 
         
         public bool IsCombatActive { get; private set; }
         public bool IsPlayerTurn { get; private set; }
@@ -62,35 +62,36 @@ namespace Assets.Scripts.Controller
                             defense 
                         FROM Soldier";
 
-                    using (var reader = command.ExecuteReader())
+                    using var reader = command.ExecuteReader();
+                    while (reader.Read())
                     {
-                        while (reader.Read())
+                        try
                         {
-                            try
-                            {
-                                var role = new Role(reader.GetString(1));
-                                var soldier = new Soldier(
-                                    name: reader.GetString(0),
-                                    role: role,
-                                    level: reader.GetInt32(2),
-                                    health: reader.GetInt32(4),
-                                    attack: reader.GetInt32(5),
-                                    defense: reader.GetInt32(6)
-                                );
-                                soldier.GainExp(reader.GetInt32(3)); // 单独设置经验值
-                                
-                                _availableSoldiers.Add(soldier);
-                                Debug.Log($"Loaded soldier: {soldier.Name} ({role.GetRoleName()})");
-                            }
-                            catch (Exception ex)
-                            {
-                                Debug.LogError($"Failed to load soldier: {ex.Message}");
-                            }
+                            var role = new Role(reader.GetString(1));
+                            var soldier = new Soldier(
+                                name: reader.GetString(0),
+                                role: role,
+                                level: reader.GetInt32(2),
+                                health: reader.GetInt32(4),
+                                attack: reader.GetInt32(5),
+                                defense: reader.GetInt32(6)
+                            );
+                            soldier.GainExp(reader.GetInt32(3)); // 单独设置经验值
+
+                            _availableSoldiers.Add(soldier);
+                            Debug.Log($"Loaded soldier: {soldier.Name} ({role.GetRoleName()})");
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.LogError($"Failed to load soldier: {ex.Message}");
                         }
                     }
                 }
             }
             // Enemy initialization
+            // TODO: Load enemies from database
+            _availableEnemies.Clear();
+            _availableEnemies.Add(new Enemy("Slime", 20, 3, 1, 5));
             _availableEnemies.Add(new Enemy("Goblin", 30, 5, 1, 10));
             _availableEnemies.Add(new Enemy("Orc", 60, 10, 2, 20));
             _availableEnemies.Add(new Enemy("Dragon", 150, 20, 5, 50));

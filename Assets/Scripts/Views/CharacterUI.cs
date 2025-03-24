@@ -68,6 +68,5 @@ public class CharacterUI : MonoBehaviour
         }
 
         characterImage.color = baseColor;
-        // characterImage.color = isDead? Color.black : (isSelected ? Color.white : (isAlly ? Color.blue : Color.red));
     }
 }
