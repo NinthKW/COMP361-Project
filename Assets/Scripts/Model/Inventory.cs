@@ -72,12 +72,12 @@ namespace Assets.Scripts.Model
         {
             this.itemType = type;
             this.itemName = type.ToString();
-            this.description = GetDefaultDescription(type);
+            this.description = GetItemDescription(type);
             this.quantity = quantity;
         }
 
         // Returns a simple description for each item type
-        private string GetDefaultDescription(ItemType type)
+        private string GetItemDescription(ItemType type)
         {
             switch (type)
             {
