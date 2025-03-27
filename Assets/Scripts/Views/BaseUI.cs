@@ -33,41 +33,41 @@ public class BaseUI : MonoBehaviour
         backButton.onClick.AddListener(OnBackButtonClicked);
 
         // Ensure a Canvas exists in the scene.
-        Canvas canvas = FindObjectOfType<Canvas>();
-        if (canvas == null)
-        {
-            GameObject canvasObj = new GameObject("Canvas");
-            canvas = canvasObj.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvasObj.AddComponent<CanvasScaler>();
-            canvasObj.AddComponent<GraphicRaycaster>();
-        }
+    //    Canvas canvas = FindObjectOfType<Canvas>();
+    //    if (canvas == null)
+    //    {
+    //        GameObject canvasObj = new GameObject("Canvas");
+    //        canvas = canvasObj.AddComponent<Canvas>();
+    //        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+    //        canvasObj.AddComponent<CanvasScaler>();
+    //        canvasObj.AddComponent<GraphicRaycaster>();
+    //    }
 
-        // Create the "Table" panel.
-        GameObject tablePanel = new GameObject("GridTable");
-        tablePanel.transform.SetParent(canvas.transform, false);
+    //    // Create the "Table" panel.
+    //    GameObject tablePanel = new GameObject("GridTable");
+    //    tablePanel.transform.SetParent(canvas.transform, false);
 
-        tableRect = tablePanel.AddComponent<RectTransform>();
+    //    tableRect = tablePanel.AddComponent<RectTransform>();
 
-        // Anchor the table at the top-right corner.
-        tableRect.anchorMin = new Vector2(1f, 1f);
-        tableRect.anchorMax = new Vector2(1f, 1f);
-        tableRect.pivot = new Vector2(1f, 1f);
+    //    // Anchor the table at the top-right corner.
+    //    tableRect.anchorMin = new Vector2(1f, 1f);
+    //    tableRect.anchorMax = new Vector2(1f, 1f);
+    //    tableRect.pivot = new Vector2(1f, 1f);
 
-        // Position the table 50px from the top and right edges.
-        tableRect.anchoredPosition = new Vector2(-50f, -50f);
+    //    // Position the table 50px from the top and right edges.
+    //    tableRect.anchoredPosition = new Vector2(-50f, -50f);
 
-        // Set the overall size of the table based on the grid dimensions.
-        float totalWidth = columns * cellSize;
-        float totalHeight = rows * cellSize;
-        tableRect.sizeDelta = new Vector2(totalWidth, totalHeight);
+    //    // Set the overall size of the table based on the grid dimensions.
+    //    float totalWidth = columns * cellSize;
+    //    float totalHeight = rows * cellSize;
+    //    tableRect.sizeDelta = new Vector2(totalWidth, totalHeight);
 
-        // Add a black transparent background to the grid.
-        Image tableBg = tablePanel.AddComponent<Image>();
-        tableBg.color = new Color(0f, 0f, 0f, 0.5f); // Black with 50% opacity
+    //    // Add a black transparent background to the grid.
+    //    Image tableBg = tablePanel.AddComponent<Image>();
+    //    tableBg.color = new Color(0f, 0f, 0f, 0.5f); // Black with 50% opacity
 
-        // Draw the grid lines.
-        DrawGrid(totalWidth, totalHeight);
+    //    // Draw the grid lines.
+    //    DrawGrid(totalWidth, totalHeight);
     }
 
     // Update is called once per frame
