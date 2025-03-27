@@ -429,6 +429,7 @@ MonoBehaviour:
   missionButtonContainer: {fileID: 13296011}
   missionButtonPrefab: {fileID: 2153828838381728940, guid: 80c1e8878dd05bd41877e2d0af6cbc02, type: 3}
   buildingName: {fileID: 401995426}
+  backButton: {fileID: 950102096}
 --- !u!114 &211542983
 MonoBehaviour:
   m_ObjectHideFlags: 0

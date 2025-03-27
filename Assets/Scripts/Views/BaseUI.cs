@@ -14,6 +14,8 @@ public class BaseUI : MonoBehaviour
     public TextMeshProUGUI buildingName;
     private Base selectedBuilding;
 
+    public Button backButton;
+
     // Hardcoded grid dimensions
     private int rows = 7;         // 7 rows (y-axis)
     private int columns = 12;     // 12 columns (x-axis)
@@ -28,6 +30,7 @@ public class BaseUI : MonoBehaviour
     void Start()
     {
         PopulateBuildingList();
+        backButton.onClick.AddListener(OnBackButtonClicked);
 
         // Ensure a Canvas exists in the scene.
         Canvas canvas = FindObjectOfType<Canvas>();
@@ -186,5 +189,11 @@ public class BaseUI : MonoBehaviour
         lineRect.sizeDelta = new Vector2(length, lineThickness);
         lineRect.anchoredPosition = start;
         lineRect.localRotation = Quaternion.Euler(0, 0, angle);
+    }
+
+    void OnBackButtonClicked()
+    {
+        GameManager.Instance.ChangeState(GameState.MainMenuPage);
+        GameManager.Instance.LoadGameState(GameState.MainMenuPage);
     }
 }
