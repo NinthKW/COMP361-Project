@@ -5,10 +5,13 @@ using UnityEngine.UI;
 public class DraggableBuilding : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     private Transform originalParent;
-    private Vector2 initialPosition; // Store the starting anchored position.
+    private Vector2 initialPosition; // Original anchored position.
     private Canvas canvas;
     private RectTransform rectTransform;
     private CanvasGroup canvasGroup;
+
+    // Stores the offset between the pointer and the object's pivot.
+    private Vector2 pointerOffset;
 
     void Awake()
     {
@@ -34,16 +37,25 @@ public class DraggableBuilding : MonoBehaviour, IBeginDragHandler, IDragHandler,
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        // When drag begins, do not update the initial position.
-        // Move the object to the canvas root so it is not clipped.
+        // Calculate the offset between where the pointer is and the object's pivot.
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            rectTransform, eventData.position, eventData.pressEventCamera, out pointerOffset);
+        
+        // Move the object to the canvas root to avoid clipping.
         transform.SetParent(canvas.transform);
         canvasGroup.blocksRaycasts = false;
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        // Move the object with the pointer.
-        rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
+        Vector2 localPoint;
+        // Convert the screen point of the cursor to a local point in the canvas's coordinate space.
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvas.transform as RectTransform, eventData.position, eventData.pressEventCamera, out localPoint))
+        {
+            // Set the new position adjusted by the initial pointer offset.
+            rectTransform.localPosition = localPoint - pointerOffset;
+        }
     }
 
     public void OnEndDrag(PointerEventData eventData)
