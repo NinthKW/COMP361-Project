@@ -80,8 +80,6 @@ namespace Assets.Scripts.Controller
                             ); 
 
                             buildingList.Add(building);
-
-                            Debug.Log($"Loaded Mission: {buildingName}");
                         }
 
                         reader.Close();

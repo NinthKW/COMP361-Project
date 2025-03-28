@@ -14,6 +14,8 @@ public class BaseUI : MonoBehaviour
     public TextMeshProUGUI buildingName;
     private Base selectedBuilding;
 
+    public Button backButton;
+
     private RectTransform tableRect;
 
 
@@ -21,7 +23,7 @@ public class BaseUI : MonoBehaviour
     void Start()
     {
         PopulateBuildingList();
-
+        backButton.onClick.AddListener(OnBackButtonClicked);
     }
 
     // Update is called once per frame
