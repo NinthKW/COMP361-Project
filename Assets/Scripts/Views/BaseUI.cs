@@ -101,7 +101,11 @@ public class BaseUI : MonoBehaviour
         selectedBuilding = building;
     }
 
+    void OnBackButtonClicked()
+    {
+        GameManager.Instance.ChangeState(GameState.MainMenuPage);
+        GameManager.Instance.LoadGameState(GameState.MainMenuPage);
+    }
 
 
-    
 }
