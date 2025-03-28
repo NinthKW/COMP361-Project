@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 163953013887290311}
   - component: {fileID: 1967782750749341289}
   - component: {fileID: 107150995062856351}
+  - component: {fileID: 4206894107539009346}
   m_Layer: 5
   m_Name: BaseButton
   m_TagString: Untagged
@@ -157,6 +158,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_AspectMode: 1
   m_AspectRatio: 1
+--- !u!114 &4206894107539009346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2153828838381728940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4c034cb661a5964bb9adfe97fb1ca69, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7059667437207289080
 GameObject:
   m_ObjectHideFlags: 0
