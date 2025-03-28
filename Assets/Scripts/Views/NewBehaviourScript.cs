@@ -1,0 +1,65 @@
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+public class DraggableBuilding : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+{
+    private Transform originalParent;
+    private Vector2 initialPosition; // Store the starting anchored position.
+    private Canvas canvas;
+    private RectTransform rectTransform;
+    private CanvasGroup canvasGroup;
+
+    void Awake()
+    {
+        rectTransform = GetComponent<RectTransform>();
+
+        // Ensure there's a CanvasGroup attached.
+        canvasGroup = GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
+        {
+            canvasGroup = gameObject.AddComponent<CanvasGroup>();
+        }
+
+        // Get the parent Canvas for proper scaling.
+        canvas = GetComponentInParent<Canvas>();
+    }
+
+    void Start()
+    {
+        // Save the initial position and parent at the start.
+        initialPosition = rectTransform.anchoredPosition;
+        originalParent = transform.parent;
+    }
+
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        // When drag begins, do not update the initial position.
+        // Move the object to the canvas root so it is not clipped.
+        transform.SetParent(canvas.transform);
+        canvasGroup.blocksRaycasts = false;
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        // Move the object with the pointer.
+        rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        canvasGroup.blocksRaycasts = true;
+        // If the object hasn't been reparented to a valid drop target, return it to its starting position.
+        if (transform.parent == canvas.transform)
+        {
+            ResetToInitialPosition();
+        }
+    }
+
+    // Resets the building back to the original starting position and parent.
+    public void ResetToInitialPosition()
+    {
+        transform.SetParent(originalParent);
+        rectTransform.anchoredPosition = initialPosition;
+    }
+}
