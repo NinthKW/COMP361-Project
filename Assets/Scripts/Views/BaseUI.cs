@@ -16,13 +16,6 @@ public class BaseUI : MonoBehaviour
 
     public Button backButton;
 
-    // Hardcoded grid dimensions
-    private int rows = 7;         // 7 rows (y-axis)
-    private int columns = 12;     // 12 columns (x-axis)
-    private float cellSize = 110f; // Smaller cell size for a reduced overall grid
-    private Color lineColor = Color.black;
-    private float lineThickness = 2f;
-
     private RectTransform tableRect;
 
 
@@ -31,7 +24,6 @@ public class BaseUI : MonoBehaviour
     {
         PopulateBuildingList();
         backButton.onClick.AddListener(OnBackButtonClicked);
-
     }
 
     // Update is called once per frame
