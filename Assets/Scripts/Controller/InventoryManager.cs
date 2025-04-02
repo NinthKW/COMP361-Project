@@ -21,7 +21,7 @@ namespace Assets.Scripts.Controller
             if (Instance == null)
             {
                 Instance = this;
-                DontDestroyOnLoad(gameObject); // Keep across scenes
+                DontDestroyOnLoad(gameObject); 
             }
             else
             {
