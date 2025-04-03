@@ -21,7 +21,7 @@ namespace Assets.Scripts.Model
         public GameObject GameObject { get; private set; }
         public string ObjectTag { get; protected set; }
 
-        protected Character(string name, int health, int level, int attack, int defense, int maxHealth)
+        protected Character(string name, int health, int level, int attack, int defense)
         {
             Name = name;
             Health = health;
@@ -89,7 +89,7 @@ namespace Assets.Scripts.Model
         public int ExperienceReward { get; private set; }
 
         public Enemy(string name, int health, int damage, int level, int expReward) 
-            : base(name, health, level, damage, 0, 0)
+            : base(name, health, level, damage, 0)
         {
             BaseDamage = damage;
             ExperienceReward = expReward;
@@ -119,8 +119,8 @@ namespace Assets.Scripts.Model
         private int _defense;
         private Role _role;
 
-        public Soldier(string name, Role role, int level, int health, int attack, int defense, int maxHealth) 
-        : base(name, health, level, attack, defense, maxHealth)
+        public Soldier(string name, Role role, int level, int health, int attack, int defense) 
+        : base(name, health, level, attack, defense)
         {
             _role = role;
             AttackChances = role.BaseAttackChance;

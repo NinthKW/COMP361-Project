@@ -80,6 +80,9 @@ namespace Assets.Scripts.Controller
                 case GameState.CombatPage:
                     SceneManager.LoadScene("CombatPage");
                     break;
+                case GameState.MissionPreparationPage:
+                    SceneManager.LoadScene("MissionPrepPageUI");
+                    break;
             }
 
             ChangeState(newState);
