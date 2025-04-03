@@ -87,16 +87,33 @@ namespace Assets.Scripts.Controller
 
         public void NewGame()
         {
-
+            currentGame = new Game();
+            Debug.Log("New game started with default settings.");
         }
         public void LoadGame()
         {
+            // Define the database connection string.
+            string dbPath = "URI=file:" + Application.persistentDataPath + "/game.db";
+    
+            // Create a new game instance using the constructor that loads data from the database.
+            currentGame = new Game(dbPath);
+            Debug.Log("Game loaded from database: " + dbPath);
 
         }
 
         public void SaveGame()
         {
-            
+            if (currentGame != null)
+            {
+            // Assuming you add a SaveGameData method in your Game class,
+            // call it to save all game data to the database.
+            currentGame.SaveGameData();
+            Debug.Log("Game saved to database.");
+            }
+            else
+            {
+                Debug.LogWarning("No game instance available to save.");
+            }   
         }
 
         public void QuitGame()
