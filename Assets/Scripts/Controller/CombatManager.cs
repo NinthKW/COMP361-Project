@@ -1,6 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Assets.Scripts.Model;
+using System.Data;
+using Mono.Data.Sqlite;
+using System;
+using System.Linq;
 
 namespace Assets.Scripts.Controller 
 {
@@ -12,10 +16,11 @@ namespace Assets.Scripts.Controller
         // [SerializeField] private int maxSoldiersAllowed = 5;
         [SerializeField] private float enemyTurnDelay = 1f;
         
-        private List<Soldier> _availableSoldiers = new();
-        private List<Enemy> _availableEnemies = new();
-        private List<Character> _selectedCharacters = new();
-        private List<Character> _enemyCharacters = new();
+        [SerializeField] private List<Soldier> _availableSoldiers = new();
+        [SerializeField] private List<Enemy> _availableEnemies = new();
+        [SerializeField] private List<Character> _selectedCharacters = new();
+        [SerializeField] private List<Character> _enemyCharacters = new();
+        [SerializeField] private string dbName = "URI=file:database.db"; 
         
         public bool IsCombatActive { get; private set; }
         public bool IsPlayerTurn { get; private set; }
@@ -39,17 +44,105 @@ namespace Assets.Scripts.Controller
 
         private void InitializeAvailableUnits()
         {
-            // Soldier initialization
-            _availableSoldiers.Add(new Soldier(new Role(RoleType.Sniper)));
-            _availableSoldiers.Add(new Soldier(new Role(RoleType.Medic)));
-            _availableSoldiers.Add(new Soldier(new Role(RoleType.Army)));
-            _availableSoldiers.Add(new Soldier(new Role(RoleType.Engineer)));
-            _availableSoldiers.Add(new Soldier(new Role(RoleType.Scott)));
+            _availableSoldiers.Clear();
 
+            using (var connection = new SqliteConnection(dbName))
+            {
+                connection.Open();
+                
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+                        SELECT 
+                            name, 
+                            role, 
+                            level,
+                            exp,
+                            health,
+                            attack,
+                            defense 
+                        FROM Soldier";
+
+                    using var reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        try
+                        {
+                            var role = new Role(reader.GetString(1));
+                            var soldier = new Soldier(
+                                name: reader.GetString(0),
+                                role: role,
+                                level: reader.GetInt32(2),
+                                health: reader.GetInt32(4),
+                                attack: reader.GetInt32(5),
+                                defense: reader.GetInt32(6)
+                            );
+                            soldier.GainExp(reader.GetInt32(3)); // 单独设置经验值
+
+                            _availableSoldiers.Add(soldier);
+                            Debug.Log($"Loaded soldier: {soldier.Name} ({role.GetRoleName()})");
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.LogError($"Failed to load soldier: {ex.Message}");
+                        }
+                    }
+                }
+            }
             // Enemy initialization
+            // TODO: Load enemies from database
+            _availableEnemies.Clear();
+            _availableEnemies.Add(new Enemy("Slime", 20, 3, 1, 5));
             _availableEnemies.Add(new Enemy("Goblin", 30, 5, 1, 10));
             _availableEnemies.Add(new Enemy("Orc", 60, 10, 2, 20));
             _availableEnemies.Add(new Enemy("Dragon", 150, 20, 5, 50));
+        }
+        public Soldier CreateNewSoldier(string soldierName, string roleType)
+        {
+            try
+            {
+                var role = new Role(roleType);
+                var newSoldier = new Soldier(
+                    name: soldierName,
+                    role: role,
+                    level: 1,
+                    health: role.MaxHealth,
+                    attack: role.BaseAtk,
+                    defense: role.BaseDef
+                );
+                
+                // 将新士兵存入数据库
+                using (var connection = new SqliteConnection(dbName))
+                {
+                    connection.Open();
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = @"
+                            INSERT INTO Soldier 
+                                (name, role, level, exp, health, attack, defense)
+                            VALUES
+                                (@name, @role, @level, @exp, @health, @attack, @defense)";
+                        
+                        command.Parameters.AddWithValue("@name", soldierName);
+                        command.Parameters.AddWithValue("@role", roleType);
+                        command.Parameters.AddWithValue("@level", 1);
+                        command.Parameters.AddWithValue("@exp", 0);
+                        command.Parameters.AddWithValue("@health", role.MaxHealth);
+                        command.Parameters.AddWithValue("@attack", role.BaseAtk);
+                        command.Parameters.AddWithValue("@defense", role.BaseDef);
+                        
+                        command.ExecuteNonQuery();
+                    }
+                }
+                
+                _availableSoldiers.Add(newSoldier);
+                return newSoldier;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Failed to create soldier: {ex.Message}");
+                return null;
+            }
         }
 
         public void StartCombat(List<Soldier> selectedSoldiers, List<Enemy> missionEnemies)
@@ -68,7 +161,7 @@ namespace Assets.Scripts.Controller
 
             IsCombatActive = true;
             IsPlayerTurn = true;
-            Debug.Log($"Combat started: {_selectedCharacters.Count} vs {_enemyCharacters.Count}");
+            Debug.Log($"Combat started: {_selectedCharacters.Count(c => c != null)} vs {_enemyCharacters.Count(c => c != null)}");
         }
 
         public void ProcessAttack(Character attacker, Character target)
@@ -128,8 +221,8 @@ namespace Assets.Scripts.Controller
 
         private void CleanupDeadUnits()
         {
-            _selectedCharacters.RemoveAll(c => c.IsDead());
-            _enemyCharacters.RemoveAll(c => c.IsDead());
+            _selectedCharacters.RemoveAll(c => c != null && c.IsDead());
+            _enemyCharacters.RemoveAll(c => c != null && c.IsDead());
         }
 
         public bool CheckCombatEnd()
@@ -169,7 +262,7 @@ namespace Assets.Scripts.Controller
         public Soldier GetRandomSoldier()
         {
             if (_selectedCharacters.Count == 0) return null;
-            return (Soldier)_selectedCharacters[Random.Range(0, _selectedCharacters.Count)];
+            return (Soldier)_selectedCharacters[UnityEngine.Random.Range(0, _selectedCharacters.Count)];
         }
 
         public void EndCombat(bool victory)
@@ -204,7 +297,8 @@ namespace Assets.Scripts.Controller
         #region Helper Methods
         public List<Soldier> GetAvailableSoldiers() => new(_availableSoldiers);
         public List<Enemy> GetAvailableEnemies() => new(_availableEnemies);
-        
+        public List<Character> GetSelectedCharacters() => new(_selectedCharacters);
+        public List<Character> GetEnemyCharacters() => new(_enemyCharacters);
         public bool IsAlly(Character character) => 
             _selectedCharacters.Contains(character);
 

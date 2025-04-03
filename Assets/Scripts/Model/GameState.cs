@@ -14,5 +14,6 @@ namespace Assets.Scripts.Model
         MissionSelectPage,
         MissionResultPage,
         GameOverPage,
+        MissionPreparationPage,
     }
 }
