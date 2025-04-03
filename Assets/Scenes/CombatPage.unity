@@ -164,6 +164,7 @@ MonoBehaviour:
   unitRole: {fileID: 996923898}
   retreatButton: {fileID: 604413854}
   retreatConfirmationPrefab: {fileID: 6589493220716002990, guid: 4f838fd49253546739872df1c67a8d76, type: 3}
+  formationSlotPrefab: {fileID: 3694220011202148361, guid: bc659821656a9e0469744f5ef68ee77d, type: 3}
   attackDelay: 0.5
   exhaustedColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
 --- !u!224 &215957489
