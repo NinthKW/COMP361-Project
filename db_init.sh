@@ -66,7 +66,7 @@ CREATE TABLE Infrastructure (
     description VARCHAR(1000),
     level int, 
     cost int, 
-    resource_amount int,
+    resource_amount,
     resource_type int,
     FOREIGN KEY (resource_type) REFERENCES Resource(resource_id)
 );
@@ -191,12 +191,7 @@ INSERT INTO Infrastructure VALUES
 (2, 'Armory', 'Store weapons', 2, 600, 60, 2),
 (3, 'Factory', 'Produce equipment', 3, 700, 70, 3),
 (4, 'HQ', 'Command center', 4, 800, 80, 4),
-(5, 'Research Lab', 'Develop technologies', 5, 900, 90, 5),
-(6, 'Hospital', 'Heal wounded soldiers', 6, 750, 75, 5),
-(7, 'Watchtower', 'Provide surveillance', 7, 400, 40, 5),
-(8, 'Supply Depot', 'Store essential supplies', 8, 650, 65, 5),
-(9, 'Power Plant', 'Generate electricity', 9, 1000, 100, 5),
-(10, 'Dockyard', 'Construct naval units', 10, 1100, 110, 5);
+(5, 'Research Lab', 'Develop technologies', 5, 900, 90, 5);
 
 -- Insert into Weather
 INSERT INTO Weather VALUES
