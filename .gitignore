@@ -64,10 +64,13 @@ Assembly-CSharp.csproj
 test*
 *.sln
 
-Assembly-CSharp.csproj#
 ==== random test files ===== #
+Assembly-CSharp.csproj#
+Scripts.csproj
+EditModeTests.csproj
 test*
 *.sln
+
 
 # Unity Test Files (explicitly include)
 !Assets/Tests/
