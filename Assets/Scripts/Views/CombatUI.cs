@@ -22,6 +22,8 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     [SerializeField] private TextMeshProUGUI unitRole;
     [SerializeField] private Button retreatButton;
     [SerializeField] private GameObject retreatConfirmationPrefab;
+    [SerializeField] private GameObject formationSlotPrefab;
+
 
     [Header("Settings")]
     [SerializeField] private float attackDelay = 0.5f;
@@ -39,8 +41,11 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         {
             Debug.Log("Debugging Scene");
             CombatManager.Instance = new GameObject().AddComponent<CombatManager>();
+            CombatManager.Instance.GetAvailableSoldiers().Add(new Soldier("Test Soldier", new Role("Tank"), 3, 2, 1, 1));
+            CombatManager.Instance.GetAvailableEnemies().Add(new Enemy("Test Enemy", 1, 3, 2, 1));
         }
-        CombatManager.Instance.StartCombat(CombatManager.Instance.GetAvailableSoldiers(), CombatManager.Instance.GetAvailableEnemies());
+        Debug.Log("CombatUI Start");
+        // CombatManager.Instance.StartCombat(CombatManager.Instance.GetAvailableSoldiers(), CombatManager.Instance.GetAvailableEnemies());
         CombatManager.Instance.OnCombatEnd += OnCombatEnd;
         InitializeUI();
     }
@@ -66,14 +71,13 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         int midY = Screen.height / 2;
         int midAllyX = midX - 250;
         int midEnemyX = midX + 200;
-        List<Vector2> allyPositions = new List<Vector2>
+        List<Vector3> allyPositions = new()
         {
-            new(midAllyX - 200, midY - 200),
-            new(midAllyX - 200, midY),
-            new(midAllyX - 200, midY + 200),
-            new(midAllyX, midY - 100),
-            new(midAllyX, midY + 100),
-            new(midAllyX + 200, midY)
+            new Vector3(midAllyX - 100, midY + 200, 0),
+            new Vector3(midAllyX + 100, midY + 100, 0),
+            new Vector3(midAllyX - 100, midY, 0),
+            new Vector3(midAllyX + 100, midY - 100, 0),
+            new Vector3(midAllyX - 100, midY - 200, 0)
         };
 
         List<Vector2> enemyPositions = new List<Vector2>
@@ -81,13 +85,17 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             new(midEnemyX, midY - 100),
             new(midEnemyX, midY + 100),
             new(midEnemyX + 200, midY),
-            new(700, 300),
-            new(700, 500),
+            new(midEnemyX + 200, midY + 200),
+            new(midEnemyX + 200, midY - 200),
+            new(midEnemyX + 400, midY),
         };
-        foreach (var soldier in CombatManager.Instance.GetAvailableSoldiers())
+        foreach (var soldier in CombatManager.Instance.GetSelectedCharacters())
         {
-            int index = CombatManager.Instance.GetAvailableSoldiers().IndexOf(soldier);
-            CreateCharacterCard(soldier, isAlly: true, allyPositions[index]);
+            int index = CombatManager.Instance.GetSelectedCharacters().IndexOf(soldier);
+            if (soldier != null && soldier is Soldier) 
+            {
+                CreateCharacterCard(soldier, isAlly: true, allyPositions[index]);
+            }
         }
         foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
         {

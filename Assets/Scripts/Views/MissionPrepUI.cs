@@ -47,11 +47,11 @@ public class MissionPreparationUI : MonoBehaviour
     {
         List<Vector3> positions = new()
         {
-            new Vector3(-200, -100, 0),
-            new Vector3(-100, 100, 0),
-            new Vector3(0, -100, 0),
+            new Vector3(-100, 200, 0),
             new Vector3(100, 100, 0),
-            new Vector3(200, -100, 0)
+            new Vector3(-100, 0, 0),
+            new Vector3(100, -100, 0),
+            new Vector3(-100, -200, 0)
         };
         // 初始化阵型槽位
         for (int i = 0; i < 5; i++)
@@ -62,6 +62,7 @@ public class MissionPreparationUI : MonoBehaviour
             
             slot.gameObject.GetComponent<RectTransform>().localPosition = positions[i];
             slot.gameObject.SetActive(true);
+            slot.SlotIndex = i;
             formationSlots.Add(slot);
         }
 
@@ -98,24 +99,39 @@ public class MissionPreparationUI : MonoBehaviour
 
     void OnStartBattle()
     {
-        // 检查是否所有槽位都有士兵
-        if (formationSlots.Any(slot => slot.CurrentSoldier == null))
+        // 检查是否所有槽位都没有士兵
+        if (formationSlots.All(slot => slot.CurrentSoldier == null))
         {
-            Debug.Log("请为所有槽位分配士兵");
+            Debug.Log("没有士兵分配到阵型槽位，无法开始战斗！");
             return;
         }
 
         List<Soldier> combatSoldiers = new List<Soldier>();
         List<Enemy> combatEnemies = new List<Enemy>();
 
-        foreach(Soldier soldier in formationSlots.Select(slot => slot.CurrentSoldier).ToList())
+        // Create a dictionary mapping slot indices to soldiers (including empty slots)
+        List<Soldier> selectedSoldiers = new List<Soldier>(5) {
+            null, null, null, null, null
+        };
+
+        // Populate the dictionary with all slots (even empty ones)
+        foreach (var slot in formationSlots)
         {
-            combatSoldiers.Add(soldier);
+            if (slot.CurrentSoldier != null) 
+            {
+                Debug.Log($"Slot {slot.SlotIndex} has soldier: {slot.CurrentSoldier.Name}");
+                selectedSoldiers[slot.SlotIndex] = slot.CurrentSoldier;
+            } 
+            else 
+            {
+                selectedSoldiers[slot.SlotIndex] = null; // Empty slot
+            }
+            
         }
 
         // 开始战斗
         CombatManager.Instance.StartCombat(
-            formationSlots.Select(slot => slot.CurrentSoldier).ToList(), 
+            selectedSoldiers, 
             CombatManager.Instance.GetAvailableEnemies()
         );
 
@@ -146,7 +162,7 @@ public class MissionPreparationUI : MonoBehaviour
     public void OnEnemySelected(CharacterCard card)
     {
         // 取消之前的选择
-        if (selectedCharacterCard != null) 
+        if (selectedCharacterCard) 
         {
             selectedCharacterCard.SetSelected(false);
         }
@@ -154,11 +170,10 @@ public class MissionPreparationUI : MonoBehaviour
         selectedCharacterCard = card;
         selectedFormationSlot = null;
         
-        if (card != null)
+        if (card)
         {
             card.SetSelected(true);
         }
-        
         enemyInfoPanel.UpdateInfo((Enemy) card.Character);
         UpdateButtonStates();
     }
@@ -166,8 +181,15 @@ public class MissionPreparationUI : MonoBehaviour
 
     public void OnSlotSelected(FormationSlot slot)
     {
-        selectedFormationSlot = slot;
-        UpdateButtonStates();
+        if (selectedCharacterCard.Character is Soldier)
+        {
+            selectedFormationSlot = slot;
+            UpdateButtonStates();
+        }
+        else
+        {
+            Debug.Log("只能选择士兵卡片分配到阵型槽位");
+        }
     }
 
     void UpdateButtonStates()

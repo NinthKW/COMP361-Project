@@ -4,6 +4,7 @@ using Assets.Scripts.Model;
 using System.Data;
 using Mono.Data.Sqlite;
 using System;
+using System.Linq;
 
 namespace Assets.Scripts.Controller 
 {
@@ -160,7 +161,7 @@ namespace Assets.Scripts.Controller
 
             IsCombatActive = true;
             IsPlayerTurn = true;
-            Debug.Log($"Combat started: {_selectedCharacters.Count} vs {_enemyCharacters.Count}");
+            Debug.Log($"Combat started: {_selectedCharacters.Count(c => c != null)} vs {_enemyCharacters.Count(c => c != null)}");
         }
 
         public void ProcessAttack(Character attacker, Character target)
@@ -220,8 +221,8 @@ namespace Assets.Scripts.Controller
 
         private void CleanupDeadUnits()
         {
-            _selectedCharacters.RemoveAll(c => c.IsDead());
-            _enemyCharacters.RemoveAll(c => c.IsDead());
+            _selectedCharacters.RemoveAll(c => c != null && c.IsDead());
+            _enemyCharacters.RemoveAll(c => c != null && c.IsDead());
         }
 
         public bool CheckCombatEnd()
@@ -296,7 +297,8 @@ namespace Assets.Scripts.Controller
         #region Helper Methods
         public List<Soldier> GetAvailableSoldiers() => new(_availableSoldiers);
         public List<Enemy> GetAvailableEnemies() => new(_availableEnemies);
-        
+        public List<Character> GetSelectedCharacters() => new(_selectedCharacters);
+        public List<Character> GetEnemyCharacters() => new(_enemyCharacters);
         public bool IsAlly(Character character) => 
             _selectedCharacters.Contains(character);
 
