@@ -18,6 +18,8 @@ namespace Assets.Scripts.Model
         public string weather;
         public bool isCompleted;
 
+        public List<Enemy> AssignedEnemies;  //enemy info
+
         public Mission(int id, string name, string description, int difficulty, int rewardMoney, int rewardAmount, int rewardResourceId, string terrain, string weather)
         {
             this.id = id;
@@ -30,6 +32,7 @@ namespace Assets.Scripts.Model
             this.terrain = terrain;
             this.weather = weather;
             this.isCompleted = false;
+            this.AssignedEnemies = new List<Enemy>();  // 初始化敌人列表
         }
     }
 }

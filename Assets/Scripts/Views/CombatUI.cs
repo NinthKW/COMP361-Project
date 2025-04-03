@@ -6,6 +6,7 @@ using TMPro;
 using Assets.Scripts.Model;
 using Assets.Scripts.Controller;
 using System.Collections.Generic;
+using System.Linq;
 
 public class CombatUI : MonoBehaviour, IPointerClickHandler
 {
@@ -97,9 +98,13 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
                 CreateCharacterCard(soldier, isAlly: true, allyPositions[index]);
             }
         }
+
+        Debug.Log($"Enemy numbers is: {CombatManager.Instance.GetAvailableEnemies().Count}");
         foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
         {
+            Debug.Log($"Enemy found: {enemy.Name}");
             int index = CombatManager.Instance.GetAvailableEnemies().IndexOf(enemy);
+            //Debug.Log($"index is: {index}");
             CreateCharacterCard(enemy, isAlly: false, enemyPositions[index]);
         }
     }
@@ -301,6 +306,10 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         endTurnButton.image.color = endTurnButton.image.color == Color.red ? Color.white : endTurnButton.image.color;
         StartCoroutine(EndTurnRoutine());
         Update();
+
+        // 检查并补充新的敌人
+        CombatManager.Instance.CheckAndReplaceDeadEnemies();
+        CreateCharacterDisplays(); // 重新显示敌人
     }
 
     IEnumerator EndTurnRoutine()
@@ -327,20 +336,48 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
     private void OnEnemyTurn()
     {
+        Debug.Log("Enemy's Turn Started.");
+        Debug.Log($"length of GetAvailableEnemies {CombatManager.Instance.GetAvailableEnemies().Count}");
+
+        Queue<Enemy> enemyQueue = new Queue<Enemy>();
+
         foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
         {
-            if (enemy.IsDead()) continue;
+            if (!enemy.IsDead())
+            {
+                enemyQueue.Enqueue(enemy);
+            }
+        }
 
-            var attacker = enemy as Enemy;
+        // 启动协程来处理敌人的行动
+        StartCoroutine(ExecuteEnemyTurn(enemyQueue));
+    }
+
+    private IEnumerator ExecuteEnemyTurn(Queue<Enemy> enemyQueue)
+    {
+        while (enemyQueue.Count > 0)
+        {
+            var attacker = enemyQueue.Dequeue();
+
+            if (attacker.IsDead()) continue;
+
             var target = CombatManager.Instance.GetRandomSoldier();
             if (target != null)
             {
-                StartCoroutine(ExecuteAttackRoutine(attacker, target));
+                Debug.Log($"{attacker.Name} is attacking {target.Name}");
+                yield return StartCoroutine(ExecuteAttackRoutine(attacker, target)); // 等待当前敌人攻击完毕
             }
         }
+
         ResetAttackChances();
         Update();
+
+        CombatManager.Instance.CheckAndReplaceDeadEnemies();
+        CreateCharacterDisplays(); // 重新更新显示
+
+        Debug.Log("Enemy Turn Finished.");
     }
+
 
     void ResetAttackChances()
     {

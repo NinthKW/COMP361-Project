@@ -79,9 +79,12 @@ namespace Assets.Scripts.Controller
                                 weather
                             );
 
+                            LoadMissionEnemiesFromDatabase(mission);
+
                             missions.Add(mission);
 
                             Debug.Log($"Loaded Mission: {missionName} (Difficulty: {difficulty}, Terrain: {terrain}, Weather: {weather})");
+                            
                         }
 
                         reader.Close();
@@ -93,9 +96,59 @@ namespace Assets.Scripts.Controller
             }
         }
 
-        public void StartMission(int missionID)
+
+
+        void LoadMissionEnemiesFromDatabase(Mission mission)
         {
-            Mission selectedMission = missions.Find(m => m.id == missionID);
+            using (var connection = new SqliteConnection(dbPath))
+            {
+                connection.Open();
+
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+                SELECT 
+                    MISSION_ENEMY.et_id,
+                    MISSION_ENEMY.count,
+                    ENEMY_TYPES.et_name,
+                    ENEMY_TYPES.HP,
+                    ENEMY_TYPES.base_ATK,
+                    ENEMY_TYPES.base_DPS
+                FROM MISSION_ENEMY
+                INNER JOIN ENEMY_TYPES ON MISSION_ENEMY.et_id = ENEMY_TYPES.et_ID
+                WHERE MISSION_ENEMY.mission_id = @missionId;
+            ";
+
+                    command.Parameters.AddWithValue("@missionId", mission.id);
+
+                    using (IDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int count = reader.GetInt32(1);
+                            string name = reader.GetString(2);
+                            int hp = reader.GetInt32(3);
+                            int attack = reader.GetInt32(4);
+                            int dps = reader.GetInt32(5);
+
+                            for (int i = 0; i < count; i++)
+                            {
+                                var enemy = new Enemy(name, hp, attack, dps, 10); // 假设经验值为10
+                                mission.AssignedEnemies.Add(enemy);
+                            }
+
+                            Debug.Log($"Loaded {count} {name}(s) for Mission {mission.name}");
+                        }
+                    }
+                }
+
+                connection.Close();
+            }
+        }
+
+        public void StartMission(Mission selectedMission)
+        {
+            CombatManager.Instance.SetcurrentMission(selectedMission);
             if (selectedMission != null)
             {
                 Debug.Log("Starting Mission: " + selectedMission.name);
@@ -103,7 +156,7 @@ namespace Assets.Scripts.Controller
             }
             else
             {
-                Debug.LogWarning("Mission not found: " + missionID);
+                Debug.LogWarning("Mission not found: ");
             }
         }
 

@@ -131,8 +131,8 @@ public class MissionPreparationUI : MonoBehaviour
 
         // 开始战斗
         CombatManager.Instance.StartCombat(
-            selectedSoldiers, 
-            CombatManager.Instance.GetAvailableEnemies()
+            CombatManager.Instance.currentMission,
+            selectedSoldiers
         );
 
         // 进入战斗场景
