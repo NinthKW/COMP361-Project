@@ -21,15 +21,14 @@ CREATE TABLE Resource (
     current_amount int
 );
 
-CREATE TABLE IF NOT EXISTS Soldier (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    role TEXT NOT NULL,
-    level INTEGER DEFAULT 1,
-    exp INTEGER DEFAULT 0,
-    health INTEGER NOT NULL,
-    attack INTEGER NOT NULL,
-    defense INTEGER NOT NULL
+CREATE TABLE Soldier (
+    soldier_id int PRIMARY KEY,
+    name VARCHAR(255) NOT NULL, 
+    level int DEFAULT 1,
+    hp int,
+    atk int,
+    def int,
+    role VARCHAR(50)   
 );
 
 CREATE TABLE Weapon (
@@ -156,11 +155,11 @@ INSERT INTO Resource VALUES
 
 -- Insert into Soldier
 INSERT INTO Soldier VALUES
-(1, 'John', 'Engineer', 1, 0, 100, 10, 5),
-(2, 'Jane', 'Sniper', 1, 0, 80, 20, 10),
-(3, 'Jack', 'Tank', 1, 0, 200, 30, 15),
-(4, 'Jill', 'Medic', 1, 0, 150, 25, 12),
-(5, 'Boss', 'Scout', 1, 0, 70, 50, 25);
+(1, 'John', 5, 100, 20, 15, 'Infantry'),
+(2, 'Alice', 3, 80, 15, 10, 'Sniper'),
+(3, 'Bob', 7, 120, 25, 20, 'Tank'),
+(4, 'Eve', 4, 90, 18, 12, 'Scout'),
+(5, 'Charlie', 6, 110, 22, 17, 'Engineer');
 
 -- Insert into Weapon
 INSERT INTO Weapon VALUES

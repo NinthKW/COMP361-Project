@@ -75,6 +75,3 @@ test*
 # Unity Test Files (explicitly include)
 !Assets/Tests/
 !Assets/Tests/**/*
-EditModeTests.csproj
-Scripts.csproj
-*csproj

@@ -115,7 +115,7 @@ namespace Assets.Scripts.Controller
                 CombatManager.Instance.gameObject.SetActive(true);
             }
 
-            GameManager.Instance.LoadGameState(GameState.MissionPreparationPage);
+            GameManager.Instance.LoadGameState(GameState.CombatPage);
         }
     }
 }

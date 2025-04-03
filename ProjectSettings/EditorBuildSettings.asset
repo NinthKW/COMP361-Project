@@ -21,17 +21,9 @@ EditorBuildSettings:
     path: Assets/Scenes/CombatPage.unity
     guid: 9bde016214afacd40bef6a2f06fa8c25
   - enabled: 1
-<<<<<<< HEAD
     path: Assets/Scenes/BasePage.unity
     guid: beecc2c93a12c3043ac118c8f8c66a6f
   - enabled: 1
     path: Assets/Scenes/TechPage.unity
     guid: 1e5f56635f400b045a907f0eb22202a1
-=======
-    path: Assets/Scenes/TechPage.unity
-    guid: 1e5f56635f400b045a907f0eb22202a1
-  - enabled: 1
-    path: Assets/Scenes/MissionPrepPageUI.unity
-    guid: 4680d6d8604da4368b58cb2178e51293
->>>>>>> main
   m_configObjects: {}
