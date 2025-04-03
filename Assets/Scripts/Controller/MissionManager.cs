@@ -7,6 +7,7 @@ using Mono.Data.Sqlite;
 
 namespace Assets.Scripts.Controller
 {
+
     public class MissionManager : MonoBehaviour
     {
         public static MissionManager Instance;
@@ -61,10 +62,10 @@ namespace Assets.Scripts.Controller
                             string description = reader.GetString(2);
                             int difficulty = reader.GetInt32(3);
                             int rewardMoney = reader.GetInt32(4);
-                            int rewardAmount = reader.GetInt32(5); 
+                            int rewardAmount = reader.GetInt32(5);
                             int rewardResourceId = reader.GetInt32(6);
-                            string terrain = reader.GetString(7);   
-                            string weather = reader.GetString(8);   
+                            string terrain = reader.GetString(7);
+                            string weather = reader.GetString(8);
 
                             // 创建 Mission 对象
                             Mission mission = new Mission(
