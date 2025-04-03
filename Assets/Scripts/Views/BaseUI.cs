@@ -11,7 +11,6 @@ public class BaseUI : MonoBehaviour
     public Transform missionButtonContainer;
     public GameObject missionButtonPrefab;
 
-    public TextMeshProUGUI buildingName;
     private Base selectedBuilding;
 
     public Button backButton;
@@ -98,7 +97,6 @@ public class BaseUI : MonoBehaviour
     //Update selected building attribute
     void OnSelectedBuilding(Base building)
     {
-        buildingName.text = building.name;
         selectedBuilding = building;
     }
 
