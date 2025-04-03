@@ -17,8 +17,9 @@ namespace Assets.Scripts.Model
         public string terrain;
         public string weather;
         public bool isCompleted;
+        public bool unlocked;
 
-        public Mission(int id, string name, string description, int difficulty, int rewardMoney, int rewardAmount, int rewardResourceId, string terrain, string weather)
+        public Mission(int id, string name, string description, int difficulty, int rewardMoney, int rewardAmount, int rewardResourceId, string terrain, string weather, bool unlocked)
         {
             this.id = id;
             this.name = name;
@@ -30,6 +31,7 @@ namespace Assets.Scripts.Model
             this.terrain = terrain;
             this.weather = weather;
             this.isCompleted = false;
+            this.unlocked = unlocked;
         }
     }
 }
