@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Model;
 using Mono.Data.Sqlite;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -67,6 +68,7 @@ namespace Assets.Scripts.Controller
                             int cost = reader.GetInt32(4);
                             int resourceAmount = reader.GetInt32(5);
                             int resourceType = reader.GetInt32(6);
+                            bool unlocked = reader.GetBoolean(7);
 
 
                             Base building = new Base(
@@ -76,7 +78,8 @@ namespace Assets.Scripts.Controller
                                 level,
                                 cost,
                                 resourceAmount,
-                                resourceType
+                                resourceType,
+                                unlocked
                             ); 
 
                             buildingList.Add(building);

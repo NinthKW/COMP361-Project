@@ -16,8 +16,9 @@ namespace Assets.Scripts.Model
         public int cost;
         public int resource_amount;
         public int resource_type;
+        public bool unlocked;
 
-        public Base(int building_id, string name, string description, int level, int cost, int resource_amount, int resource_type)
+        public Base(int building_id, string name, string description, int level, int cost, int resource_amount, int resource_type, bool unlocked)
         {
             this.building_id = building_id;
             this.name = name;
@@ -26,6 +27,7 @@ namespace Assets.Scripts.Model
             this.cost = cost;
             this.resource_amount = resource_amount;
             this.resource_type = resource_type;
+            this.unlocked = unlocked;
         }
     }
 }
