@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!-- Generated file, do not modify, your changes will be overwritten (use AssetPostprocessor.OnGeneratedCSProject) -->
   <PropertyGroup>
@@ -55,16 +55,17 @@
     <UnityVersion>2022.3.45f1</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Analyzer Include="C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
-    <Analyzer Include="G:\Unity\2022.3.45f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.SourceGenerators.dll" />
-    <Analyzer Include="G:\Unity\2022.3.45f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
+    <Analyzer Include="C:\Program Files\Unity\Hub\Editor\2022.3.45f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.SourceGenerators.dll" />
+    <Analyzer Include="C:\Program Files\Unity\Hub\Editor\2022.3.45f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Controller\LevelManager.cs" />
     <Compile Include="Assets\Scripts\Model\Character.cs" />
     <Compile Include="Assets\Scripts\Views\CharacterCard.cs" />
     <Compile Include="Assets\Scripts\Controller\MissionManager.cs" />
+    <Compile Include="Assets\Scripts\Views\GridDropArea.cs" />
     <Compile Include="Assets\Scripts\Views\FormationSlot.cs" />
+    <Compile Include="Assets\Scripts\Controller\BaseManager.cs" />
     <Compile Include="Assets\Scripts\Views\MissionPrepUI.cs" />
     <Compile Include="Assets\Scripts\Model\Skill.cs" />
     <Compile Include="Assets\Scripts\Model\Role.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="Assets\Scripts\Model\Game.cs" />
     <Compile Include="Assets\Scripts\Views\InfoPanel.cs" />
     <Compile Include="Assets\Scripts\Model\ItemType.cs" />
+    <Compile Include="Assets\Scripts\Views\DragButton.cs" />
     <Compile Include="Assets\Scripts\Views\TechUI.cs" />
     <Compile Include="Assets\Scripts\Views\WelcomePageUI.cs" />
     <Compile Include="Assets\Scripts\Model\Inventory.cs" />
@@ -83,6 +85,7 @@
     <Compile Include="Assets\Scripts\Model\Tech.cs" />
     <Compile Include="Assets\Scripts\Controller\CombatManager.cs" />
     <Compile Include="Assets\Scripts\Views\ResourcesPageUI.cs" />
+    <Compile Include="Assets\Scripts\Views\BaseUI.cs" />
     <Compile Include="Assets\Scripts\Model\Base.cs" />
     <Compile Include="Assets\Scripts\Controller\InventoryManager.cs" />
     <Compile Include="Assets\Scripts\db_test.cs" />

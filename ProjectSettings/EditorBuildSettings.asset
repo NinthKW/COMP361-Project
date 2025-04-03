@@ -26,4 +26,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/MissionPrepPageUI.unity
     guid: 4680d6d8604da4368b58cb2178e51293
+  - enabled: 1
+    path: Assets/Scenes/BasePage.unity
+    guid: f2a6d101e5f52334c8efaae835f7fc61
   m_configObjects: {}
