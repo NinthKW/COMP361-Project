@@ -37,6 +37,17 @@ public class DraggableBuilding : MonoBehaviour, IBeginDragHandler, IDragHandler,
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        //Change anchor point
+        //LayoutElement layoutElement = GetComponent<LayoutElement>();
+        //layoutElement.ignoreLayout = true;
+
+        //rectTransform.anchorMax = new Vector2(1, 1);
+        //rectTransform.anchorMin = new Vector2(0, 0);
+        //rectTransform.pivot = new Vector2(0.5f, 0.5f);
+
+        //rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 250);
+        //rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 250);
+
         // Calculate the offset between where the pointer is and the object's pivot.
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             rectTransform, eventData.position, eventData.pressEventCamera, out pointerOffset);
@@ -61,9 +72,20 @@ public class DraggableBuilding : MonoBehaviour, IBeginDragHandler, IDragHandler,
     public void OnEndDrag(PointerEventData eventData)
     {
         canvasGroup.blocksRaycasts = true;
+
+        LayoutElement layoutElement = GetComponent<LayoutElement>();
+        layoutElement.ignoreLayout = true;
+
+        rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        rectTransform.pivot = new Vector2(0.5f, 0.5f);
+
+        rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 250);
+        rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 250);
         // If the object hasn't been reparented to a valid drop target, return it to its starting position.
         if (transform.parent == canvas.transform)
         {
+            layoutElement.ignoreLayout = false;
             ResetToInitialPosition();
         }
     }
