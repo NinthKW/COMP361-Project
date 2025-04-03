@@ -17,20 +17,33 @@ public class CharacterUI : MonoBehaviour
 
     public Character Character => _character;
 
-    void Start()
-    {
+    private Color _allyTextColor;
+    private Color _enemyTextColor;
+    private Color _allyImageColor;
+    private Color _enemyImageColor;
 
-    }
     public void Initialize(Character character, bool isAlly)
     {
         _character = character;
+        ColorUtility.TryParseHtmlString("#A0B6FF", out this._allyTextColor);
+        ColorUtility.TryParseHtmlString("#FFA0A0", out this._enemyTextColor);
+        ColorUtility.TryParseHtmlString("#A0B6FF", out this._allyImageColor);
+        ColorUtility.TryParseHtmlString("#FFA0A0", out this._enemyImageColor);
+        this._allyTextColor.a = 1;
+        this._enemyTextColor.a = 1;
+        this._allyImageColor.a = 1;
+        this._enemyImageColor.a = 1;
+
         UpdateVisuals(isAlly);
     }
 
     void UpdateVisuals(bool isAlly)
     {
+        
+
         nameText.text = _character.Name;
-        characterImage.color = isAlly ? Color.blue : Color.red;
+        nameText.color = isAlly ? _allyTextColor : _enemyTextColor;
+        characterImage.color = isAlly ? _allyImageColor : _enemyImageColor;
         UpdateState(false, false, isAlly, false);
     }
 
@@ -40,7 +53,20 @@ public class CharacterUI : MonoBehaviour
         
         attackChanceText.text = $"{_character.AttackChances}/{_character.MaxAttacksPerTurn}";
         
-        exhaustedOverlay.SetActive(isExhausted);
-        characterImage.color = isDead? Color.black : (isSelected ? Color.white : (isAlly ? Color.blue : Color.red));
+        exhaustedOverlay.SetActive(isExhausted || isDead);
+        // Get the base color based on whether it's an ally
+        Color baseColor = isAlly ? _allyImageColor : _enemyImageColor;
+
+        if (isSelected) {
+            // Make the color brighter
+            baseColor = new Color(
+                Mathf.Min(baseColor.r * 1.2f, 1f),
+                Mathf.Min(baseColor.g * 1.2f, 1f),
+                Mathf.Min(baseColor.b * 1.2f, 1f),
+                baseColor.a
+            );
+        }
+
+        characterImage.color = baseColor;
     }
 }
