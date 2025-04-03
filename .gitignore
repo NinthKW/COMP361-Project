@@ -75,3 +75,4 @@ test*
 EditModeTests.csproj
 Scripts.csproj
 *csproj
+*.orig
