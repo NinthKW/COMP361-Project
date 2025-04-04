@@ -49,7 +49,7 @@ namespace Assets.Scripts.Controller
         {
             _availableSoldiers.Clear();
 
-            using (var connection = new SqliteConnection(dbName))
+            using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
                 
@@ -118,7 +118,7 @@ namespace Assets.Scripts.Controller
                 );
                 
                 // 将新士兵存入数据库
-                using (var connection = new SqliteConnection(dbName))
+                using (var connection = new SqliteConnection(dbPath))
                 {
                     connection.Open();
                     using (var command = connection.CreateCommand())
