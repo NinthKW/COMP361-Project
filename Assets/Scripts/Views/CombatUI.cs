@@ -75,7 +75,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         
         // 测试数据
         CombatManager.Instance.GetAvailableSoldiers().Add(
-            new Soldier("Alpha", new Role("Tank"), 5, 3, 50, 50));
+            new Soldier("Alpha", new Role("Tank"), 5, 3,50, 50, 50));
         CombatManager.Instance.GetAvailableEnemies().Add(
             new Enemy("Drone", 2, 5, 3, 1));
     }

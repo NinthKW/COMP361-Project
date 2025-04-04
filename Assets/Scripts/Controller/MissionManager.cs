@@ -77,8 +77,7 @@ namespace Assets.Scripts.Controller
                                 rewardAmount,
                                 rewardResourceId,
                                 terrain,
-                                weather,
-                                unlocked
+                                weather
                             );
 
                             LoadMissionEnemiesFromDatabase(mission);
