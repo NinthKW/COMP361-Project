@@ -164,6 +164,7 @@ namespace Assets.Scripts.Controller
                 _availableEnemies.Add(enemy);
                 Debug.Log($"Added enemy: {enemy.Name}");
             }
+            _availableEnemies = _availableEnemies.GetRange(index: 0, 3); // For testing purposes, limit to 3 enemies
         }
 
         // 修改后的 StartCombat 方法，传入 Mission 对象和玩家选定的士兵列表
@@ -217,12 +218,16 @@ namespace Assets.Scripts.Controller
 
             IsCombatActive = true;
             IsPlayerTurn = true;
+            _availableEnemies = _availableEnemies.GetRange(index: 0, 3); // For testing purposes, limit to 3 enemies
+            _enemyCharacters = _enemyCharacters.GetRange(index: 0, 3); // For testing purposes, limit to 3 enemies
+            _waitingEnemies.Clear(); // 清空等待敌人列表 for testing purposes
             Debug.Log($"Combat started: {_selectedCharacters.Count} vs {_enemyCharacters.Count}");
         }
 
         public void ProcessAttack(Character attacker, Character target)
         {
             if (!ValidateAttack(attacker, target)) return;
+            if (attacker.GameObject == null || target.GameObject == null) return;
 
             // Execute attack
             attacker.Attack(target);
@@ -234,16 +239,10 @@ namespace Assets.Scripts.Controller
             }
 
             // Cleanup dead units
-            CleanupDeadUnits();
+            CheckAndReplaceDeadEnemies();
 
             // Check combat status
             if (CheckCombatEnd()) return;
-
-            // Auto switch turns
-            if (ShouldSwitchTurn(attacker))
-            {
-                StartCoroutine(SwitchTurnRoutine());
-            }
         }
 
         private bool ValidateAttack(Character attacker, Character target)
@@ -279,8 +278,8 @@ namespace Assets.Scripts.Controller
         public void CheckAndReplaceDeadEnemies()
         {
             var deadEnemies = _enemyCharacters.Where(e => e.IsDead()).ToList();
-            _enemyCharacters.RemoveAll(e => e.IsDead());
-            _availableEnemies.RemoveAll(e => e.IsDead());
+            _selectedCharacters.RemoveAll(c => c != null && c.IsDead());
+            _enemyCharacters.RemoveAll(c => c != null && c.IsDead());
 
             foreach (var deadEnemy in deadEnemies)
             {
@@ -315,16 +314,6 @@ namespace Assets.Scripts.Controller
                 return true;
             }
 
-            return false;
-        }
-
-        private bool ShouldSwitchTurn(Character attacker)
-        {
-            if (!IsPlayerTurn)
-            {
-                // Enemies act sequentially
-                return attacker == _enemyCharacters[^1];
-            }
             return false;
         }
 
@@ -382,10 +371,10 @@ namespace Assets.Scripts.Controller
         public List<Character> GetEnemyCharacters() => new(_enemyCharacters);
         public List<Enemy> GetWaitingEnemies() => new(_waitingEnemies);
         public bool IsAlly(Character character) => 
-            _selectedCharacters.Contains(character);
+            character is Soldier;
 
         public bool IsEnemy(Character character) => 
-            _enemyCharacters.Contains(character);
+            character is Enemy;
         #endregion
     }
 }

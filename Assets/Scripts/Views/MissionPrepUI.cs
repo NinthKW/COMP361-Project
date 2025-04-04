@@ -182,6 +182,7 @@ public class MissionPreparationUI : MonoBehaviour
 
     public void OnSlotSelected(FormationSlot slot)
     {
+        if (selectedCharacterCard == null) return;
         if (selectedCharacterCard.Character is Soldier)
         {
             selectedFormationSlot = slot;

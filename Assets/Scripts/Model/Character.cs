@@ -81,6 +81,11 @@ namespace Assets.Scripts.Model
             Debug.Log($"{Name} has been defeated!");
             // 可以在这里添加死亡动画、物品掉落等逻辑
         }
+
+        public void ResetAttackChances()
+        {
+            AttackChances = MaxAttacksPerTurn;
+        }
     }
 
     public class Enemy : Character

@@ -11,7 +11,7 @@ public class CharacterUI : MonoBehaviour
     public Slider healthBar;
     public TMP_Text nameText;
     public TMP_Text attackChanceText;
-    public TMP_Text atkDefText;  // 新增的 Text 用于显示 ATK 和 DEF
+    public TMP_Text atkDefText;
     public GameObject exhaustedOverlay;
 
     private Character _character;
