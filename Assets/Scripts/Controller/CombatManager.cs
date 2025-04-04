@@ -18,10 +18,13 @@ namespace Assets.Scripts.Controller
         
         [SerializeField] private List<Soldier> _availableSoldiers = new();
         [SerializeField] private List<Enemy> _availableEnemies = new();
+        [SerializeField] private List<Enemy> _waitingEnemies = new();
         [SerializeField] private List<Character> _selectedCharacters = new();
         [SerializeField] private List<Character> _enemyCharacters = new();
-        [SerializeField] private string dbName = "URI=file:database.db"; 
-        
+        [SerializeField] private string dbName = "URI=file:database.db";
+
+        public Mission currentMission;
+
         public bool IsCombatActive { get; private set; }
         public bool IsPlayerTurn { get; private set; }
         public System.Action<bool> OnCombatEnd;
@@ -93,11 +96,11 @@ namespace Assets.Scripts.Controller
             }
             // Enemy initialization
             // TODO: Load enemies from database
-            _availableEnemies.Clear();
-            _availableEnemies.Add(new Enemy("Slime", 20, 3, 1, 5));
-            _availableEnemies.Add(new Enemy("Goblin", 30, 5, 1, 10));
-            _availableEnemies.Add(new Enemy("Orc", 60, 10, 2, 20));
-            _availableEnemies.Add(new Enemy("Dragon", 150, 20, 5, 50));
+            //_availableEnemies.Clear();
+            //_availableEnemies.Add(new Enemy("Slime", 20, 3, 1, 5));
+            //_availableEnemies.Add(new Enemy("Goblin", 30, 5, 1, 10));
+            //_availableEnemies.Add(new Enemy("Orc", 60, 10, 2, 20));
+            //_availableEnemies.Add(new Enemy("Dragon", 150, 20, 5, 50));
         }
         public Soldier CreateNewSoldier(string soldierName, string roleType)
         {
@@ -149,13 +152,67 @@ namespace Assets.Scripts.Controller
             }
         }
 
-        public void StartCombat(List<Soldier> selectedSoldiers, List<Enemy> missionEnemies)
+        public void UpdateInitialEnemies(Mission mission) 
+        {
+            _availableEnemies.Clear();
+            _waitingEnemies.Clear(); // 清空等待敌人列表
+
+            if (mission == null || mission.AssignedEnemies == null || mission.AssignedEnemies.Count == 0)
+            {
+                Debug.LogError("No enemies assigned to the mission.");
+                return;
+            }
+
+            foreach (var enemy in mission.AssignedEnemies)
+            {
+                _availableEnemies.Add(enemy);
+                Debug.Log($"Added enemy: {enemy.Name}");
+            }
+            _availableEnemies = _availableEnemies.GetRange(index: 0, 3); // For testing purposes, limit to 3 enemies
+        }
+
+        // 修改后的 StartCombat 方法，传入 Mission 对象和玩家选定的士兵列表
+        public void StartCombat(Mission mission, List<Soldier> selectedSoldiers)
         {
             _selectedCharacters.Clear();
             _enemyCharacters.Clear();
+            _availableEnemies.Clear();
+            _waitingEnemies.Clear(); // 清空等待敌人列表
 
+            if (selectedSoldiers == null || selectedSoldiers.Count == 0)
+            {
+                Debug.LogError("Cannot start combat: no soldiers selected.");
+                return;
+            }
             _selectedCharacters.AddRange(selectedSoldiers);
-            _enemyCharacters.AddRange(missionEnemies);
+
+            if (mission == null)
+            {
+                Debug.LogError("Cannot start combat: mission is null.");
+                return;
+            }
+            if (mission.AssignedEnemies == null || mission.AssignedEnemies.Count == 0)
+            {
+                Debug.LogError($"Mission '{mission.name}' has no assigned enemies.");
+                return;
+            }
+
+            //_enemyCharacters.AddRange(mission.AssignedEnemies);
+
+            // 将当前任务的敌人加载到 _availableEnemies 和 _waitingEnemies 中
+            for (int i = 0; i < mission.AssignedEnemies.Count; i++)
+            {
+                if (i < 6)
+                {
+                    _availableEnemies.Add(mission.AssignedEnemies[i]);  // 用于 UI 显示
+                    _enemyCharacters.Add(mission.AssignedEnemies[i]);   // 用于战斗逻辑处理
+                }
+                else
+                {
+                    _waitingEnemies.Add(mission.AssignedEnemies[i]); // 剩下的敌人存入等待列表
+                }
+                Debug.Log($"Added enemy to _availableEnemies: {mission.AssignedEnemies[i].Name}");
+            }
 
             if (_selectedCharacters.Count == 0 || _enemyCharacters.Count == 0)
             {
@@ -165,12 +222,16 @@ namespace Assets.Scripts.Controller
 
             IsCombatActive = true;
             IsPlayerTurn = true;
-            Debug.Log($"Combat started: {_selectedCharacters.Count(c => c != null)} vs {_enemyCharacters.Count(c => c != null)}");
+            _availableEnemies = _availableEnemies.GetRange(index: 0, 3); // For testing purposes, limit to 3 enemies
+            _enemyCharacters = _enemyCharacters.GetRange(index: 0, 3); // For testing purposes, limit to 3 enemies
+            _waitingEnemies.Clear(); // 清空等待敌人列表 for testing purposes
+            Debug.Log($"Combat started: {_selectedCharacters.Count} vs {_enemyCharacters.Count}");
         }
 
         public void ProcessAttack(Character attacker, Character target)
         {
             if (!ValidateAttack(attacker, target)) return;
+            if (attacker.GameObject == null || target.GameObject == null) return;
 
             // Execute attack
             attacker.Attack(target);
@@ -182,16 +243,10 @@ namespace Assets.Scripts.Controller
             }
 
             // Cleanup dead units
-            CleanupDeadUnits();
+            CheckAndReplaceDeadEnemies();
 
             // Check combat status
             if (CheckCombatEnd()) return;
-
-            // Auto switch turns
-            if (ShouldSwitchTurn(attacker))
-            {
-                StartCoroutine(SwitchTurnRoutine());
-            }
         }
 
         private bool ValidateAttack(Character attacker, Character target)
@@ -223,6 +278,26 @@ namespace Assets.Scripts.Controller
             return true;
         }
 
+        // 在回合结束时调用，检查并补充敌人
+        public void CheckAndReplaceDeadEnemies()
+        {
+            var deadEnemies = _enemyCharacters.Where(e => e.IsDead()).ToList();
+            _selectedCharacters.RemoveAll(c => c != null && c.IsDead());
+            _enemyCharacters.RemoveAll(c => c != null && c.IsDead());
+
+            foreach (var deadEnemy in deadEnemies)
+            {
+                if (_waitingEnemies.Count > 0)
+                {
+                    var newEnemy = _waitingEnemies[0];
+                    _waitingEnemies.RemoveAt(0);
+                    _availableEnemies.Add(newEnemy);
+                    _enemyCharacters.Add(newEnemy);
+                    Debug.Log($"Replaced dead enemy with: {newEnemy.Name}");
+                }
+            }
+        }
+
         private void CleanupDeadUnits()
         {
             _selectedCharacters.RemoveAll(c => c != null && c.IsDead());
@@ -243,16 +318,6 @@ namespace Assets.Scripts.Controller
                 return true;
             }
 
-            return false;
-        }
-
-        private bool ShouldSwitchTurn(Character attacker)
-        {
-            if (!IsPlayerTurn)
-            {
-                // Enemies act sequentially
-                return attacker == _enemyCharacters[^1];
-            }
             return false;
         }
 
@@ -298,16 +363,22 @@ namespace Assets.Scripts.Controller
             StartCoroutine(SwitchTurnRoutine());
         }
 
+        public void SetcurrentMission(Mission mission)
+        {
+            currentMission = mission;
+        }
+
         #region Helper Methods
         public List<Soldier> GetAvailableSoldiers() => new(_availableSoldiers);
         public List<Enemy> GetAvailableEnemies() => new(_availableEnemies);
         public List<Character> GetSelectedCharacters() => new(_selectedCharacters);
         public List<Character> GetEnemyCharacters() => new(_enemyCharacters);
+        public List<Enemy> GetWaitingEnemies() => new(_waitingEnemies);
         public bool IsAlly(Character character) => 
-            _selectedCharacters.Contains(character);
+            character is Soldier;
 
         public bool IsEnemy(Character character) => 
-            _enemyCharacters.Contains(character);
+            character is Enemy;
         #endregion
     }
 }
