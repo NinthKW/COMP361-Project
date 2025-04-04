@@ -152,7 +152,7 @@ namespace Assets.Scripts.Controller
             if (selectedMission != null)
             {
                 Debug.Log("Starting Mission: " + selectedMission.name);
-                Invoke(nameof(StartCombat), 2f);
+                Invoke(nameof(StartCombat), 0.5f);
             }
             else
             {

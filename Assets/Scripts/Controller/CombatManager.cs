@@ -148,6 +148,24 @@ namespace Assets.Scripts.Controller
             }
         }
 
+        public void UpdateInitialEnemies(Mission mission) 
+        {
+            _availableEnemies.Clear();
+            _waitingEnemies.Clear(); // 清空等待敌人列表
+
+            if (mission == null || mission.AssignedEnemies == null || mission.AssignedEnemies.Count == 0)
+            {
+                Debug.LogError("No enemies assigned to the mission.");
+                return;
+            }
+
+            foreach (var enemy in mission.AssignedEnemies)
+            {
+                _availableEnemies.Add(enemy);
+                Debug.Log($"Added enemy: {enemy.Name}");
+            }
+        }
+
         // 修改后的 StartCombat 方法，传入 Mission 对象和玩家选定的士兵列表
         public void StartCombat(Mission mission, List<Soldier> selectedSoldiers)
         {
@@ -362,6 +380,7 @@ namespace Assets.Scripts.Controller
         public List<Enemy> GetAvailableEnemies() => new(_availableEnemies);
         public List<Character> GetSelectedCharacters() => new(_selectedCharacters);
         public List<Character> GetEnemyCharacters() => new(_enemyCharacters);
+        public List<Enemy> GetWaitingEnemies() => new(_waitingEnemies);
         public bool IsAlly(Character character) => 
             _selectedCharacters.Contains(character);
 

@@ -39,6 +39,7 @@ public class MissionPreparationUI : MonoBehaviour
             Debug.Log("Debugging Scene");
             CombatManager.Instance = new GameObject().AddComponent<CombatManager>();
         }
+        CombatManager.Instance.UpdateInitialEnemies(CombatManager.Instance.currentMission);
         InitializeUI();
         SetupButtons();
     }

@@ -35,6 +35,8 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     private Character selectedEnemy;
     private GameObject selectionFrame;
     private bool isAttackExecuting;
+    private List<GameObject> soldierCards = new List<GameObject>();
+    private List<GameObject> enemyCards = new List<GameObject>();
 
     void Start()
     {
@@ -95,7 +97,12 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             int index = CombatManager.Instance.GetSelectedCharacters().IndexOf(soldier);
             if (soldier != null && soldier is Soldier) 
             {
-                CreateCharacterCard(soldier, isAlly: true, allyPositions[index]);
+                soldierCards.Add(CreateCharacterCard(soldier, isAlly: true, allyPositions[index]));
+                soldier.SetGameObject(soldierCards[index]);
+            }
+            else
+            {
+                soldierCards.Add(null);
             }
         }
 
@@ -104,8 +111,8 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         {
             Debug.Log($"Enemy found: {enemy.Name}");
             int index = CombatManager.Instance.GetAvailableEnemies().IndexOf(enemy);
-            //Debug.Log($"index is: {index}");
-            CreateCharacterCard(enemy, isAlly: false, enemyPositions[index]);
+            enemyCards.Add(CreateCharacterCard(enemy, isAlly: false, enemyPositions[index]));
+            enemy.SetGameObject(enemyCards[index]);
         }
     }
 
@@ -205,7 +212,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         attacker.AttackChances--;
 
         // TODO: Show attack animation
-        // yield return StartCoroutine(PlayAttackAnimation(attacker, target));
+        yield return StartCoroutine(PlayAttackAnimation(attacker, target));
         combatLog.text = $"{attacker.Name} attacks {target.Name}!";
         yield return new WaitForSeconds(attackDelay);
         CombatManager.Instance.ProcessAttack(attacker, target);
@@ -213,13 +220,14 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         ClearSelection();
         isAttackExecuting = false;
         Update();
+        CleanDeadUnits(); // Clean up dead units after attack
         CheckTurnEnd();
     }
 
     IEnumerator PlayAttackAnimation(Character attacker, Character target)
     {
-        var originalPos = attacker.GameObject.transform.position;
-        Vector3 targetPos = target.GameObject.transform.position;
+        var originalPos = attacker.GameObject.transform.position; 
+        var targetPos = target.GameObject.transform.position;
 
         // Move towards target
         float duration = 0.2f;
@@ -251,12 +259,59 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         attacker.GameObject.transform.position = originalPos;
     }
 
+    void CleanDeadUnits()
+    {
+        // Remove dead units from the UI
+        foreach (var card in soldierCards)
+        {
+            if (card == null) continue; // Skip if card is null
+            if (card.GetComponent<CharacterUI>().Character.IsDead())
+            {
+                Destroy(card);
+            }
+        }
+        List<GameObject> temp = new List<GameObject>(enemyCards);
+        foreach (var card in temp)
+        {
+            if (card == null) continue; // Skip if card is null
+            if (card.GetComponent<CharacterUI>().Character.IsDead())
+            {
+                Vector3 position = card.transform.position; // Save position before destroying
+                Destroy(card);
+                enemyCards.Remove(card);
+                
+                if (CombatManager.Instance.GetWaitingEnemies().Count > 0)
+                {
+                    // Get the waiting enemy BEFORE removing it
+                    Enemy waitingEnemy = CombatManager.Instance.GetWaitingEnemies()[0];
+                    
+                    // Create new card and store the reference
+                    GameObject newCard = CreateCharacterCard(waitingEnemy, isAlly: false, position);
+                    enemyCards.Add(newCard);
+                    Button newButton = newCard.GetComponent<Button>();
+                    newButton.interactable = true;
+                    
+                    // Set the GameObject reference
+                    waitingEnemy.SetGameObject(newCard);
+                    
+                    // Add it to available enemies and enemy characters
+                    CombatManager.Instance.GetAvailableEnemies().Add(waitingEnemy);
+                    CombatManager.Instance.GetEnemyCharacters().Add(waitingEnemy);
+                    
+                    // Remove from waiting list
+                    CombatManager.Instance.GetWaitingEnemies().RemoveAt(0);
+                }
+            }
+        }
+    }
+
     void CheckTurnEnd()
     {
         Update();
         bool allExhausted = true;
         foreach (var soldier in CombatManager.Instance.GetAvailableSoldiers())
         {
+            if (soldier == null) continue; // Skip if soldier is null
             if (soldier.AttackChances > 0 && !soldier.IsDead())
             {
                 allExhausted = false;
@@ -301,15 +356,11 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
     public void OnEndTurnButton()
     {
-        turnText.text = "Enemy's Turn";
-        turnText.color = Color.red;
         endTurnButton.image.color = endTurnButton.image.color == Color.red ? Color.white : endTurnButton.image.color;
         StartCoroutine(EndTurnRoutine());
         Update();
 
-        // ¼ì²é²¢²¹³äÐÂµÄµÐÈË
         CombatManager.Instance.CheckAndReplaceDeadEnemies();
-        CreateCharacterDisplays(); // ÖØÐÂÏÔÊ¾µÐÈË
     }
 
     IEnumerator EndTurnRoutine()
@@ -324,12 +375,13 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         ClearSelection();
 
         isAttackExecuting = false;
-        bool isPlayerTurn = CombatManager.Instance.IsPlayerTurn;
-        if (!isPlayerTurn)
+        if (CombatManager.Instance.IsPlayerTurn)
         {
+            Debug.Log("Player's Turn Finished.");
+            yield break;
+        } else {
+            Debug.Log("Enemy's Turn Started.");
             OnEnemyTurn();
-            turnText.text = "Player's Turn";
-            turnText.color = Color.white;
         }
         Update();
     }
@@ -349,12 +401,13 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             }
         }
 
-        // Æô¶¯Ð­³ÌÀ´´¦ÀíµÐÈËµÄÐÐ¶¯
         StartCoroutine(ExecuteEnemyTurn(enemyQueue));
     }
 
     private IEnumerator ExecuteEnemyTurn(Queue<Enemy> enemyQueue)
     {
+        isAttackExecuting = true;
+        Update();
         while (enemyQueue.Count > 0)
         {
             var attacker = enemyQueue.Dequeue();
@@ -365,7 +418,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             if (target != null)
             {
                 Debug.Log($"{attacker.Name} is attacking {target.Name}");
-                yield return StartCoroutine(ExecuteAttackRoutine(attacker, target)); // µÈ´ýµ±Ç°µÐÈË¹¥»÷Íê±Ï
+                yield return StartCoroutine(ExecuteAttackRoutine(attacker, target)); // ï¿½È´ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½Ë¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             }
         }
 
@@ -373,9 +426,8 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         Update();
 
         CombatManager.Instance.CheckAndReplaceDeadEnemies();
-        CreateCharacterDisplays(); // ÖØÐÂ¸üÐÂÏÔÊ¾
-
-        Debug.Log("Enemy Turn Finished.");
+        isAttackExecuting = false;
+        yield return null;
     }
 
 
@@ -398,6 +450,8 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         endTurnButton.interactable = !isAttackExecuting;
 
         bool isPlayerTurn = CombatManager.Instance.IsPlayerTurn;
+        turnText.text = isPlayerTurn ? "Player's Turn" : "Enemy's Turn";
+        turnText.color = isPlayerTurn ? Color.white : Color.red;
         attackButton.gameObject.SetActive(isPlayerTurn);
         endTurnButton.gameObject.SetActive(isPlayerTurn);
 
