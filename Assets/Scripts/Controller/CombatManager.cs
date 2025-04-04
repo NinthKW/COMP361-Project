@@ -21,7 +21,7 @@ namespace Assets.Scripts.Controller
         [SerializeField] private List<Enemy> _waitingEnemies = new();
         [SerializeField] private List<Character> _selectedCharacters = new();
         [SerializeField] private List<Character> _enemyCharacters = new();
-        [SerializeField] private string dbName = "URI=file:database.db";
+        [SerializeField] private string dbPath = "URI=file:" + Application.streamingAssetsPath + "/database.db";
 
         public Mission currentMission;
 

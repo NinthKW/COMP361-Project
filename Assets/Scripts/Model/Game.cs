@@ -308,7 +308,7 @@ namespace Assets.Scripts.Model
                 }
                 connection.Close();
             }
-            
+
             // soldiers
             using (var connection = new SqliteConnection(dbName))
             {
