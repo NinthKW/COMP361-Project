@@ -105,6 +105,4 @@ public class BaseUI : MonoBehaviour
         GameManager.Instance.ChangeState(GameState.MainMenuPage);
         GameManager.Instance.LoadGameState(GameState.MainMenuPage);
     }
-
-
 }

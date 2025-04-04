@@ -41,7 +41,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         {
             Debug.Log("Debugging Scene");
             CombatManager.Instance = new GameObject().AddComponent<CombatManager>();
-            CombatManager.Instance.GetAvailableSoldiers().Add(new Soldier("Test Soldier", new Role("Tank"), 3, 2, 1, 1));
+            CombatManager.Instance.GetAvailableSoldiers().Add(new Soldier("Test Soldier", new Role("Tank"), 3, 2, 1, 1, 0)); //added temp 0 max health
             CombatManager.Instance.GetAvailableEnemies().Add(new Enemy("Test Enemy", 1, 3, 2, 1));
         }
         Debug.Log("CombatUI Start");
