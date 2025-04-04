@@ -60,10 +60,9 @@ namespace Assets.Scripts.Controller
                             name, 
                             role, 
                             level,
-                            exp,
-                            health,
-                            attack,
-                            defense,
+                            hp,
+                            atk,
+                            def,
                             max_hp
                         FROM Soldier";
 
@@ -77,10 +76,10 @@ namespace Assets.Scripts.Controller
                                 name: reader.GetString(0),
                                 role: role,
                                 level: reader.GetInt32(2),
-                                health: reader.GetInt32(4),
-                                attack: reader.GetInt32(5),
-                                defense: reader.GetInt32(6),
-                                maxHealth: reader.GetInt32(7)
+                                health: reader.GetInt32(3),
+                                attack: reader.GetInt32(4),
+                                defense: reader.GetInt32(5),
+                                maxHealth: reader.GetInt32(6)
                             );
                             soldier.GainExp(reader.GetInt32(3)); // 单独设置经验值
 
