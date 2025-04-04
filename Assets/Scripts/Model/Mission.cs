@@ -17,6 +17,7 @@ namespace Assets.Scripts.Model
         public string terrain;
         public string weather;
         public bool isCompleted;
+        public bool unlocked;
 
         public List<Enemy> AssignedEnemies;  //enemy info
 
@@ -32,7 +33,7 @@ namespace Assets.Scripts.Model
             this.terrain = terrain;
             this.weather = weather;
             this.isCompleted = false;
-            this.AssignedEnemies = new List<Enemy>();  // 初始化敌人列表
+            this.AssignedEnemies = new List<Enemy>();
         }
     }
 }

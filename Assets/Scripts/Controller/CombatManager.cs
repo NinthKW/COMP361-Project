@@ -63,7 +63,8 @@ namespace Assets.Scripts.Controller
                             exp,
                             health,
                             attack,
-                            defense 
+                            defense,
+                            max_hp
                         FROM Soldier";
 
                     using var reader = command.ExecuteReader();
@@ -78,7 +79,8 @@ namespace Assets.Scripts.Controller
                                 level: reader.GetInt32(2),
                                 health: reader.GetInt32(4),
                                 attack: reader.GetInt32(5),
-                                defense: reader.GetInt32(6)
+                                defense: reader.GetInt32(6),
+                                maxHealth: reader.GetInt32(7)
                             );
                             soldier.GainExp(reader.GetInt32(3)); // 单独设置经验值
 
@@ -111,7 +113,8 @@ namespace Assets.Scripts.Controller
                     level: 1,
                     health: role.MaxHealth,
                     attack: role.BaseAtk,
-                    defense: role.BaseDef
+                    defense: role.BaseDef,
+                    maxHealth: role.MaxHealth
                 );
                 
                 // 将新士兵存入数据库
@@ -133,6 +136,7 @@ namespace Assets.Scripts.Controller
                         command.Parameters.AddWithValue("@health", role.MaxHealth);
                         command.Parameters.AddWithValue("@attack", role.BaseAtk);
                         command.Parameters.AddWithValue("@defense", role.BaseDef);
+
                         
                         command.ExecuteNonQuery();
                     }

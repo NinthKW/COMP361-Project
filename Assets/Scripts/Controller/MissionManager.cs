@@ -65,6 +65,7 @@ namespace Assets.Scripts.Controller
                             int rewardResourceId = reader.GetInt32(6);
                             string terrain = reader.GetString(7);   
                             string weather = reader.GetString(8);   
+                            bool unlocked = reader.GetBoolean(9);
 
                             // 创建 Mission 对象
                             Mission mission = new Mission(
@@ -76,7 +77,8 @@ namespace Assets.Scripts.Controller
                                 rewardAmount,
                                 rewardResourceId,
                                 terrain,
-                                weather
+                                weather,
+                                unlocked
                             );
 
                             LoadMissionEnemiesFromDatabase(mission);
