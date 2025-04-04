@@ -13,6 +13,10 @@ namespace Assets.Scripts.Model {
         public int costResourceAmount;
         public bool isUnlocked;
 
+        public Tech()
+        {
+            techId = 0;
+        }
         public Tech(int techId, string techName, string description, float costMoney, 
                    int costResourceId, int costResourceAmount) 
         {

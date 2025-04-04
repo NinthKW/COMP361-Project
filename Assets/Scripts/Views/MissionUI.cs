@@ -82,7 +82,7 @@ public class MissionSelectUI : MonoBehaviour
     {
         if (selectedMission != null)
         {
-            MissionManager.Instance.StartMission(selectedMission.id);
+            MissionManager.Instance.StartMission(selectedMission);
         }
         else
         {
