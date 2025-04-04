@@ -173,9 +173,9 @@ INSERT INTO Soldier VALUES
 (5, 'Charlie', 6, 110, 110, 22, 17, 'Engineer'),
 (6, 'David', 5, 95, 95, 19, 14, 'Medic'),
 (7, 'Sophia', 4, 85, 85, 16, 11, 'Assault'),
-(8, 'James', 6, 115, 115, 23, 18, 'Heavy Gunner'),
+(8, 'James', 6, 115, 115, 23, 18, 'HeavyGunner'),
 (9, 'Olivia', 3, 75, 75, 14, 9, 'Recon'),
-(10, 'Henry', 7, 130, 130, 27, 22, 'Special Forces');
+(10, 'Henry', 7, 130, 130, 27, 22, 'SpecialForces');
 
 -- Insert into Weapon
 INSERT INTO Weapon VALUES
