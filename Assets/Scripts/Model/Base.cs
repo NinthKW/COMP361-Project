@@ -36,5 +36,10 @@ namespace Assets.Scripts.Model
                 }
             }
         }
+
+        public Dictionary<int, int> GetBuildings()
+        {
+            return buildings;
+        }
     }
 }

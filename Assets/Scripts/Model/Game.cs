@@ -143,8 +143,9 @@ namespace Assets.Scripts.Model
                             int rewardResourceId = int.Parse(reader["rewardResourceId"].ToString());
                             string terrain = reader["terrain"].ToString();
                             string weather = reader["weather"].ToString();
+                            bool isUnlocked = bool.Parse(reader["isUnlocked"].ToString());
 
-                            Mission mission = new Mission(id, name, description, difficulty, rewardMoney, rewardAmount, rewardResourceId, terrain, weather);
+                            Mission mission = new Mission(id, name, description, difficulty, rewardMoney, rewardAmount, rewardResourceId, terrain, weather, isUnlocked);
                             this.MissionsData.Add(mission);
                         }
                         reader.Close();
@@ -176,14 +177,15 @@ namespace Assets.Scripts.Model
                                 int health = int.Parse(reader["health"].ToString());
                                 int attack = int.Parse(reader["attack"].ToString());
                                 int defense = int.Parse(reader["defense"].ToString());
+                                int maxHealth = int.Parse(reader["maxHealth"].ToString());
 
                                 // Assuming role information is stored in the table:
                                 string roleName = reader["roleName"].ToString();
                                 int baseAttackChance = int.Parse(reader["baseAttackChance"].ToString());
                                 // Instantiate a Role (you should have a Role class defined accordingly)
-                                Role role = new Role(roleName, baseAttackChance);
+                                Role role = new Role(roleName);
 
-                                Soldier soldier = new Soldier(name, role, level, health, attack, defense);
+                                Soldier soldier = new Soldier(name, role, level, health, attack, defense, maxHealth);
                                 this.soldiersData.Add(soldier);
                             }
                             else if (characterType == "Enemy")
