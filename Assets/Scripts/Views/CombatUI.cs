@@ -10,18 +10,24 @@ using System.Collections.Generic;
 public class CombatUI : MonoBehaviour, IPointerClickHandler
 {
     #region UI Components
-    [Header("UI Elements")]
+    [Header("Unit Container Settings")]
     [SerializeField] private Transform combatUnitContainer;
     [SerializeField] private GameObject characterUIPrefab;
+    [SerializeField] private GameObject selectionFramePrefab;
+
+    [Header("Combat UI Settings")]
     [SerializeField] private TextMeshProUGUI turnText;
     [SerializeField] private TextMeshProUGUI combatLog;
-    [SerializeField] private Button attackButton;
-    [SerializeField] private Button endTurnButton;
-    [SerializeField] private GameObject selectionFramePrefab;
     [SerializeField] private TextMeshProUGUI unitName;
     [SerializeField] private TextMeshProUGUI unitRole;
+    [SerializeField] private Button attackButton;
+    [SerializeField] private Button endTurnButton;
     [SerializeField] private Button retreatButton;
     [SerializeField] private GameObject retreatConfirmationPrefab;
+
+    [Header("Ability Panel Settings")]
+    [SerializeField] private GameObject abilityPanel; // 能力面板（在场景中提前挂好）
+    [SerializeField] private GameObject abilityButtonPrefab; // 能力按钮预制件
 
     [Header("Position Settings")]
     [SerializeField] private List<Vector3> allyPositions = new();
@@ -36,6 +42,8 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     private Character selectedAlly;
     private Character selectedEnemy;
     private GameObject selectionFrame;
+    private Ability selectedAbility = null;  // 当前选中的技能
+    private Character abilityTarget = null;    // 技能目标（如果需要选择目标）
     private bool isAttackExecuting;
     private readonly List<GameObject> soldierCards = new();
     private readonly List<GameObject> enemyCards = new();

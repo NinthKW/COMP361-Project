@@ -8,7 +8,7 @@ using static UnityEngine.GraphicsBuffer;
 
 namespace Assets.Scripts.Model 
 {
-    public abstract class Ability
+    public abstract class Ability : MonoBehaviour
     {
         public string Name { get; protected set; }
         public int Cost { get; protected set; }
@@ -99,15 +99,14 @@ namespace Assets.Scripts.Model
                     target.Def += BuffDefAmount;
                     target.Buffs.Add("HealBuff", this);
 
-                    // Start healing over time (requires a Coroutine runner, e.g., a dedicated MonoBehaviour)
-                    CoroutineRunner.Instance.StartCoroutine(HealOverTime(target, healPerTurn));
+                    StartCoroutine(HealOverTime(target, healPerTurn));
 
                     Debug.Log($"{target.Name} will heal for {healPerTurn} per turn for {Duration} turns and defense increased by {BuffDefAmount}!");
                 }
             }
         }
 
-        private IEnumerator HealOverTime(Character target, float healPerTurn)
+        private System.Collections.IEnumerator HealOverTime(Character target, float healPerTurn)
         {
             int turns = Duration;
             while (turns-- > 0)
@@ -121,6 +120,13 @@ namespace Assets.Scripts.Model
                 }
                 // Wait for 1 second between turns (adjust the duration as needed)
                 yield return new WaitForSeconds(1);
+            }
+            // Remove the buff after the duration ends
+            if (target.Buffs.ContainsKey("HealBuff"))
+            {
+                target.Def -= BuffDefAmount; // Remove the defense buff
+                target.Buffs.Remove("HealBuff");
+                Debug.Log($"{target.Name}'s HealBuff has expired. Defense decreased by {BuffDefAmount}.");
             }
         }
     }

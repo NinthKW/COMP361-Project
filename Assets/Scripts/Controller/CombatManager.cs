@@ -367,10 +367,10 @@ namespace Assets.Scripts.Controller
                     {
                         if (!soldier.Abilities.Any(a => a is HealAbility))
                         {
-                            if (!soldier.Abilities.Any(a => a is NanoShieldAbility))
+                            if (!soldier.Abilities.Any(a => a is ShieldAbility))
                             {
                                 int shieldAmount = soldier.Atk * 2; // Adjust scaling as needed
-                                var nanoShield = new NanoShieldAbility(
+                                var nanoShield = new ShieldAbility(
                                     "Nano Shield",
                                     cost: 2,
                                     cooldown: 4,
