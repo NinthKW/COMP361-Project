@@ -72,12 +72,6 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         Debug.Log("Initializing Test Combat Manager");
         var managerObj = new GameObject("CombatManager");
         CombatManager.Instance = managerObj.AddComponent<CombatManager>();
-        
-        // 测试数据
-        CombatManager.Instance.GetAvailableSoldiers().Add(
-            new Soldier("Alpha", new Role("Tank"), 5, 3,50, 50, 50));
-        CombatManager.Instance.GetAvailableEnemies().Add(
-            new Enemy("Drone", 2, 5, 3, 1));
     }
 
     void InitializeUIComponents()
@@ -131,7 +125,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             new (midX+100, midY+100, 0),
             new (midX-100, midY, 0),
             new (midX+100, midY-100, 0),
-            new (midX-100, midY-200, 0),
+            new (midX-100, midY-200, z: 0),
             new (midX+300, midY, 0)
         };
         foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
@@ -185,16 +179,15 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         UpdateCombatLog($"{attacker.Name} attacks {target.Name}!");
         
         attacker.AttackChances--;
-        yield return StartCoroutine(PlayAttackAnimation(attacker, target));
         
-        CombatManager.Instance.ProcessAttack(attacker, target);
+        yield return StartCoroutine(PlayAttackAnimation(attacker, target, attacker.GetAttackAmount(target)));
         PostAttackCleanup();
         
         yield return new WaitForSeconds(attackDelay);
         isAttackExecuting = false;
     }
 
-    IEnumerator PlayAttackAnimation(Character attacker, Character target)
+    IEnumerator PlayAttackAnimation(Character attacker, Character target, int damage)
     {
         if (attacker.GameObject == null || target.GameObject == null) yield break;
         var originalPos = attacker.GameObject.transform.position;
@@ -204,9 +197,8 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         yield return MoveToPosition(attacker.GameObject.transform, 
             targetPos - new Vector3(1, 0, 0), 0.2f);
 
-        // 显示伤害效果
-        int damage = attacker.GetAttackAmount(target);
         ShowDamageText(target, damage);
+        CombatManager.Instance.ProcessAttack(attacker, target);
 
         // 返回动画
         yield return MoveToPosition(attacker.GameObject.transform, 
@@ -564,9 +556,9 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     void CheckTurnEnd()
     {
         var allExhausted = true;
-        foreach (var soldier in CombatManager.Instance.GetAvailableSoldiers())
+        foreach (var soldier in CombatManager.Instance.GetSelectedCharacters())
         {
-            if (soldier.IsDead() || soldier == null) continue;
+            if (soldier == null || soldier.IsDead()) continue;
             if (soldier.AttackChances > 0) allExhausted = false;
         }
         endTurnButton.image.color = allExhausted ? Color.red : Color.white;

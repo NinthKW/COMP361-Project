@@ -21,7 +21,7 @@ namespace Assets.Scripts.Controller
         [SerializeField] private List<Enemy> _waitingEnemies = new();
         [SerializeField] private List<Character> _selectedCharacters = new();
         [SerializeField] private List<Character> _enemyCharacters = new();
-        [SerializeField] private string dbPath = "URI=file:" + Application.streamingAssetsPath + "/database.db";
+        private readonly string dbPath = "URI=file:" + Application.streamingAssetsPath + "/database.db";
 
         public Mission currentMission;
 
@@ -167,7 +167,6 @@ namespace Assets.Scripts.Controller
                 _availableEnemies.Add(enemy);
                 Debug.Log($"Added enemy: {enemy.Name}");
             }
-            _availableEnemies = _availableEnemies.GetRange(index: 0, 3); // For testing purposes, limit to 3 enemies
         }
 
         // 修改后的 StartCombat 方法，传入 Mission 对象和玩家选定的士兵列表
@@ -196,8 +195,6 @@ namespace Assets.Scripts.Controller
                 return;
             }
 
-            //_enemyCharacters.AddRange(mission.AssignedEnemies);
-
             // 将当前任务的敌人加载到 _availableEnemies 和 _waitingEnemies 中
             for (int i = 0; i < mission.AssignedEnemies.Count; i++)
             {
@@ -221,9 +218,6 @@ namespace Assets.Scripts.Controller
 
             IsCombatActive = true;
             IsPlayerTurn = true;
-            _availableEnemies = _availableEnemies.GetRange(index: 0, 3); // For testing purposes, limit to 3 enemies
-            _enemyCharacters = _enemyCharacters.GetRange(index: 0, 3); // For testing purposes, limit to 3 enemies
-            _waitingEnemies.Clear(); // 清空等待敌人列表 for testing purposes
             Debug.Log($"Combat started: {_selectedCharacters.Count} vs {_enemyCharacters.Count}");
         }
 

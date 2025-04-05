@@ -70,6 +70,7 @@ public class MissionPreparationUI : MonoBehaviour
         // 加载可用士兵
         foreach (var soldier in CombatManager.Instance.GetAvailableSoldiers())
         {
+            Debug.Log($"From missionprepUI: Loading soldier: {soldier.Name}");
             var card = Instantiate(soldierCardPrefab, availableSoldiersPanel).GetComponent<CharacterCard>();
             card.Initialize(soldier, this);
             characterCards.Add(card);
@@ -199,8 +200,6 @@ public class MissionPreparationUI : MonoBehaviour
         // Assign按钮状态
         bool canAssign = selectedCharacterCard != null && selectedFormationSlot != null;
         assignButton.interactable = canAssign;
-
-        // 其他按钮状态...
     }
 
     void OnAssignButtonClicked()

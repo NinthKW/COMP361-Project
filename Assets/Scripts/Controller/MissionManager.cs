@@ -132,10 +132,11 @@ namespace Assets.Scripts.Controller
                             int hp = reader.GetInt32(3);
                             int attack = reader.GetInt32(4);
                             int dps = reader.GetInt32(5);
+                            int maxHealth = hp; // 假设最大生命值等于当前生命值
 
                             for (int i = 0; i < count; i++)
                             {
-                                var enemy = new Enemy(name, hp, attack, dps, 10); // 假设经验值为10
+                                var enemy = new Enemy(name, hp, attack, dps, maxHealth, 1, 10); // TODO: add level and exp to database
                                 mission.AssignedEnemies.Add(enemy);
                             }
 
