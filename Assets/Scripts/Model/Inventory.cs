@@ -3,106 +3,132 @@ using UnityEngine;
 
 namespace Assets.Scripts.Model
 {
-    // Manages a collection of InventoryItem objects (the actual inventory logic)
+    // Inventory holds lists of weapons and equipment
     [System.Serializable]
     public class Inventory
     {
-        private List<InventoryItem> items;
+        private List<Weapon> weapons; // List of weapon items
+        private List<Equipment> equipments; // List of equipment items
 
-        public Inventory(){
-            items = new List<InventoryItem>();
-        }
-
-        // Add an item to the inventory
-        public void AddItem(InventoryItem newItem) {
-            InventoryItem existingItem = items.Find(item => item.itemType == newItem.itemType);
-            if (existingItem != null)
-            {
-                existingItem.AddQuantity(newItem.quantity);
-            }
-            else
-            {
-                items.Add(newItem);
-            }
-        }
-
-         // Remove a certain quantity of an item
-        public bool RemoveItem(ItemType itemType, int quantity)
+        // Constructor: Initialize the lists
+        public Inventory()
         {
-            InventoryItem item = items.Find(i => i.itemType == itemType);
-            if (item != null && item.quantity >= quantity)
+            weapons = new List<Weapon>(); // Create weapons list
+            equipments = new List<Equipment>(); // Create equipments list
+        }
+
+        #region Weapon Methods
+        // Add a weapon if it's not already in the list
+        public void AddWeapon(Weapon weapon)
+        {
+            // Avoid duplicate entries
+            if (!weapons.Exists(w => w.weapon_id == weapon.weapon_id))
             {
-                item.SubtractQuantity(quantity);
-                if (item.quantity == 0)
-                {
-                    items.Remove(item);
-                }
-                return true;
+                weapons.Add(weapon);
             }
-            return false;
         }
 
-        // Get an item by its type
-        public InventoryItem GetItem(ItemType itemType){
-            return items.Find(i => i.itemType == itemType);
+        // Return a copy of the weapons list
+        public List<Weapon> GetWeapons()
+        {
+            return new List<Weapon>(weapons);
         }
 
-        // Get a copy of the current inventory
-        public List<InventoryItem> GetAllItems(){
-            return new List<InventoryItem>(items);
+        // Remove a weapon by its id
+        public void RemoveWeapon(int weaponId)
+        {
+            Weapon weapon = weapons.Find(w => w.weapon_id == weaponId);
+            if (weapon != null)
+            {
+                weapons.Remove(weapon);
+            }
+        }
+        #endregion
+
+        #region Equipment Methods
+        // Add equipment if it's not already in the list
+        public void AddEquipment(Equipment equipment)
+        {
+            if (!equipments.Exists(e => e.equipment_id == equipment.equipment_id))
+            {
+                equipments.Add(equipment);
+            }
         }
 
-        // Clear all items from the inventory
+        // Return a copy of the equipments list
+        public List<Equipment> GetEquipments()
+        {
+            return new List<Equipment>(equipments);
+        }
+
+        // Remove equipment by its id
+        public void RemoveEquipment(int equipmentId)
+        {
+            Equipment equipment = equipments.Find(e => e.equipment_id == equipmentId);
+            if (equipment != null)
+            {
+                equipments.Remove(equipment);
+            }
+        }
+        #endregion
+
+        // Clear all weapons and equipment from the inventory
         public void Clear()
         {
-            items.Clear();
+            weapons.Clear();
+            equipments.Clear();
         }
     }
 
-    // Represents a single item stored in the inventory
+    // Class to store weapon information
     [System.Serializable]
-    public class InventoryItem
+    public class Weapon
     {
-        public ItemType itemType;
-        public string itemName;
+        public int weapon_id;
+        public string name;
         public string description;
-        public int quantity;
+        public int damage;
+        public int cost;
+        public int resource_amount;
+        public int resource_type;
 
-        public InventoryItem(ItemType type, int quantity)
+        // Constructor for a weapon
+        public Weapon(int weapon_id, string name, string description, int damage, int cost, int resource_amount, int resource_type)
         {
-            this.itemType = type;
-            this.itemName = type.ToString();
-            this.description = GetItemDescription(type);
-            this.quantity = quantity;
+            this.weapon_id = weapon_id;
+            this.name = name;
+            this.description = description;
+            this.damage = damage;
+            this.cost = cost;
+            this.resource_amount = resource_amount;
+            this.resource_type = resource_type;
         }
+    }
 
-        // Returns a simple description for each item type
-        private string GetItemDescription(ItemType type)
-        {
-            switch (type)
-            {
-                case ItemType.Food: return "Used to feed your units.";
-                case ItemType.Wood: return "Basic construction material.";
-                case ItemType.Stone: return "Used to build strong structures.";
-                case ItemType.Metal: return "Necessary for tech development.";
-                case ItemType.Fuel: return "Powers vehicles and tools.";
-                case ItemType.Ammo: return "Required for weapons.";
-                case ItemType.Medicine: return "Used for healing.";
-                case ItemType.Weapon: return "Used in combat.";
-                case ItemType.Armor: return "Reduces damage taken.";
-                case ItemType.Tool: return "Useful for crafting or repairs.";
-                default: return "No description available.";
-            }
-        }
+    // Class to store equipment information
+    [System.Serializable]
+    public class Equipment
+    {
+        public int equipment_id;
+        public string name;
+        public int hp;
+        public int def;
+        public int atk;
+        public int cost;
+        public int resource_amount;
+        public int resource_type;
 
-        public void AddQuantity(int amount)
+        // Constructor for equipment
+        public Equipment(int equipment_id, string name, int hp, int def, int atk, int cost, int resource_amount, int resource_type)
         {
-            quantity += amount;
-        }
-
-        public void SubtractQuantity(int amount)
-        {
-            quantity = Mathf.Max(0, quantity - amount);
+            this.equipment_id = equipment_id;
+            this.name = name;
+            this.hp = hp;
+            this.def = def;
+            this.atk = atk;
+            this.cost = cost;
+            this.resource_amount = resource_amount;
+            this.resource_type = resource_type;
         }
     }
 }
