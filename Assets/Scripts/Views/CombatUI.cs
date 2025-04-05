@@ -203,7 +203,11 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         // 冲锋动画
         yield return MoveToPosition(attacker.GameObject.transform, 
             targetPos - new Vector3(1, 0, 0), 0.2f);
-        
+
+        // 显示伤害效果
+        int damage = attacker.GetAttackAmount(target);
+        ShowDamageText(target, damage);
+
         // 返回动画
         yield return MoveToPosition(attacker.GameObject.transform, 
             originalPos, 0.2f);
@@ -225,6 +229,57 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             yield return null;
         }
         objTransform.position = targetPos;
+    }
+
+    private void ShowDamageText(Character target, int damage)
+    {
+        Canvas canvas = FindObjectOfType<Canvas>();
+
+        if (canvas == null)
+        {
+            Debug.LogError("No Canvas found in the scene!");
+            return;
+        }
+
+        // 创建一个新的 TextMeshProUGUI 对象
+        GameObject damageTextObj = new GameObject("DamageText");
+        damageTextObj.transform.SetParent(canvas.transform, false);
+
+        TextMeshProUGUI textMesh = damageTextObj.AddComponent<TextMeshProUGUI>();
+        textMesh.text = $"-{damage}";
+        textMesh.fontSize = 36;
+        textMesh.color = Color.red;
+        textMesh.alignment = TextAlignmentOptions.Center;
+        textMesh.raycastTarget = false;
+
+        // 设置位置到目标上方（从世界坐标转化为屏幕坐标）
+        Vector3 screenPosition = (target.GameObject.transform.position + new Vector3(0, 2f, 0));
+        damageTextObj.transform.position = screenPosition;
+
+        // 开始淡出协程
+        StartCoroutine(FadeAndDestroyText(textMesh));
+    }
+
+    private IEnumerator FadeAndDestroyText(TextMeshProUGUI textMesh)
+    {
+        float duration = 2f;
+        //float fadeSpeed = 0.5f;
+
+        Color originalColor = textMesh.color;
+
+        for (float t = 0; t < duration; t += Time.deltaTime)
+        {
+            // 让文字慢慢上升
+            textMesh.transform.Translate(Vector3.up * Time.deltaTime * 20f);
+
+            // 控制透明度
+            float alpha = Mathf.Lerp(1f, 0f, t / duration);
+            textMesh.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
+
+            yield return null;
+        }
+
+        Destroy(textMesh.gameObject);
     }
 
     void PostAttackCleanup()

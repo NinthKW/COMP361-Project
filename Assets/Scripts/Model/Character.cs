@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace Assets.Scripts.Model
 {
@@ -49,6 +50,16 @@ namespace Assets.Scripts.Model
             int finalDamage = CalculateDamage();
             Debug.Log($"{Name} attacks {target.Name} with {finalDamage} damage!");
             target.TakeDamage(finalDamage);
+        }
+
+        public virtual int GetAttackAmount(Character target)
+        {
+            if (target == null || target.IsDead()) return 0;
+
+            int finalDamage = CalculateDamage();
+            Debug.Log($"{Name} attacks {target.Name} with {finalDamage} damage!");
+
+            return finalDamage;
         }
 
         protected abstract int CalculateDamage();

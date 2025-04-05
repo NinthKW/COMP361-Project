@@ -36,7 +36,7 @@ namespace Assets.Scripts.Controller
         }
 
         void Start()
-        {
+        {   
             if (SceneManager.GetActiveScene().name != "WelcomePage")
             {
                 LoadGameState(GameState.WelcomePage);
