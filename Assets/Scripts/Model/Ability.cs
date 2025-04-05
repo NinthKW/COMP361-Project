@@ -51,6 +51,7 @@ namespace Assets.Scripts.Model
         }
     }
 
+    #region Heals
     public class HealAbility : Ability
     {
         public int HealAmount { get; private set; }
@@ -123,7 +124,9 @@ namespace Assets.Scripts.Model
             }
         }
     }
+    #endregion
 
+    #region buffs
     public class ShieldAbility : Ability
     {
         public int ShieldAmount { get; private set; }
@@ -175,7 +178,9 @@ namespace Assets.Scripts.Model
             }
         }
     }
+    #endregion
 
+    #region controls
     public class TauntAbility : Ability
     {
         public int TauntDuration { get; private set; }
@@ -202,4 +207,5 @@ namespace Assets.Scripts.Model
             }
         }
     }
+    #endregion
 }
