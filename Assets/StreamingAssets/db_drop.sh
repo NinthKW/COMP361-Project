@@ -14,7 +14,6 @@ sqlite3 "$DB_FILE" <<EOF
 DROP TABLE Resource;
 DROP TABLE Soldier;
 DROP TABLE Weapon;
-DROP TABLE Ability;
 DROP TABLE Equipment;
 DROP TABLE Infrastructure;
 DROP TABLE Weather;
