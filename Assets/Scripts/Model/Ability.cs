@@ -74,6 +74,80 @@ namespace Assets.Scripts.Model
         }
     }
 
+    public class HealBuffAbility : Ability
+    {
+        public int HealAmount { get; private set; }
+        public int BuffDefAmount { get; private set; }
+
+        public HealBuffAbility(string name, int cost, int cooldown, int duration, string description, int healAmount, int buffDefAmount) 
+            : base(name, cost, cooldown, duration, description, "HealBuff")
+        {
+            HealAmount = healAmount;
+            BuffDefAmount = buffDefAmount;
+        }
+
+        public override void Activate(List<Character> targets)
+        {
+            base.Activate(targets);
+            float healPerTurn = (float)HealAmount / Duration;
+            foreach (var target in targets)
+            {
+                if (target != null)
+                {
+                    // Increase defense immediately
+                    target.Def += BuffDefAmount;
+                    target.Buffs.Add("HealBuff", this);
+
+                    // Start healing over time (requires a Coroutine runner, e.g., a dedicated MonoBehaviour)
+                    CoroutineRunner.Instance.StartCoroutine(HealOverTime(target, healPerTurn));
+
+                    Debug.Log($"{target.Name} will heal for {healPerTurn} per turn for {Duration} turns and defense increased by {BuffDefAmount}!");
+                }
+            }
+        }
+
+        private IEnumerator HealOverTime(Character target, float healPerTurn)
+        {
+            int turns = Duration;
+            while (turns-- > 0)
+            {
+                if (target.Health < target.MaxHealth)
+                {
+                    // Apply heal per turn (rounded to an int)
+                    int healThisTurn = Mathf.RoundToInt(healPerTurn);
+                    target.Health = Mathf.Min(target.Health + healThisTurn, target.MaxHealth);
+                    Debug.Log($"{target.Name} heals for {healThisTurn} health.");
+                }
+                // Wait for 1 second between turns (adjust the duration as needed)
+                yield return new WaitForSeconds(1);
+            }
+        }
+    }
+
+    public class ShieldAbility : Ability
+    {
+        public int ShieldAmount { get; private set; }
+
+        public ShieldAbility(string name, int cost, int cooldown, int duration, string description, int shieldAmount) 
+            : base(name, cost, cooldown, duration, description, "Shield")
+        {
+            ShieldAmount = shieldAmount;
+        }
+
+        public override void Activate(List<Character> targets)
+        {
+            base.Activate(targets);
+            foreach (var target in targets)
+            {
+                if (target != null)
+                {
+                    target.Shield += ShieldAmount;
+                    target.Buffs.Add("Shield", this);
+                    Debug.Log($"{target.Name} gains a shield of {ShieldAmount}!");
+                }
+            }
+        }
+    }
     public class BuffAtkAbility : Ability
     {
         public int BuffAtkAmount { get; private set; }

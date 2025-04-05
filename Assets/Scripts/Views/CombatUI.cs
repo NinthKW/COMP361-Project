@@ -104,11 +104,11 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             new (midX+100, midY-100, 0),
             new (midX-100, midY-200, 0)
         };
-        foreach (var soldier in CombatManager.Instance.GetSelectedCharacters())
+        foreach (var soldier in CombatManager.Instance.GetInBattleSoldiers())
         {
             if (soldier is not Soldier validSoldier) continue;
             
-            var index = CombatManager.Instance.GetSelectedCharacters().IndexOf(soldier);
+            var index = CombatManager.Instance.GetInBattleSoldiers().IndexOf(soldier);
             var card = CreateCharacterCard(validSoldier, true, allyPositions[index]);
             soldierCards.Add(card);
             validSoldier.SetGameObject(card);
@@ -556,7 +556,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     void CheckTurnEnd()
     {
         var allExhausted = true;
-        foreach (var soldier in CombatManager.Instance.GetSelectedCharacters())
+        foreach (var soldier in CombatManager.Instance.GetInBattleSoldiers())
         {
             if (soldier == null || soldier.IsDead()) continue;
             if (soldier.AttackChances > 0) allExhausted = false;

@@ -147,6 +147,8 @@ namespace Assets.Scripts.Model
         private bool _hasGun;
         private int _defense;
         private Role _role;
+        public List<Ability> Abilities { get; private set; } = new List<Ability>();
+
 
         public Soldier(string name, Role role, int level, int health, int attack, int defense, int maxHealth) 
         : base(name, health, level, attack, defense, maxHealth)
