@@ -9,8 +9,8 @@ using System.Collections.Generic;
 
 public class CombatUI : MonoBehaviour, IPointerClickHandler
 {
-    // UI Elements
-    [Header("UI Components")]
+    #region UI Components
+    [Header("UI Elements")]
     [SerializeField] private Transform combatUnitContainer;
     [SerializeField] private GameObject characterUIPrefab;
     [SerializeField] private TextMeshProUGUI turnText;
@@ -22,349 +22,499 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     [SerializeField] private TextMeshProUGUI unitRole;
     [SerializeField] private Button retreatButton;
     [SerializeField] private GameObject retreatConfirmationPrefab;
-    [SerializeField] private GameObject formationSlotPrefab;
 
+    [Header("Position Settings")]
+    [SerializeField] private List<Vector3> allyPositions = new();
+    [SerializeField] private List<Vector3> enemyPositions = new();
 
-    [Header("Settings")]
+    [Header("Combat Settings")]
     [SerializeField] private float attackDelay = 0.5f;
-    [SerializeField] private Color exhaustedColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
+    [SerializeField] private Color exhaustedColor = new(0.5f, 0.5f, 0.5f, 0.5f);
+    #endregion
 
-    // Selection System
+    #region Combat State
     private Character selectedAlly;
     private Character selectedEnemy;
     private GameObject selectionFrame;
     private bool isAttackExecuting;
+    private readonly List<GameObject> soldierCards = new();
+    private readonly List<GameObject> enemyCards = new();
+    private readonly List<GameObject> waitingEnemyCards = new();
+    #endregion
 
+    #region Lifecycle Methods
     void Start()
     {
-        if (CombatManager.Instance == null)
-        {
-            Debug.Log("Debugging Scene");
-            CombatManager.Instance = new GameObject().AddComponent<CombatManager>();
-            CombatManager.Instance.GetAvailableSoldiers().Add(new Soldier("Test Soldier", new Role("Tank"), 3, 2, 1, 1, 0)); //added temp 0 max health
-            CombatManager.Instance.GetAvailableEnemies().Add(new Enemy("Test Enemy", 1, 3, 2, 1));
-        }
-        Debug.Log("CombatUI Start");
-        // CombatManager.Instance.StartCombat(CombatManager.Instance.GetAvailableSoldiers(), CombatManager.Instance.GetAvailableEnemies());
-        CombatManager.Instance.OnCombatEnd += OnCombatEnd;
-        InitializeUI();
+        InitializeCombatManager();
+        InitializeUIComponents();
+        SubscribeToEvents();
     }
 
-    void InitializeUI()
+    void Update()
+    {
+        UpdateCharacterUIStates();
+        UpdateButtonStates();
+        UpdateSelectionVisual();
+    }
+
+    void OnDestroy()
+    {
+        if (CombatManager.Instance != null)
+            CombatManager.Instance.OnCombatEnd -= OnCombatEnd;
+    }
+    #endregion
+
+    #region Initialization
+    void InitializeCombatManager()
+    {
+        if (CombatManager.Instance != null) return;
+
+        Debug.Log("Initializing Test Combat Manager");
+        var managerObj = new GameObject("CombatManager");
+        CombatManager.Instance = managerObj.AddComponent<CombatManager>();
+        
+        // 测试数据
+        CombatManager.Instance.GetAvailableSoldiers().Add(
+            new Soldier("Alpha", new Role("Tank"), 5, 3,50, 50, 50));
+        CombatManager.Instance.GetAvailableEnemies().Add(
+            new Enemy("Drone", 2, 5, 3, 1));
+    }
+
+    void InitializeUIComponents()
     {
         CreateCharacterDisplays();
-        Update();
-
-        attackButton.onClick.AddListener(OnAttackButton);
-        endTurnButton.onClick.AddListener(OnEndTurnButton);
-        retreatButton.onClick.AddListener(OnRetreatButton);
-
-        combatLog.text = "Combat Ready! Select a soldier to begin.";
-        turnText.text = "Player's Turn";
-        turnText.color = Color.white;
-        Update();
+        SetupButtonListeners();
+        InitializeCombatLog();
     }
 
+    void SubscribeToEvents() => 
+        CombatManager.Instance.OnCombatEnd += OnCombatEnd;
+    #endregion
+
+    #region UI Creation
     void CreateCharacterDisplays()
     {
-        int midX = Screen.width / 2;
-        int midY = Screen.height / 2;
-        int midAllyX = midX - 250;
-        int midEnemyX = midX + 200;
-        List<Vector3> allyPositions = new()
-        {
-            new Vector3(midAllyX - 100, midY + 200, 0),
-            new Vector3(midAllyX + 100, midY + 100, 0),
-            new Vector3(midAllyX - 100, midY, 0),
-            new Vector3(midAllyX + 100, midY - 100, 0),
-            new Vector3(midAllyX - 100, midY - 200, 0)
-        };
+        CreateSoldierCards();
+        CreateEnemyCards();
+    }
 
-        List<Vector2> enemyPositions = new List<Vector2>
+    void CreateSoldierCards()
+    {
+        int midX = (Screen.width / 2) - 250;
+        int midY = Screen.height / 2;
+        allyPositions = new List<Vector3>
         {
-            new(midEnemyX, midY - 100),
-            new(midEnemyX, midY + 100),
-            new(midEnemyX + 200, midY),
-            new(midEnemyX + 200, midY + 200),
-            new(midEnemyX + 200, midY - 200),
-            new(midEnemyX + 400, midY),
+            new (x: midX-100, midY+200, 0),
+            new (midX+100, midY+100, 0),
+            new (midX-100, midY, 0),
+            new (midX+100, midY-100, 0),
+            new (midX-100, midY-200, 0)
         };
         foreach (var soldier in CombatManager.Instance.GetSelectedCharacters())
         {
-            int index = CombatManager.Instance.GetSelectedCharacters().IndexOf(soldier);
-            if (soldier != null && soldier is Soldier) 
-            {
-                CreateCharacterCard(soldier, isAlly: true, allyPositions[index]);
-            }
+            if (soldier is not Soldier validSoldier) continue;
+            
+            var index = CombatManager.Instance.GetSelectedCharacters().IndexOf(soldier);
+            var card = CreateCharacterCard(validSoldier, true, allyPositions[index]);
+            soldierCards.Add(card);
+            validSoldier.SetGameObject(card);
         }
+    }
+
+    void CreateEnemyCards()
+    {
+        int midX = (Screen.width / 2) + 200;
+        int midY = Screen.height / 2;
+        enemyPositions = new List<Vector3>
+        {
+            new (x: midX-100, midY+200, 0),
+            new (midX+100, midY+100, 0),
+            new (midX-100, midY, 0),
+            new (midX+100, midY-100, 0),
+            new (midX-100, midY-200, 0),
+            new (midX+300, midY, 0)
+        };
         foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
         {
-            int index = CombatManager.Instance.GetAvailableEnemies().IndexOf(enemy);
-            CreateCharacterCard(enemy, isAlly: false, enemyPositions[index]);
+            var index = CombatManager.Instance.GetAvailableEnemies().IndexOf(enemy);
+            Debug.Log($"Enemy Index: {index}");
+            var card = CreateCharacterCard(enemy, false, enemyPositions[index]);
+            enemyCards.Add(card);
+            enemy.SetGameObject(card);
+        }
+        foreach (var enemy in CombatManager.Instance.GetWaitingEnemies())
+        {
+            var card = CreateCharacterCard(enemy, false, new Vector3(Screen.width + 200, -200, 0));
+            waitingEnemyCards.Add(card);
+            enemy.SetGameObject(card);
         }
     }
 
     GameObject CreateCharacterCard(Character character, bool isAlly, Vector2 position)
     {
         var card = Instantiate(characterUIPrefab, combatUnitContainer);
-        float xPosition = isAlly ? 350 : 600;
-        card.transform.position = (Vector3)position;
+        card.transform.position = position;
+        
         var ui = card.GetComponent<CharacterUI>();
         ui.Initialize(character, isAlly);
-
-        // Add click handler
-        var button = card.GetComponent<Button>();
-        button.onClick.AddListener(() => OnCharacterClicked(character));
+        
+        SetupCardInteraction(card, character);
         return card;
     }
 
+    void SetupCardInteraction(GameObject card, Character character)
+    {
+        if (!card.TryGetComponent<Button>(out var button))
+            button = card.AddComponent<Button>();
+        
+        button.onClick.RemoveAllListeners();
+        button.onClick.AddListener(() => OnCharacterClicked(character));
+    }
+    #endregion
+
+    #region Combat Logic
+    public void OnAttackButton()
+    {
+        if (!CanAttack()) return;
+        StartCoroutine(ExecuteAttackRoutine(selectedAlly, selectedEnemy));
+    }
+
+    IEnumerator ExecuteAttackRoutine(Character attacker, Character target)
+    {
+        isAttackExecuting = true;
+        UpdateCombatLog($"{attacker.Name} attacks {target.Name}!");
+        
+        attacker.AttackChances--;
+        yield return StartCoroutine(PlayAttackAnimation(attacker, target));
+        
+        CombatManager.Instance.ProcessAttack(attacker, target);
+        PostAttackCleanup();
+        
+        yield return new WaitForSeconds(attackDelay);
+        isAttackExecuting = false;
+    }
+
+    IEnumerator PlayAttackAnimation(Character attacker, Character target)
+    {
+        if (attacker.GameObject == null || target.GameObject == null) yield break;
+        var originalPos = attacker.GameObject.transform.position;
+        var targetPos = target.GameObject.transform.position;
+
+        // 冲锋动画
+        yield return MoveToPosition(attacker.GameObject.transform, 
+            targetPos - new Vector3(1, 0, 0), 0.2f);
+        
+        // 返回动画
+        yield return MoveToPosition(attacker.GameObject.transform, 
+            originalPos, 0.2f);
+    }
+
+    IEnumerator MoveToPosition(Transform objTransform, Vector3 targetPos, float duration)
+    {
+        float elapsed = 0f;
+        Vector3 startPos = objTransform.position;
+
+        while (elapsed < duration)
+        {
+            objTransform.position = Vector3.Lerp(
+                startPos, 
+                targetPos, 
+                elapsed / duration
+            );
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        objTransform.position = targetPos;
+    }
+
+    void PostAttackCleanup()
+    {
+        ClearSelection();
+        CheckTurnEnd();
+        UpdateCombatState();
+    }
+
+    void CleanDeadUnits()
+    {
+        CleanSoldierUnits();
+        CleanEnemyUnits();
+    }
+
+    void CleanSoldierUnits()
+    {
+        foreach (var card in soldierCards.ToArray())
+        {
+            if (card == null) continue;
+            
+            var character = card.GetComponent<CharacterUI>().Character;
+            if (!character.IsDead()) continue;
+            
+            soldierCards.Remove(card);
+            Destroy(card);
+        }
+    }
+
+    void CleanEnemyUnits()
+    {
+        foreach (var card in enemyCards.ToArray())
+        {
+            if (card == null) continue;
+            
+            var enemy = card.GetComponent<CharacterUI>().Character;
+            if (!enemy.IsDead()) continue;
+
+            var position = card.transform.position;
+            enemyCards.Remove(card);
+            Destroy(card);
+            
+            if (waitingEnemyCards.Count == 0) return;
+            StartCoroutine(MoveToPosition(waitingEnemyCards[0].transform, position, 0.2f));
+            enemyCards.Add(waitingEnemyCards[0]);
+            waitingEnemyCards.RemoveAt(0);
+        }
+    }
+    #endregion
+
+    #region Selection System
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (eventData.pointerCurrentRaycast.gameObject == null)
-        {
+        if (IsClickingEmptyArea(eventData))
             ClearSelection();
-            UpdateSelectionVisual();
-        }
     }
 
     void OnCharacterClicked(Character character)
     {
         if (isAttackExecuting) return;
 
-        if (CombatManager.Instance.IsAlly(character))
+        switch (character)
         {
-            HandleAllySelection(character as Soldier);
-            unitRole.text = $"Soldier - {(character as Soldier).GetRoleName()} \n Level: {character.Level}";
+            case Soldier soldier when CombatManager.Instance.IsAlly(soldier):
+                HandleAllySelection(soldier);
+                break;
+            case Enemy enemy when CombatManager.Instance.IsEnemy(enemy):
+                HandleEnemySelection(enemy);
+                break;
         }
-        else if (CombatManager.Instance.IsEnemy(character))
-        {
-            HandleEnemySelection(character);
-        }
-        unitName.text = character.Name;
-        Update();
+        
+        UpdateUnitInfoDisplay(character);
     }
 
     void HandleAllySelection(Soldier soldier)
     {
-        if (soldier == null || soldier.IsDead() || soldier.AttackChances <= 0) return;
-
+        if (soldier.IsDead() || soldier.AttackChances <= 0) return;
+        
         selectedAlly = soldier;
         selectedEnemy = null;
-        Update();
-        combatLog.text = $"Selected {soldier.Name}, now select a target.";
+        UpdateCombatLog($"Chosen {soldier.Name}");
     }
 
     void HandleEnemySelection(Character enemy)
     {
         if (selectedAlly == null || enemy.IsDead()) return;
-
+        
         selectedEnemy = enemy;
-        Update();
-        combatLog.text = $"Targeting {enemy.Name}, ready to attack!";
+        UpdateCombatLog($"Targeting {enemy.Name}");
+    }
+
+    void UpdateUnitInfoDisplay(Character character)
+    {
+        unitName.text = character.Name;
+        if (character is Soldier soldier)
+            unitRole.text = $"{soldier.GetRoleName()} Lv.{soldier.Level}";
     }
 
     void UpdateSelectionVisual()
     {
         Destroy(selectionFrame);
-
+        
         var target = selectedEnemy ?? selectedAlly;
-        if (target != null && target.GameObject != null)
-        {
-            selectionFrame = Instantiate(selectionFramePrefab, target.GameObject.transform);
-        }
+        if (target?.GameObject == null) return;
 
-        attackButton.interactable = CanAttack();
+        selectionFrame = Instantiate(selectionFramePrefab, 
+            target.GameObject.transform, 
+            false);
     }
+    #endregion
 
-    bool CanAttack()
-    {
-        return selectedAlly != null &&
-               selectedEnemy != null &&
-               (selectedAlly as Soldier).AttackChances > 0;
-    }
-
-    public void OnAttackButton()
-    {
-        if (!CanAttack()) return;
-
-        StartCoroutine(ExecuteAttackRoutine(selectedAlly, selectedEnemy));
-
-        Update();
-    }
-
-    IEnumerator ExecuteAttackRoutine(Character attacker, Character target)
-    {
-        isAttackExecuting = true;
-        Update();
-
-        attacker.AttackChances--;
-
-        // TODO: Show attack animation
-        // yield return StartCoroutine(PlayAttackAnimation(attacker, target));
-        combatLog.text = $"{attacker.Name} attacks {target.Name}!";
-        yield return new WaitForSeconds(attackDelay);
-        CombatManager.Instance.ProcessAttack(attacker, target);
-
-        ClearSelection();
-        isAttackExecuting = false;
-        Update();
-        CheckTurnEnd();
-    }
-
-    IEnumerator PlayAttackAnimation(Character attacker, Character target)
-    {
-        var originalPos = attacker.GameObject.transform.position;
-        Vector3 targetPos = target.GameObject.transform.position;
-
-        // Move towards target
-        float duration = 0.2f;
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            attacker.GameObject.transform.position = Vector3.Lerp(
-                originalPos,
-                targetPos - new Vector3(1,0,0),
-                elapsed/duration
-            );
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-
-        // Return to original position
-        elapsed = 0f;
-        while (elapsed < duration)
-        {
-            attacker.GameObject.transform.position = Vector3.Lerp(
-                targetPos - new Vector3(1,0,0),
-                originalPos,
-                elapsed/duration
-            );
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-
-        attacker.GameObject.transform.position = originalPos;
-    }
-
-    void CheckTurnEnd()
-    {
-        Update();
-        bool allExhausted = true;
-        foreach (var soldier in CombatManager.Instance.GetAvailableSoldiers())
-        {
-            if (soldier.AttackChances > 0 && !soldier.IsDead())
-            {
-                allExhausted = false;
-                break;
-            }
-        }
-
-        endTurnButton.image.color = allExhausted ? Color.red : Color.white;
-        Update();
-    }
-
-    void OnRetreatButton()
-    {
-        DisableAll();
-
-        // Add Canvas Group to block clicks
-        GameObject confirmWindow = Instantiate(retreatConfirmationPrefab, transform);
-        CanvasGroup group = confirmWindow.AddComponent<CanvasGroup>();
-        group.blocksRaycasts = true;
-        group.interactable = true;
-
-        // Pause combat
-        Time.timeScale = 0;
-
-        confirmWindow.GetComponent<RetreatConfirmation>().Initialize(
-            onConfirm: () => {
-                Destroy(confirmWindow);
-                Time.timeScale = 1;
-                OnCombatEnd(false); // Trigger combat failure
-            },
-            onCancel: () => {
-                Destroy(confirmWindow);
-                Time.timeScale = 1;
-                isAttackExecuting = false;
-                EnableAll();
-                Update();
-            }
-        );
-        confirmWindow.GetComponent<RetreatConfirmation>().SetMessage("Are you sure you want to retreat?");
-    }
-
-
-    public void OnEndTurnButton()
-    {
-        turnText.text = "Enemy's Turn";
-        turnText.color = Color.red;
-        endTurnButton.image.color = endTurnButton.image.color == Color.red ? Color.white : endTurnButton.image.color;
-        StartCoroutine(EndTurnRoutine());
-        Update();
-    }
+    #region Turn Management
+    public void OnEndTurnButton() => StartCoroutine(EndTurnRoutine());
 
     IEnumerator EndTurnRoutine()
     {
         isAttackExecuting = true;
-        Update();
-
-        yield return new WaitForSeconds(attackDelay);
-
+        UpdateCombatLog("Ending turn...");
+        
+        // yield return new WaitForSeconds(attackDelay);
+        
         CombatManager.Instance.EndCurrentTurn();
         ResetAttackChances();
         ClearSelection();
-
+        
+        if (!CombatManager.Instance.IsPlayerTurn)
+            yield return StartCoroutine(ExecuteEnemyTurn());
+        
         isAttackExecuting = false;
-        bool isPlayerTurn = CombatManager.Instance.IsPlayerTurn;
-        if (!isPlayerTurn)
-        {
-            OnEnemyTurn();
-            turnText.text = "Player's Turn";
-            turnText.color = Color.white;
-        }
-        Update();
+        UpdateCombatState();
     }
 
-    private void OnEnemyTurn()
+    IEnumerator ExecuteEnemyTurn()
     {
-        foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
+        UpdateCombatLog("Enemy Turn Starts!");
+        var enemies = GetActiveEnemies();
+
+        foreach (var enemy in enemies)
         {
             if (enemy.IsDead()) continue;
-
-            var attacker = enemy as Enemy;
+            
             var target = CombatManager.Instance.GetRandomSoldier();
-            if (target != null)
-            {
-                StartCoroutine(ExecuteAttackRoutine(attacker, target));
-            }
+            if (target == null) continue;
+
+            yield return StartCoroutine(ExecuteAttackRoutine(enemy, target));
         }
+        UpdateCombatLog("Enemy Turn Ends!");
         ResetAttackChances();
-        Update();
+        ClearSelection();
+        OnEndTurnButton();
+        UpdateCombatLog("Player's Turn Starts!");
+    }
+
+    List<Enemy> GetActiveEnemies()
+    {
+        var activeEnemies = new List<Enemy>();
+        foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
+        {
+            if (!enemy.IsDead())
+                activeEnemies.Add(enemy);
+        }
+        return activeEnemies;
     }
 
     void ResetAttackChances()
     {
         foreach (var soldier in CombatManager.Instance.GetAvailableSoldiers())
-        {
-            soldier.AttackChances = soldier.MaxAttacksPerTurn;
-        }
-
+            soldier.ResetAttackChances();
+        
         foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
+            enemy.ResetAttackChances();
+    }
+    #endregion
+
+    #region UI Update
+    void UpdateCharacterUIStates()
+    {
+        foreach (Transform child in combatUnitContainer)
         {
-            enemy.AttackChances = enemy.MaxAttacksPerTurn;
+            if (!child.TryGetComponent<CharacterUI>(out var ui)) continue;
+
+            var character = ui.Character;
+            ui.UpdateState(
+                isSelected: IsSelected(character),
+                isExhausted: IsExhausted(character),
+                isAlly: CombatManager.Instance.IsAlly(character),
+                isDead: character.IsDead()
+            );
         }
     }
+
+    bool IsSelected(Character character) => 
+        character == selectedAlly || character == selectedEnemy;
+
+    bool IsExhausted(Character character) =>
+        character is Soldier soldier && soldier.AttackChances <= 0;
 
     void UpdateButtonStates()
     {
         attackButton.interactable = CanAttack() && !isAttackExecuting;
         endTurnButton.interactable = !isAttackExecuting;
+        retreatButton.interactable = !isAttackExecuting && CombatManager.Instance.IsPlayerTurn;
+        
+        UpdateTurnDisplay();
+    }
 
-        bool isPlayerTurn = CombatManager.Instance.IsPlayerTurn;
-        attackButton.gameObject.SetActive(isPlayerTurn);
-        endTurnButton.gameObject.SetActive(isPlayerTurn);
+    void UpdateTurnDisplay()
+    {
+        turnText.text = CombatManager.Instance.IsPlayerTurn ? 
+            "Player's Turn" : "Enemy's Turn";
+        turnText.color = CombatManager.Instance.IsPlayerTurn ? 
+            Color.white : Color.red;
+    }
 
-        retreatButton.interactable = !isAttackExecuting && isPlayerTurn;
+    bool CanAttack() => 
+        selectedAlly != null && 
+        selectedEnemy != null && 
+        selectedAlly is Soldier { AttackChances: > 0 };
+    #endregion
+
+    #region Retreat System
+    void OnRetreatButton()
+    {
+        DisableAllControls();
+        ShowRetreatConfirmation();
+    }
+
+    void ShowRetreatConfirmation()
+    {
+        var confirmWindow = Instantiate(retreatConfirmationPrefab, transform);
+        var canvasGroup = confirmWindow.AddComponent<CanvasGroup>();
+        canvasGroup.blocksRaycasts = true;
+        
+        var retreatConfirm = confirmWindow.GetComponent<RetreatConfirmation>();
+        retreatConfirm.Initialize(
+            onConfirm: () => HandleRetreatConfirmed(retreatConfirm),
+            onCancel: () => HandleRetreatCanceled(retreatConfirm)
+        );
+    }
+
+    void HandleRetreatConfirmed(RetreatConfirmation window)
+    {
+        Destroy(window.gameObject);
+        OnCombatEnd(false);
+    }
+
+    void HandleRetreatCanceled(RetreatConfirmation window)
+    {
+        Destroy(window.gameObject);
+        EnableAllControls();
+    }
+    #endregion
+
+    #region Helper Methods
+    void InitializeCombatLog()
+    {
+        combatLog.text = "Combat Begins!";
+        turnText.text = "Player's Turn";
+        turnText.color = Color.white;
+    }
+
+    void SetupButtonListeners()
+    {
+        attackButton.onClick.AddListener(OnAttackButton);
+        endTurnButton.onClick.AddListener(OnEndTurnButton);
+        retreatButton.onClick.AddListener(OnRetreatButton);
+    }
+
+    bool IsClickingEmptyArea(PointerEventData eventData) => 
+        eventData.pointerCurrentRaycast.gameObject == null;
+
+    void UpdateCombatLog(string message) => 
+        combatLog.text = message;
+
+    void UpdateCombatState()
+    {
+        CheckTurnEnd();
+        CleanDeadUnits();
+        Update();
+    }
+
+    void CheckTurnEnd()
+    {
+        var allExhausted = true;
+        foreach (var soldier in CombatManager.Instance.GetAvailableSoldiers())
+        {
+            if (soldier.IsDead() || soldier == null) continue;
+            if (soldier.AttackChances > 0) allExhausted = false;
+        }
+        endTurnButton.image.color = allExhausted ? Color.red : Color.white;
     }
 
     void ClearSelection()
@@ -374,76 +524,51 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         Destroy(selectionFrame);
     }
 
+    void DisableAllControls()
+    {
+        isAttackExecuting = true;
+        SetControlsInteractable(false);
+    }
+
+    void EnableAllControls()
+    {
+        isAttackExecuting = false;
+        SetControlsInteractable(true);
+    }
+
+    void SetControlsInteractable(bool state)
+    {
+        attackButton.interactable = state;
+        endTurnButton.interactable = state;
+        retreatButton.interactable = state;
+
+        foreach (Transform child in combatUnitContainer)
+        {
+            if (child.TryGetComponent<Button>(out var button))
+                button.interactable = state;
+        }
+    }
+    #endregion
+
+    #region Combat Events
     void OnCombatEnd(bool victory)
     {
-        DisableAll();
-        string resultMessage = victory ? "Victory!" : "Defeat!";
-        combatLog.fontSize = 36; // Make text larger
-        combatLog.color = victory ? Color.white : Color.red; // Change color based on result
-        combatLog.text = resultMessage;
-        StartCoroutine(ReturnToBaseAfterDelay(5f)); // Increased delay to see the message
+        DisableAllControls();
+        ShowEndMessage(victory);
+        StartCoroutine(ReturnToBaseAfterDelay(3f));
+    }
+
+    void ShowEndMessage(bool victory)
+    {
+        combatLog.fontSize = 36;
+        combatLog.color = victory ? Color.green : Color.red;
+        combatLog.text = victory ? "Victory!" : "Defeated!";
     }
 
     IEnumerator ReturnToBaseAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-        // Load other scene or reset UI
-        Debug.Log("Returning to base...");
         GameManager.Instance.LoadGameState(GameState.MissionPage);
     }
-
-    void Update()
-    {
-        // Update character UI states
-        foreach (Transform child in combatUnitContainer)
-        {
-            var ui = child.GetComponent<CharacterUI>();
-            if (ui != null)
-            {
-                ui.UpdateState(
-                    isSelected: ui.Character == selectedAlly || ui.Character == selectedEnemy,
-                    isExhausted: (ui.Character is Soldier s) && s.AttackChances <= 0,
-                    isAlly: CombatManager.Instance.IsAlly(ui.Character),
-                    isDead: ui.Character.IsDead()
-                );
-            }
-        }
-        UpdateButtonStates();
-        UpdateSelectionVisual();
-    }
-
-    void EnableAll()
-    {
-        isAttackExecuting = false; // Reset combat state
-
-        // Enable all character buttons
-        foreach (Transform child in combatUnitContainer)
-        {
-            var button = child.GetComponent<Button>();
-            if (button != null)
-            {
-                button.interactable = true;
-            }
-        }
-
-        UpdateButtonStates(); // Force refresh button states
-    }
-
-    void DisableAll()
-    {
-        attackButton.interactable = false;
-        endTurnButton.interactable = false;
-        retreatButton.interactable = false; // This line can be kept
-
-        isAttackExecuting = true;
-
-        foreach (Transform child in combatUnitContainer)
-        {
-            var button = child.GetComponent<Button>();
-            if (button != null)
-            {
-                button.interactable = false;
-            }
-        }
-    }
+    #endregion
 }

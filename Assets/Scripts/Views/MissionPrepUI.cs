@@ -39,6 +39,7 @@ public class MissionPreparationUI : MonoBehaviour
             Debug.Log("Debugging Scene");
             CombatManager.Instance = new GameObject().AddComponent<CombatManager>();
         }
+        CombatManager.Instance.UpdateInitialEnemies(CombatManager.Instance.currentMission);
         InitializeUI();
         SetupButtons();
     }
@@ -131,8 +132,8 @@ public class MissionPreparationUI : MonoBehaviour
 
         // 开始战斗
         CombatManager.Instance.StartCombat(
-            selectedSoldiers, 
-            CombatManager.Instance.GetAvailableEnemies()
+            CombatManager.Instance.currentMission,
+            selectedSoldiers
         );
 
         // 进入战斗场景
@@ -181,6 +182,7 @@ public class MissionPreparationUI : MonoBehaviour
 
     public void OnSlotSelected(FormationSlot slot)
     {
+        if (selectedCharacterCard == null) return;
         if (selectedCharacterCard.Character is Soldier)
         {
             selectedFormationSlot = slot;

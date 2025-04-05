@@ -19,7 +19,9 @@ namespace Assets.Scripts.Model
         public bool isCompleted;
         public bool unlocked;
 
-        public Mission(int id, string name, string description, int difficulty, int rewardMoney, int rewardAmount, int rewardResourceId, string terrain, string weather, bool unlocked)
+        public List<Enemy> AssignedEnemies;  //enemy info
+
+        public Mission(int id, string name, string description, int difficulty, int rewardMoney, int rewardAmount, int rewardResourceId, string terrain, string weather, bool isCompleted)
         {
             this.id = id;
             this.name = name;
@@ -30,8 +32,8 @@ namespace Assets.Scripts.Model
             this.rewardResourceId = rewardResourceId;
             this.terrain = terrain;
             this.weather = weather;
-            this.isCompleted = false;
-            this.unlocked = unlocked;
+            this.isCompleted = isCompleted;
+            this.AssignedEnemies = new List<Enemy>();
         }
     }
 }
