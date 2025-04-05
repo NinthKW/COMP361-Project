@@ -21,6 +21,7 @@ namespace Assets.Scripts.Model
         public int MaxAttacksPerTurn { get; protected set; }
         public GameObject GameObject { get; private set; }
         public string ObjectTag { get; protected set; }
+        public List<string> Buffs { get; private set; } = new List<string>();
 
         protected Character(string name, int health, int level, int attack, int defense, int maxHealth)
         {
@@ -57,8 +58,6 @@ namespace Assets.Scripts.Model
             if (target == null || target.IsDead()) return 0;
 
             int finalDamage = CalculateDamage();
-            Debug.Log($"{Name} attacks {target.Name} with {finalDamage} damage!");
-
             return finalDamage;
         }
 
@@ -104,8 +103,8 @@ namespace Assets.Scripts.Model
         public int BaseDamage { get; private set; }
         public int ExperienceReward { get; private set; }
 
-        public Enemy(string name, int health, int damage, int level, int expReward) 
-            : base(name, health, level, damage, 0, 0)
+        public Enemy(string name, int health, int damage, int defense, int maxHealth, int level, int expReward) 
+            : base(name, health, level, damage, defense, maxHealth)
         {
             BaseDamage = damage;
             ExperienceReward = expReward;
@@ -178,19 +177,6 @@ namespace Assets.Scripts.Model
         {
             int mitigatedDamage = Mathf.Max(0, damage - _defense);
             base.TakeDamage(mitigatedDamage);
-        }
-    }
-
-    // 随机名称生成器
-    public static class NameGenerator
-    {
-        private static readonly string[] Names = {
-            "Alice", "Bob", "Charlie", "David", "Eve", "Frank", "Grace", "Heidi", "Ivan", "Judy"
-        };
-        
-        public static string GetRandomName()
-        {
-            return Names[UnityEngine.Random.Range(0, Names.Length)];
         }
     }
 }
