@@ -235,8 +235,7 @@ namespace Assets.Scripts.Controller
                 soldier.GainExp((target as Enemy)?.ExperienceReward ?? 0);
             }
 
-            // Cleanup dead units
-            CheckAndReplaceDeadEnemies();
+
 
             // Check combat status
             if (CheckCombatEnd()) return;
@@ -291,12 +290,6 @@ namespace Assets.Scripts.Controller
             }
         }
 
-        private void CleanupDeadUnits()
-        {
-            _selectedCharacters.RemoveAll(c => c != null && c.IsDead());
-            _enemyCharacters.RemoveAll(c => c != null && c.IsDead());
-        }
-
         public bool CheckCombatEnd()
         {
             if (_selectedCharacters.Count == 0)
@@ -316,6 +309,7 @@ namespace Assets.Scripts.Controller
 
         private IEnumerator<WaitForSeconds> SwitchTurnRoutine()
         {
+            if (!IsPlayerTurn) CheckAndReplaceDeadEnemies();
             IsPlayerTurn = !IsPlayerTurn;
             Debug.Log($"Turn switched to: {(IsPlayerTurn ? "Player" : "Enemy")}");
             yield return new WaitForSeconds(enemyTurnDelay);

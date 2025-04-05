@@ -422,6 +422,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         ResetAttackChances();
         ClearSelection();
         OnEndTurnButton();
+        CleanDeadUnits();
         UpdateCombatLog("Player's Turn Starts!");
     }
 
@@ -549,7 +550,6 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     void UpdateCombatState()
     {
         CheckTurnEnd();
-        CleanDeadUnits();
         Update();
     }
 

@@ -12,16 +12,17 @@ namespace Assets.Scripts.Model
     public abstract class Character
     {
         public string Name { get; protected set; }
-        public int Health { get; protected set; }
+        public int Health { get; set; }
         public int MaxHealth { get; protected set; }
-        public int Atk { get; protected set; }
-        public int Def { get; protected set; }
+        public int Atk { get; set; }
+        public int Def { get; set; }
+        public int Shield { get; set; } = 0;
         public int Level { get; protected set; }
         public int AttackChances { get; set; }
         public int MaxAttacksPerTurn { get; protected set; }
         public GameObject GameObject { get; private set; }
         public string ObjectTag { get; protected set; }
-        public List<string> Buffs { get; private set; } = new List<string>();
+        public Dictionary<string, Ability> Buffs { get; private set; } = new Dictionary<string, Ability>();
 
         protected Character(string name, int health, int level, int attack, int defense, int maxHealth)
         {
@@ -36,6 +37,19 @@ namespace Assets.Scripts.Model
         public virtual void TakeDamage(int damage)
         {
             damage = Mathf.Max(0, damage);
+            if (Shield > 0)
+            {
+                if (damage > Shield)
+                {
+                    damage -= Shield;
+                    Shield = 0;
+                }
+                else
+                {
+                    Shield -= damage;
+                    damage = 0;
+                }
+            }
             Health = Mathf.Max(Health - damage, 0);
             
             if (Health <= 0)
