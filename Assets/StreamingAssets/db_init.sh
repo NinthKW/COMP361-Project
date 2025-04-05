@@ -270,6 +270,7 @@ INSERT INTO TECHNOLOGY VALUES
 (9, 'AI Combat Assist', 'Integrate AI-assisted targeting', 600, 9, 55, 350, 4, 9, 9, 9, 1),
 (10, 'Orbital Strike', 'Unlock powerful satellite-based attacks', 700, 10, 65, 400, 5, 10, 10, 10, 1);
 
+
 -- Insert into Equipment
 INSERT INTO Equipment VALUES
 (1, 'Combat Armor', 50, 10, 5, 150, 10, 1, 1),
