@@ -44,13 +44,6 @@ CREATE TABLE Weapon (
     FOREIGN KEY (resource_type) REFERENCES Resource(resource_id)
 );
 
-CREATE TABLE Ability (
-    ability_id INT PRIMARY KEY,
-    name VARCHAR(255),
-    description VARCHAR(255),
-    unlocked BOOL
-);
-
 CREATE TABLE Equipment (
     equipment_id INT PRIMARY KEY,
     name VARCHAR(255),
@@ -277,16 +270,6 @@ INSERT INTO TECHNOLOGY VALUES
 (9, 'AI Combat Assist', 'Integrate AI-assisted targeting', 600, 9, 55, 350, 4, 9, 9, 9, 1),
 (10, 'Orbital Strike', 'Unlock powerful satellite-based attacks', 700, 10, 65, 400, 5, 10, 10, 10, 1);
 
--- Insert into Ability
-INSERT INTO Ability VALUES
-(1, 'Adrenaline Boost', 'Temporarily increases speed and attack power', 1),
-(2, 'Energy Shield', 'Creates a temporary shield that absorbs damage', 1),
-(3, 'Holographic Decoy', 'Projects a fake image to distract enemies', 1),
-(4, 'EMP Blast', 'Disables enemy electronics in a small radius', 1),
-(5, 'Nano Healing', 'Heals minor wounds over time', 1),
-(6, 'Plasma Surge', 'Boosts weapon energy output for increased damage', 1),
-(7, 'Cloaking Device', 'Renders the user invisible for a short time', 1),
-(8, 'Gravity Manipulation', 'Allows brief levitation or immobilizes enemies', 1);
 
 -- Insert into Equipment
 INSERT INTO Equipment VALUES
