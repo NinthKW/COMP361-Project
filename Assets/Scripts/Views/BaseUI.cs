@@ -54,7 +54,7 @@ public class BaseUI : MonoBehaviour
                 layoutElement.preferredHeight = buttonRect.sizeDelta.y;
             }
             
-            Sprite buttonTexture = Resources.Load<Sprite>("base_" + building.name.ToLower());
+            Sprite buttonTexture = UnityEngine.Resources.Load<Sprite>("base_" + building.name.ToLower());
             buttonObj.GetComponent<Image>().sprite = buttonTexture;
             if (buttonTexture == null)
             {

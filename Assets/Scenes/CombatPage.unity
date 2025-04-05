@@ -164,6 +164,7 @@ MonoBehaviour:
   unitRole: {fileID: 996923898}
   retreatButton: {fileID: 604413854}
   retreatConfirmationPrefab: {fileID: 6589493220716002990, guid: 4f838fd49253546739872df1c67a8d76, type: 3}
+  damageTextPrefab: {fileID: 5202302677689599982, guid: ecac5495d467863449323a13f55f7718, type: 3}
   allyPositions: []
   enemyPositions: []
   attackDelay: 0.5
@@ -485,7 +486,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &452095127
@@ -966,7 +967,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &804915068

@@ -21,7 +21,7 @@ namespace Assets.Scripts.Controller
         [SerializeField] private List<Enemy> _waitingEnemies = new();
         [SerializeField] private List<Character> _selectedCharacters = new();
         [SerializeField] private List<Character> _enemyCharacters = new();
-        [SerializeField] private string dbName = "URI=file:database.db";
+        [SerializeField] private string dbPath = "URI=file:" + Application.streamingAssetsPath + "/database.db";
 
         public Mission currentMission;
 
@@ -49,7 +49,7 @@ namespace Assets.Scripts.Controller
         {
             _availableSoldiers.Clear();
 
-            using (var connection = new SqliteConnection(dbName))
+            using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
                 
@@ -60,10 +60,9 @@ namespace Assets.Scripts.Controller
                             name, 
                             role, 
                             level,
-                            exp,
-                            health,
-                            attack,
-                            defense,
+                            hp,
+                            atk,
+                            def,
                             max_hp
                         FROM Soldier";
 
@@ -77,10 +76,10 @@ namespace Assets.Scripts.Controller
                                 name: reader.GetString(0),
                                 role: role,
                                 level: reader.GetInt32(2),
-                                health: reader.GetInt32(4),
-                                attack: reader.GetInt32(5),
-                                defense: reader.GetInt32(6),
-                                maxHealth: reader.GetInt32(7)
+                                health: reader.GetInt32(3),
+                                attack: reader.GetInt32(4),
+                                defense: reader.GetInt32(5),
+                                maxHealth: reader.GetInt32(6)
                             );
                             soldier.GainExp(reader.GetInt32(3)); // 单独设置经验值
 
@@ -118,7 +117,7 @@ namespace Assets.Scripts.Controller
                 );
                 
                 // 将新士兵存入数据库
-                using (var connection = new SqliteConnection(dbName))
+                using (var connection = new SqliteConnection(dbPath))
                 {
                     connection.Open();
                     using (var command = connection.CreateCommand())
