@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 
 using UnityEngine;
@@ -12,12 +13,12 @@ namespace Assets.Scripts.Model
     {
         public string Name { get; protected set; }
         public int Cost { get; protected set; }
-        public int Cooldown { get; protected set; } = 0;
+        public int CooldownCounter { get; protected set; } = 0;
+        public int Cooldown { get; protected set; }
+        public int DurationCounter { get; protected set; } = 0;
         public int Duration { get; protected set; }
         public string Description { get; protected set; }
         public string Type { get; protected set; }
-        public bool IsActive { get; private set; } = false;
-        public bool IsOnCooldown { get; private set; } = false;
         
         // Remove constructor and add Initialize method
         public virtual void Initialize(string name, int cost, int cooldown, int duration, string description, string type)
@@ -25,10 +26,14 @@ namespace Assets.Scripts.Model
             Name = name;
             Cost = cost;
             Cooldown = cooldown;
+            CooldownCounter = 0;
             Duration = duration;
             Description = description;
             Type = type;
         }
+
+        public bool IsOnCooldown => CooldownCounter > 0;
+        public bool IsActive => DurationCounter > 0;
 
         public virtual bool Activate(List<Character> targets)
         {
@@ -42,20 +47,19 @@ namespace Assets.Scripts.Model
                 Debug.LogWarning($"No targets available for ability {Name}.");
                 return false;
             }
-            IsActive = true;
-            IsOnCooldown = true;
+            CooldownCounter = Cooldown;
+            DurationCounter = Duration;
             return true;
         }
 
         public virtual void OnTurnEnd(List<Character> targets)
         {
-            if (IsActive)
+            if (Duration > 0)
             {
-                Duration--;
-                if (Duration <= 0)
+                DurationCounter = Mathf.Max(0, DurationCounter - 1);
+                if (DurationCounter <= 0)
                 {
-                    IsActive = false;
-                    IsOnCooldown = true;
+                    // TODO: add to UI
                     Debug.Log($"{Name} has expired.");
                 }
             }
@@ -64,7 +68,7 @@ namespace Assets.Scripts.Model
                 Cooldown--;
                 if (Cooldown <= 0)
                 {
-                    IsOnCooldown = false;
+                    // TODO: add to UI
                     Debug.Log($"{Name} is ready to use again.");
                 }
             }
@@ -101,6 +105,7 @@ namespace Assets.Scripts.Model
     {
         public int HealAmount { get; private set; }
         public int BuffDefAmount { get; private set; }
+        private float healPerTurn;
 
         public void Initialize(string name, int cost, int cooldown, int duration, string description, int healAmount, int buffDefAmount)
         {
@@ -112,7 +117,7 @@ namespace Assets.Scripts.Model
         public override bool Activate(List<Character> targets)
         {
             if (!base.Activate(targets)) return false;
-            float healPerTurn = (float)HealAmount / Duration;
+            healPerTurn = (float) HealAmount / Duration;
             foreach (var target in targets)
             {
                 if (target != null)
@@ -129,28 +134,32 @@ namespace Assets.Scripts.Model
             return true;
         }
 
-        private System.Collections.IEnumerator HealOverTime(Character target, float healPerTurn)
+        public override void OnTurnEnd(List<Character> targets)
         {
-            // Method implementation unchanged
-            int turns = Duration;
-            while (turns-- > 0)
+            base.OnTurnEnd(targets);
+            if (IsActive)
             {
-                if (target.Health < target.MaxHealth)
+                Duration--;
+                Cooldown--;
+                if (Cooldown <= 0)
                 {
-                    // Apply heal per turn (rounded to an int)
-                    int healThisTurn = Mathf.RoundToInt(healPerTurn);
-                    target.Health = Mathf.Min(target.Health + healThisTurn, target.MaxHealth);
-                    Debug.Log($"{target.Name} heals for {healThisTurn} health.");
+                    IsOnCooldown = false;
+                    Debug.Log($"{Name} is ready to use again.");
                 }
-                // Wait for 1 second between turns (adjust the duration as needed)
-                yield return new WaitForSeconds(1);
-            }
-            // Remove the buff after the duration ends
-            if (target.Buffs.ContainsKey("HealBuff"))
-            {
-                target.Def -= BuffDefAmount; // Remove the defense buff
-                target.Buffs.Remove("HealBuff");
-                Debug.Log($"{target.Name}'s HealBuff has expired. Defense decreased by {BuffDefAmount}.");
+                if (Duration <= 0)
+                {
+                    IsActive = false;
+                    Debug.Log($"{Name} has expired.");
+                    foreach (var target in targets)
+                    {
+                        if (target != null && target.Buffs.ContainsKey("HealBuff"))
+                        {
+                            target.Def -= BuffDefAmount;
+                            target.Buffs.Remove("HealBuff");
+                            Debug.Log($"{target.Name}'s defense decreased by {BuffDefAmount}!");
+                        }
+                    }
+                }
             }
         }
     }
@@ -236,6 +245,8 @@ namespace Assets.Scripts.Model
                     target.Buffs.Add("Taunt", this);
                     target.Def += BuffDefAmount;
                     target.Shield += target.Atk;
+                    TauntDuration = this.Duration;
+
                     Debug.Log($"{target} taunts enemies for {TauntDuration} turns!");
                 }
             }
@@ -247,19 +258,31 @@ namespace Assets.Scripts.Model
             base.OnTurnEnd(targets);
             if (IsActive)
             {
-                foreach (var target in targets)
+                TauntDuration--;
+                Cooldown--;
+                if (Cooldown <= 0)
                 {
-                    if (target != null && target.Buffs.ContainsKey("Taunt"))
+                    IsOnCooldown = false;
+                    Debug.Log($"{Name} is ready to use again.");
+                }
+                if (TauntDuration <= 0)
+                {
+                    IsActive = false;
+                    Debug.Log($"{Name} has expired.");
+                    foreach (var target in targets)
                     {
-                        target.Def -= BuffDefAmount;
-                        if (target.Shield > 0) {
-                            target.Shield -= target.Atk;
+                        if (target != null && target.Buffs.ContainsKey("Taunt"))
+                        {
+                            target.Def -= BuffDefAmount;
+                            if (target.Shield > 0) {
+                                target.Shield -= target.Atk;
+                            }
+                            else {
+                                target.Shield = 0;
+                            }
+                            target.Buffs.Remove("Taunt");
+                            Debug.Log($"{target} is no longer taunting.");
                         }
-                        else {
-                            target.Shield = 0;
-                        }
-                        target.Buffs.Remove("Taunt");
-                        Debug.Log($"{target} is no longer taunting.");
                     }
                 }
             }

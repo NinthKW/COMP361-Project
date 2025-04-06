@@ -181,11 +181,12 @@ INSERT OR IGNORE INTO Resource (resource_id, name, current_amount) VALUES
 (6, 'Copper', 700), (7, 'Silver', 400), (8, 'Titanium', 350), (9, 'Uranium', 250), (10, 'Platinum', 150);
 
 INSERT OR IGNORE INTO Soldier (soldier_id, name, level, hp, max_hp, atk, def, role) VALUES
-(1, 'John', 5, 100, 100, 20, 15, 'Infantry'), (2, 'Alice', 3, 80, 80, 15, 10, 'Sniper'),
-(3, 'Bob', 7, 120, 120, 25, 20, 'Tank'), (4, 'Eve', 4, 90, 90, 18, 12, 'Scout'),
-(5, 'Charlie', 6, 110, 110, 22, 17, 'Engineer'), (6, 'David', 5, 95, 95, 19, 14, 'Medic'),
-(7, 'Sophia', 4, 85, 85, 16, 11, 'Assault'), (8, 'James', 6, 115, 115, 23, 18, 'HeavyGunner'),
-(9, 'Olivia', 3, 75, 75, 14, 9, 'Recon'), (10, 'Henry', 7, 130, 130, 27, 22, 'SpecialForces');
+(1, 'John', 5, 100, 100, 20, 15, 'Infantry'),
+(2, 'Alice', 3, 80, 80, 15, 10, 'Sniper'),
+(3, 'Bob', 7, 120, 120, 25, 20, 'Tank'),
+(4, 'Charlie', 6, 110, 110, 22, 17, 'Engineer'),
+(5, 'David', 20, 95, 95, 19, 14, 'Medic'),
+(6, 'Henry', 7, 130, 130, 27, 22, 'Infantry');
 
 INSERT OR IGNORE INTO Weapon (weapon_id, name, description, damage, cost, resource_amount, resource_type, unlocked) VALUES
 (1, 'Rifle', 'Standard issue rifle', 30, 100, 10, 1, 1), (2, 'Sniper', 'Long-range precision rifle', 50, 150, 15, 2, 1),

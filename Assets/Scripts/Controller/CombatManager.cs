@@ -351,29 +351,26 @@ namespace Assets.Scripts.Controller
                     }
                     if (soldier.Level > 5)
                     {
-                        if (!soldier.Abilities.Any(a => a is HealAbility))
+                        if (!soldier.Abilities.Any(a => a is HealBuffAbility))
                         {
                             int healAmount = Mathf.Abs(soldier.Atk) * 3;
                             var healBuffAbility = gameObject.AddComponent<HealBuffAbility>();
                             healBuffAbility.Initialize("Nano Revival", cost: 1, cooldown: 3, duration: 1,
-                                description: "Heal and buff ability, heal amount scales with attack.", healAmount: healAmount, buffDefAmount: (int) (soldier.Def * 0.5));
+                                description: "Heal and buff ability, heal amount scales with attack.", healAmount: healAmount, buffDefAmount: (int)(soldier.Def * 0.5f));
                             soldier.Abilities.Add(healBuffAbility);
                             Debug.Log($"{soldier.Name} acquired Heal Buff ability with heal amount of {healAmount} and defense buff.");
                         }
                     }
                     if (soldier.Level > 7)
                     {
-                        if (!soldier.Abilities.Any(a => a is HealAbility))
+                        if (!soldier.Abilities.Any(a => a is ShieldAbility))
                         {
-                            if (!soldier.Abilities.Any(a => a is ShieldAbility))
-                            {
-                                int shieldAmount = soldier.Atk * 2; // Adjust scaling as needed
-                                var shieldAbility = gameObject.AddComponent<ShieldAbility>();
-                                shieldAbility.Initialize("Aegis Surge", cost: 2, cooldown: 3, duration: 1,
-                                    description: "Shield ability, shield amount scales with attack.", shieldAmount: shieldAmount);
-                                soldier.Abilities.Add(shieldAbility);
-                                Debug.Log($"{soldier.Name} acquired Nano Shield ability with shield amount of {shieldAmount}.");
-                            }
+                            int shieldAmount = soldier.Atk * 2; // Adjust scaling as needed
+                            var shieldAbility = gameObject.AddComponent<ShieldAbility>();
+                            shieldAbility.Initialize("Aegis Surge", cost: 2, cooldown: 3, duration: 1,
+                                description: "Shield ability, shield amount scales with attack.", shieldAmount: shieldAmount);
+                            soldier.Abilities.Add(shieldAbility);
+                            Debug.Log($"{soldier.Name} acquired Nano Shield ability with shield amount of {shieldAmount}.");
                         }
                     }
                 }

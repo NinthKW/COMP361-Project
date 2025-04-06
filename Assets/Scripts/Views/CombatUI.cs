@@ -129,73 +129,73 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         CreateSoldierCards();
         CreateEnemyCards();
     }
-void CreateSoldierCards()
-{
-    int midX = (Screen.width / 2) - 160;
-    int midY = Screen.height / 2;
-    
-    // Adjust these values until the spacing feels right.
-    float horizontalOffset = 50f;   // Increase this if soldiers are too close horizontally.
-    float verticalSpacing = 50f;    // Increase this if soldiers are too close vertically.
-    
-    allyPositions = new List<Vector3>
+    void CreateSoldierCards()
     {
-        new Vector3(midX - horizontalOffset, midY + verticalSpacing * 2, 0),
-        new Vector3(midX + horizontalOffset, midY + verticalSpacing, 0),
-        new Vector3(midX - horizontalOffset, midY, 0),
-        new Vector3(midX + horizontalOffset, midY - verticalSpacing, 0),
-        new Vector3(midX - horizontalOffset, midY - verticalSpacing * 2, 0)
-    };
-
-    foreach (var soldier in CombatManager.Instance.GetInBattleSoldiers())
-    {
-        if (soldier is not Soldier validSoldier) continue;
+        int midX = (Screen.width / 2) - 160;
+        int midY = Screen.height / 2;
         
-        var index = CombatManager.Instance.GetInBattleSoldiers().IndexOf(soldier);
-        var card = CreateCharacterCard(validSoldier, true, allyPositions[index]);
-        soldierCards.Add(card);
-        validSoldier.SetGameObject(card);
-    }
-}
+        // Adjust these values until the spacing feels right.
+        float horizontalOffset = 50f;   // Increase this if soldiers are too close horizontally.
+        float verticalSpacing = 50f;    // Increase this if soldiers are too close vertically.
+        
+        allyPositions = new List<Vector3>
+        {
+            new Vector3(midX - horizontalOffset, midY + verticalSpacing * 2, 0),
+            new Vector3(midX + horizontalOffset, midY + verticalSpacing, 0),
+            new Vector3(midX - horizontalOffset, midY, 0),
+            new Vector3(midX + horizontalOffset, midY - verticalSpacing, 0),
+            new Vector3(midX - horizontalOffset, midY - verticalSpacing * 2, 0)
+        };
 
-
-   void CreateEnemyCards()
-{
-    int midX = (Screen.width / 2) + 120;
-    int midY = Screen.height / 2;
-    
-    // Adjust these values until the spacing feels right.
-    float horizontalOffset = 50f;   // Increase if enemies are too close horizontally.
-    float verticalSpacing = 50f;    // Increase if enemies are too close vertically.
-    
-    enemyPositions = new List<Vector3>
-    {
-        new Vector3(midX - horizontalOffset, midY + verticalSpacing * 2, 0),
-        new Vector3(midX + horizontalOffset, midY + verticalSpacing, 0),
-        new Vector3(midX - horizontalOffset, midY, 0),
-        new Vector3(midX + horizontalOffset, midY - verticalSpacing, 0),
-        new Vector3(midX - horizontalOffset, midY - verticalSpacing * 2, 0),
-        new Vector3(midX + horizontalOffset * 2, midY, 0)
-    };
-
-    foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
-    {
-        var index = CombatManager.Instance.GetAvailableEnemies().IndexOf(enemy);
-        Debug.Log($"Enemy Index: {index}");
-        var card = CreateCharacterCard(enemy, false, enemyPositions[index]);
-        enemyCards.Add(card);
-        enemy.SetGameObject(card);
-    }
-    foreach (var enemy in CombatManager.Instance.GetWaitingEnemies())
-    {
-        var card = CreateCharacterCard(enemy, false, new Vector3(Screen.width + 200, -200, 0));
-        waitingEnemyCards.Add(card);
-        enemy.SetGameObject(card);
+        foreach (var soldier in CombatManager.Instance.GetInBattleSoldiers())
+        {
+            if (soldier is not Soldier validSoldier) continue;
+            
+            var index = CombatManager.Instance.GetInBattleSoldiers().IndexOf(soldier);
+            var card = CreateCharacterCard(validSoldier, true, allyPositions[index]);
+            soldierCards.Add(card);
+            validSoldier.SetGameObject(card);
+        }
     }
 
-    // Update enemy count display after positioning cards.
-    UpdateEnemyCountDisplay();
-}
+
+    void CreateEnemyCards()
+    {
+        int midX = (Screen.width / 2) + 120;
+        int midY = Screen.height / 2;
+        
+        // Adjust these values until the spacing feels right.
+        float horizontalOffset = 50f;   // Increase if enemies are too close horizontally.
+        float verticalSpacing = 50f;    // Increase if enemies are too close vertically.
+        
+        enemyPositions = new List<Vector3>
+        {
+            new Vector3(midX - horizontalOffset, midY + verticalSpacing * 2, 0),
+            new Vector3(midX + horizontalOffset, midY + verticalSpacing, 0),
+            new Vector3(midX - horizontalOffset, midY, 0),
+            new Vector3(midX + horizontalOffset, midY - verticalSpacing, 0),
+            new Vector3(midX - horizontalOffset, midY - verticalSpacing * 2, 0),
+            new Vector3(midX + horizontalOffset * 2, midY, 0)
+        };
+
+        foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
+        {
+            var index = CombatManager.Instance.GetAvailableEnemies().IndexOf(enemy);
+            Debug.Log($"Enemy Index: {index}");
+            var card = CreateCharacterCard(enemy, false, enemyPositions[index]);
+            enemyCards.Add(card);
+            enemy.SetGameObject(card);
+        }
+        foreach (var enemy in CombatManager.Instance.GetWaitingEnemies())
+        {
+            var card = CreateCharacterCard(enemy, false, new Vector3(Screen.width + 200, -200, 0));
+            waitingEnemyCards.Add(card);
+            enemy.SetGameObject(card);
+        }
+
+        // Update enemy count display after positioning cards.
+        UpdateEnemyCountDisplay();
+    }
 
     GameObject CreateCharacterCard(Character character, bool isAlly, Vector2 position)
     {
@@ -307,7 +307,7 @@ void CreateSoldierCards()
     {
         selectedAbility = ability;
         // Update Attack button style and prompt based on ability type
-        if (CompareAbility(ability, "Heal"))
+        if (CompareAbility(ability, "Heal") || CompareAbility(ability, "Heal"))
         {
             attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "Heal";
             endTurnButton.GetComponentInChildren<TextMeshProUGUI>().text = "Cancel";
@@ -797,16 +797,14 @@ void CreateSoldierCards()
         selectedAlly is Soldier { AttackChances: > 0 };
 
     private void UpdateEnemyCountDisplay()
-{
-    if (enemyCountText == null) return;
+    {
+        if (enemyCountText == null) return;
 
-    int activeEnemies = CombatManager.Instance.CountAliveEnemies();
-    int waitingEnemies = CombatManager.Instance.GetWaitingEnemies().Count;
+        int activeEnemies = CombatManager.Instance.CountAliveEnemies();
+        int waitingEnemies = CombatManager.Instance.GetWaitingEnemies().Count;
 
-    Debug.Log($"Active Enemies: {activeEnemies}, Waiting Enemies: {waitingEnemies}");
-
-    enemyCountText.text = $"Enemies Remaining: {activeEnemies + waitingEnemies}";
-}
+        enemyCountText.text = $"Enemies Remaining: {activeEnemies + waitingEnemies}";
+    }
     
     #endregion
 
