@@ -12,7 +12,7 @@ namespace Assets.Scripts.Controller
         
         public static ResourceManager Instance { get; private set; }
         // Holds the resource data
-        private Resources resources;
+        private Model.Resources resources;
         // Database path/name
         public string dbName;
 
@@ -30,7 +30,7 @@ namespace Assets.Scripts.Controller
                 return;
             }
             
-            resources = new Resources();
+            resources = new Model.Resources();
             
             // Database path from StreamingAssets
             if (string.IsNullOrEmpty(dbName))
@@ -76,7 +76,7 @@ namespace Assets.Scripts.Controller
         }
 
         // Returns the current Resources instance
-        public Resources GetResources()
+        public Model.Resources GetResources()
         {
             return resources;
         }
