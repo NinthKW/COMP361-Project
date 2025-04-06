@@ -16,7 +16,7 @@ public class GridDropArea : MonoBehaviour, IDropHandler
         parentCanvas = GetComponentInParent<Canvas>();
         if (parentCanvas == null)
         {
-            Debug.LogError("No Canvas found in the scene to attach the buildingInfoDisplay!");
+            // Debug.LogError("No Canvas found in the scene to attach the buildingInfoDisplay!");
             return;
         }
 

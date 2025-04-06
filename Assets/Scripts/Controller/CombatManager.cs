@@ -87,11 +87,11 @@ namespace Assets.Scripts.Controller
                             soldier.GainExp(reader.GetInt32(3)); // 单独设置经验值
 
                             _availableSoldiers.Add(soldier);
-                            Debug.Log($"Loaded soldier: {soldier.Name} ({role.GetRoleName()})");
+                            // Debug.Log($"Loaded soldier: {soldier.Name} ({role.GetRoleName()})");
                         }
                         catch (Exception ex)
                         {
-                            Debug.LogError($"Failed to load soldier: {ex.Message}");
+                            // Debug.LogError($"Failed to load soldier: {ex.Message}");
                         }
                     }
                 }
@@ -106,7 +106,7 @@ namespace Assets.Scripts.Controller
             if (_availableSoldiers.Contains(soldier)) return;
             
             _availableSoldiers.Add(soldier);
-            Debug.Log($"Added soldier: {soldier.Name}");
+            // Debug.Log($"Added soldier: {soldier.Name}");
         }
 
         public Soldier CreateNewSoldier(string soldierName, string roleType)
@@ -154,7 +154,7 @@ namespace Assets.Scripts.Controller
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Failed to create soldier: {ex.Message}");
+                // Debug.LogError($"Failed to create soldier: {ex.Message}");
                 return null;
             }
         }
@@ -169,14 +169,14 @@ namespace Assets.Scripts.Controller
 
             if (mission == null || mission.AssignedEnemies == null || mission.AssignedEnemies.Count == 0)
             {
-                Debug.LogError("No enemies assigned to the mission.");
+                // Debug.LogError("No enemies assigned to the mission.");
                 return;
             }
 
             foreach (var enemy in mission.AssignedEnemies)
             {
                 _availableEnemies.Add(enemy);
-                Debug.Log($"Added enemy: {enemy.Name}");
+                // Debug.Log($"Added enemy: {enemy.Name}");
             }
         }
 
@@ -191,19 +191,19 @@ namespace Assets.Scripts.Controller
 
             if (selectedSoldiers == null || selectedSoldiers.Count == 0)
             {
-                Debug.LogError("Cannot start combat: no soldiers selected.");
+                // Debug.LogError("Cannot start combat: no soldiers selected.");
                 return;
             }
             _inBattleSoldiers.AddRange(selectedSoldiers);
 
             if (mission == null)
             {
-                Debug.LogError("Cannot start combat: mission is null.");
+                // Debug.LogError("Cannot start combat: mission is null.");
                 return;
             }
             if (mission.AssignedEnemies == null || mission.AssignedEnemies.Count == 0)
             {
-                Debug.LogError($"Mission '{mission.name}' has no assigned enemies.");
+                // Debug.LogError($"Mission '{mission.name}' has no assigned enemies.");
                 return;
             }
 
@@ -221,18 +221,18 @@ namespace Assets.Scripts.Controller
                 {
                     _waitingEnemies.Add(mission.AssignedEnemies[i]); // 剩下的敌人存入等待列表
                 }
-                Debug.Log($"Added enemy to _availableEnemies: {mission.AssignedEnemies[i].Name}");
+                // Debug.Log($"Added enemy to _availableEnemies: {mission.AssignedEnemies[i].Name}");
             }
 
             if (_inBattleSoldiers.Count == 0 || _inBattleEnemies.Count == 0)
             {
-                Debug.LogError("Cannot start combat with empty units");
+                // Debug.LogError("Cannot start combat with empty units");
                 return;
             }
 
             IsCombatActive = true;
             IsPlayerTurn = true;
-            Debug.Log($"Combat started: {_inBattleSoldiers.Count} vs {_inBattleEnemies.Count}");
+            // Debug.Log($"Combat started: {_inBattleSoldiers.Count} vs {_inBattleEnemies.Count}");
 
             CheckAndAssignAbilities(); // 检查并分配技能
 
@@ -262,25 +262,25 @@ namespace Assets.Scripts.Controller
         {
             if (!IsCombatActive)
             {
-                Debug.LogWarning("Combat is not active");
+                // Debug.LogWarning("Combat is not active");
                 return false;
             }
 
             if (attacker.IsDead() || target.IsDead())
             {
-                Debug.LogWarning("Cannot attack with/on dead character");
+                // Debug.LogWarning("Cannot attack with/on dead character");
                 return false;
             }
 
             if (IsPlayerTurn && !_inBattleSoldiers.Contains(attacker))
             {
-                Debug.LogWarning("Not a valid player character");
+                // Debug.LogWarning("Not a valid player character");
                 return false;
             }
 
             if (!IsPlayerTurn && !_inBattleEnemies.Contains(attacker))
             {
-                Debug.LogWarning("Not a valid enemy character");
+                // Debug.LogWarning("Not a valid enemy character");
                 return false;
             }
 
@@ -302,14 +302,14 @@ namespace Assets.Scripts.Controller
                     _waitingEnemies.RemoveAt(0);
                     _availableEnemies.Add(newEnemy);
                     _inBattleEnemies.Add(newEnemy);
-                    Debug.Log($"Replaced dead enemy with: {newEnemy.Name}");
+                    // Debug.Log($"Replaced dead enemy with: {newEnemy.Name}");
                 }
             }
         }
 
         public bool CheckCombatEnd()
         {
-            Debug.Log($"Checking combat end: {CountAliveSoldiers()} vs {CountAliveEnemies()}");
+            // Debug.Log($"Checking combat end: {CountAliveSoldiers()} vs {CountAliveEnemies()}");
             if (CountAliveSoldiers() == 0)
             {
                 EndCombat(false);
@@ -343,10 +343,10 @@ namespace Assets.Scripts.Controller
                         {
                             int healAmount = Mathf.Abs(soldier.Atk);
                             var healAbility = gameObject.AddComponent<HealAbility>();
-                            healAbility.Initialize("Nano Heal", cost: 1, cooldown: 3, duration: 1,
+                            healAbility.Initialize("Nano Heal", cost: 1, cooldown: 3, 
                                 description: "Base healing ability, heal amount scales with attack.", healAmount: healAmount);
                             soldier.Abilities.Add(healAbility);
-                            Debug.Log($"{soldier.Name} acquired Heal ability with heal amount of {healAmount}.");
+                            // Debug.Log($"{soldier.Name} acquired Heal ability with heal amount of {healAmount}.");
                         }
                     }
                     if (soldier.Level > 5)
@@ -358,7 +358,7 @@ namespace Assets.Scripts.Controller
                             healBuffAbility.Initialize("Nano Revival", cost: 1, cooldown: 3, duration: 1,
                                 description: "Heal and buff ability, heal amount scales with attack.", healAmount: healAmount, buffDefAmount: (int)(soldier.Def * 0.5f));
                             soldier.Abilities.Add(healBuffAbility);
-                            Debug.Log($"{soldier.Name} acquired Heal Buff ability with heal amount of {healAmount} and defense buff.");
+                            // Debug.Log($"{soldier.Name} acquired Heal Buff ability with heal amount of {healAmount} and defense buff.");
                         }
                     }
                     if (soldier.Level > 7)
@@ -370,7 +370,7 @@ namespace Assets.Scripts.Controller
                             shieldAbility.Initialize("Aegis Surge", cost: 2, cooldown: 3, duration: 1,
                                 description: "Shield ability, shield amount scales with attack.", shieldAmount: shieldAmount);
                             soldier.Abilities.Add(shieldAbility);
-                            Debug.Log($"{soldier.Name} acquired Nano Shield ability with shield amount of {shieldAmount}.");
+                            // Debug.Log($"{soldier.Name} acquired Nano Shield ability with shield amount of {shieldAmount}.");
                         }
                     }
                 }
@@ -384,7 +384,7 @@ namespace Assets.Scripts.Controller
                         tauntAbility.Initialize("Defiant Roar", cost: soldier.MaxAttacksPerTurn, cooldown: 1, duration: 2,
                             description: "Taunt ability lasting fixed rounds, defense buff based on percentage defense.", buffDefAmount: buffDefAmount);
                         soldier.Abilities.Add(tauntAbility);
-                        Debug.Log($"{soldier.Name} acquired Taunt ability with defense buff of {buffDefAmount}.");
+                        // Debug.Log($"{soldier.Name} acquired Taunt ability with defense buff of {buffDefAmount}.");
                     }
                 }
                 // Check for Engineer role
@@ -399,7 +399,7 @@ namespace Assets.Scripts.Controller
                         buffAbility.Initialize("Adrenaline Rush", cost: soldier.MaxAttacksPerTurn, cooldown: 2, duration: duration,
                             description: "Buff ability, attack and speed buffs scale with attack.", buffAtkAmount: buffAtkAmount, buffSpeedAmount: buffSpeedAmount);
                         soldier.Abilities.Add(buffAbility);
-                        Debug.Log($"{soldier.Name} acquired Attack Buff ability lasting {duration} rounds with attack buff of {buffAtkAmount} and speed buff of {buffSpeedAmount}.");
+                        // Debug.Log($"{soldier.Name} acquired Attack Buff ability lasting {duration} rounds with attack buff of {buffAtkAmount} and speed buff of {buffSpeedAmount}.");
                     }
                 }
             }
@@ -418,24 +418,24 @@ namespace Assets.Scripts.Controller
         private void ApplyTerrainAndWeatherEffects()
         {
             if (currentMission == null) {
-                Debug.LogError("CombatManager: currentMission is null. Cannot apply terrain and weather effects.");
+                // Debug.LogError("CombatManager: currentMission is null. Cannot apply terrain and weather effects.");
                 return;
             }
 
             // 从当前任务中加载 Terrain 和 Weather 的效果
             terrainAtkEffect = currentMission.terrainAtkEffect;
-            Debug.Log($"Terrain Atk Effect: {terrainAtkEffect}");
+            // Debug.Log($"Terrain Atk Effect: {terrainAtkEffect}");
             terrainDefEffect = currentMission.terrainDefEffect;
-            Debug.Log($"Terrain Def Effect: {terrainDefEffect}");
+            // Debug.Log($"Terrain Def Effect: {terrainDefEffect}");
             terrainHpEffect = currentMission.terrainHpEffect;
-            Debug.Log($"Terrain HP Effect: {terrainHpEffect}");
+            // Debug.Log($"Terrain HP Effect: {terrainHpEffect}");
 
             weatherAtkEffect = currentMission.weatherAtkEffect;
-            Debug.Log($"Weather Atk Effect: {weatherAtkEffect}");
+            // Debug.Log($"Weather Atk Effect: {weatherAtkEffect}");
             weatherDefEffect = currentMission.weatherDefEffect;
-            Debug.Log($"Weather Def Effect: {weatherDefEffect}");
+            // Debug.Log($"Weather Def Effect: {weatherDefEffect}");
             weatherHpEffect = currentMission.weatherHpEffect;
-            Debug.Log($"Weather HP Effect: {weatherHpEffect}");
+            // Debug.Log($"Weather HP Effect: {weatherHpEffect}");
 
             // 对士兵应用效果
             foreach (var soldier in _inBattleSoldiers)
@@ -456,12 +456,12 @@ namespace Assets.Scripts.Controller
         {
             if (!IsPlayerTurn) CheckAndReplaceDeadEnemies();
             IsPlayerTurn = !IsPlayerTurn;
-            Debug.Log($"Turn switched to: {(IsPlayerTurn ? "Player" : "Enemy")}");
+            // Debug.Log($"Turn switched to: {(IsPlayerTurn ? "Player" : "Enemy")}");
             yield return new WaitForSeconds(enemyTurnDelay);
 
             if (IsPlayerTurn)
             {
-                AbilityCountDown(); // 玩家回合结束时，技能冷却
+                BuffsCountDown(); // buffs倒计时
                 CheckAndAssignAbilities(); // 检查并分配技能
             }
         }
@@ -475,12 +475,12 @@ namespace Assets.Scripts.Controller
 
             if (validSoldiers.Count == 0)
             {
-                Debug.LogError("No valid soldiers available. Cannot select any soldier.");
+                // Debug.LogError("No valid soldiers available. Cannot select any soldier.");
                 throw new InvalidOperationException("No valid soldier available.");
             }
 
             var tauntSoldiers = validSoldiers
-                .Where(s => s.Buffs.ContainsKey("Taunt"))
+                .Where(s => s.Buffs.Any(buff => buff.Value.Name.Equals("Taunt", StringComparison.OrdinalIgnoreCase)))
                 .ToList();
 
             if (tauntSoldiers.Count > 0)
@@ -496,7 +496,7 @@ namespace Assets.Scripts.Controller
         public void EndCombat(bool victory)
         {
             IsCombatActive = false;
-            Debug.Log($"Combat ended with {(victory ? "victory" : "defeat")}");
+            // Debug.Log($"Combat ended with {(victory ? "victory" : "defeat")}");
             
             // Reward experience
             if (victory)
@@ -531,14 +531,21 @@ namespace Assets.Scripts.Controller
         #region Helper Methods
         private int CountAliveSoldiers() => _inBattleSoldiers.Count(s => s != null && !s.IsDead());
         public int CountAliveEnemies() => _availableEnemies.Count(e => e != null && !e.IsDead());
-        private void AbilityCountDown()
+        private void BuffsCountDown()
         {
             foreach (var soldier in _inBattleSoldiers)
             {
                 if (soldier == null || soldier.IsDead()) continue;
-                foreach (var ability in soldier.Abilities)
+                Dictionary<Ability, Buff> temp = new(soldier.Buffs);
+                foreach (var buffPair in temp)
                 {
-                    ability.OnTurnEnd(new List<Character> { soldier });
+                    buffPair.Value.UpdateDuration(soldier);
+                    Debug.Log($"{soldier.Name}'s {buffPair.Key} buff duration: {buffPair.Value.Duration}");
+                    if (buffPair.Value.IsExpired())
+                    {
+                        soldier.Buffs.Remove(buffPair.Key);
+                        Debug.Log($"{soldier.Name}'s {buffPair.Key} buff has expired.");
+                    }
                 }
             }
         }

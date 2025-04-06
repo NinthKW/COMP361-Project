@@ -51,28 +51,6 @@ namespace Assets.Scripts.Model
             DurationCounter = Duration;
             return true;
         }
-
-        public virtual void OnTurnEnd(List<Character> targets)
-        {
-            if (Duration > 0)
-            {
-                DurationCounter = Mathf.Max(0, DurationCounter - 1);
-                if (DurationCounter <= 0)
-                {
-                    // TODO: add to UI
-                    Debug.Log($"{Name} has expired.");
-                }
-            }
-            if (IsOnCooldown)
-            {
-                Cooldown--;
-                if (Cooldown <= 0)
-                {
-                    // TODO: add to UI
-                    Debug.Log($"{Name} is ready to use again.");
-                }
-            }
-        }
     }
 
     #region Heals
@@ -80,9 +58,9 @@ namespace Assets.Scripts.Model
     {
         public int HealAmount { get; private set; }
         
-        public void Initialize(string name, int cost, int cooldown, int duration, string description, int healAmount)
+        public void Initialize(string name, int cost, int cooldown, string description, int healAmount)
         {
-            base.Initialize(name, cost, cooldown, duration, description, "Heal");
+            base.Initialize(name, cost, cooldown, 0, description, "Heal");
             HealAmount = healAmount;
         }
 
@@ -94,7 +72,7 @@ namespace Assets.Scripts.Model
                 if (target != null && target.Health < target.MaxHealth)
                 {
                     target.Health = Mathf.Min(target.Health + HealAmount, target.MaxHealth);
-                    Debug.Log($"{target.Name} healed for {HealAmount} health!");
+                    // Debug.Log($"{target.Name} healed for {HealAmount} health!");
                 }
             }
             return true;
@@ -106,66 +84,41 @@ namespace Assets.Scripts.Model
         public int HealAmount { get; private set; }
         public int BuffDefAmount { get; private set; }
         private float healPerTurn;
+        private Buff healBuff;
 
         public void Initialize(string name, int cost, int cooldown, int duration, string description, int healAmount, int buffDefAmount)
         {
             base.Initialize(name, cost, cooldown, duration, description, "HealBuff");
             HealAmount = healAmount;
             BuffDefAmount = buffDefAmount;
+            healPerTurn = (float) HealAmount / Duration;
+            healBuff = new Buff("HealBuff", Duration, true, 
+                                effectPerTurn: (target) => 
+                                {
+                                    target.Health = Mathf.Min(target.Health + (int) healPerTurn, target.MaxHealth);
+                                    target.Def += BuffDefAmount;
+                                    return 0; // Return value is not used in this context
+                                });
         }
 
         public override bool Activate(List<Character> targets)
         {
             if (!base.Activate(targets)) return false;
-            healPerTurn = (float) HealAmount / Duration;
             foreach (var target in targets)
             {
                 if (target != null)
                 {
-                    // Increase defense immediately
-                    target.Def += BuffDefAmount;
-                    target.Buffs.Add("HealBuff", this);
-
-                    StartCoroutine(HealOverTime(target, healPerTurn));
-
-                    Debug.Log($"{target.Name} will heal for {healPerTurn} per turn for {Duration} turns and defense increased by {BuffDefAmount}!");
+                    target.Buffs.Remove(this);
+                    target.Buffs.Add(this, healBuff);
+                    Debug.Log($"{target.Name} will heal for {healPerTurn} per turn for the rest of the combat and defense increased by {BuffDefAmount}!");
                 }
             }
             return true;
         }
-
-        public override void OnTurnEnd(List<Character> targets)
-        {
-            base.OnTurnEnd(targets);
-            if (IsActive)
-            {
-                Duration--;
-                Cooldown--;
-                if (Cooldown <= 0)
-                {
-                    IsOnCooldown = false;
-                    Debug.Log($"{Name} is ready to use again.");
-                }
-                if (Duration <= 0)
-                {
-                    IsActive = false;
-                    Debug.Log($"{Name} has expired.");
-                    foreach (var target in targets)
-                    {
-                        if (target != null && target.Buffs.ContainsKey("HealBuff"))
-                        {
-                            target.Def -= BuffDefAmount;
-                            target.Buffs.Remove("HealBuff");
-                            Debug.Log($"{target.Name}'s defense decreased by {BuffDefAmount}!");
-                        }
-                    }
-                }
-            }
-        }
     }
     #endregion
 
-    #region buffs
+    #region buff abilities
     public class ShieldAbility : Ability
     {
         public int ShieldAmount { get; private set; }
@@ -184,8 +137,7 @@ namespace Assets.Scripts.Model
                 if (target != null)
                 {
                     target.Shield += ShieldAmount;
-                    target.Buffs.Add("Shield", this);
-                    Debug.Log($"{target.Name} gains a shield of {ShieldAmount}!");
+                    // Debug.Log($"{target.Name} shielded for {ShieldAmount}!");
                 }
             }
             return true;
@@ -196,12 +148,27 @@ namespace Assets.Scripts.Model
     {
         public int BuffAtkAmount { get; private set; }
         public int BuffSpeedAmount { get; private set; }
+        private Buff atkBuff;
 
         public void Initialize(string name, int cost, int cooldown, int duration, string description, int buffAtkAmount, int buffSpeedAmount=1)
         {
             base.Initialize(name, cost, cooldown, duration, description, "Buff");
             BuffAtkAmount = buffAtkAmount;
             BuffSpeedAmount = buffSpeedAmount;
+            atkBuff = new Buff
+            ("BuffAtk", duration, false, 
+                effectOnStart: (target) => 
+                {
+                    target.Atk += BuffAtkAmount;
+                    target.AttackChances += BuffSpeedAmount;
+                    return 0; // Return value is not used in this context
+                },
+                effectOnExpire: (target) =>
+                {
+                    target.Atk -= BuffAtkAmount;
+                    return 0; // Return value is not used in this context
+                }
+            );
         }
 
         public override bool Activate(List<Character> targets)
@@ -211,10 +178,9 @@ namespace Assets.Scripts.Model
             {
                 if (target != null)
                 {
-                    target.Atk += BuffAtkAmount;
-                    target.AttackChances += BuffSpeedAmount;
-                    target.Buffs.Add("BuffAtk", this);
-                    Debug.Log($"{target.Name}'s attack increased by {BuffAtkAmount} and speed increased by {BuffSpeedAmount}!");
+                    target.Buffs.Remove(this);
+                    target.Buffs.Add(this, atkBuff);
+                    // Debug.Log($"{target.Name}'s attack increased by {BuffAtkAmount} and speed increased by {BuffSpeedAmount}!");
                 }
             }
             return true;
@@ -227,12 +193,15 @@ namespace Assets.Scripts.Model
     {
         public int TauntDuration { get; private set; }
         public int BuffDefAmount { get; private set; }
+        private Buff tauntBuff;
 
         public void Initialize(string name, int cost, int cooldown, int duration, string description, int buffDefAmount)
         {
-            base.Initialize(name, cost, cooldown, duration, description, "Control");
+            base.Initialize(name, cost, cooldown, duration, description, "TauntAll");
             TauntDuration = duration;
             BuffDefAmount = buffDefAmount;
+            tauntBuff = new Buff("Taunt", TauntDuration, false, 
+                                (target) => target.Def += BuffDefAmount);
         }
 
         public override bool Activate(List<Character> targets)
@@ -242,50 +211,71 @@ namespace Assets.Scripts.Model
             {
                 if (target != null)
                 {
-                    target.Buffs.Add("Taunt", this);
-                    target.Def += BuffDefAmount;
-                    target.Shield += target.Atk;
-                    TauntDuration = this.Duration;
-
-                    Debug.Log($"{target} taunts enemies for {TauntDuration} turns!");
+                    target.Buffs.Remove(this);
+                    target.Buffs.Add(this, tauntBuff);
+                    // Debug.Log($"{target.Name} is taunting for {TauntDuration} turns and defense increased by {BuffDefAmount}!");
                 }
             }
             return true;
         }
+    }
+    #endregion
 
-        public override void OnTurnEnd(List<Character> targets)
+
+    #region buffs
+    public class Buff
+    {
+        public string Name { get; set; }
+        public int Duration { get; set; }
+        public bool Permanent { get; set; } = false;
+        public Func<Character, int> EffectPerTurn { get; set; } = null;
+        public Func<Character, int> EffectOnStart { get; set; } = null;
+        public Func<Character, int> EffectOnExpire { get; set; } = null;
+        private bool Start;
+        public Buff(string name, int duration, bool permanent = false, 
+                    Func<Character, int> effectPerTurn = null,
+                    Func<Character, int> effectOnStart = null,
+                    Func<Character, int> effectOnExpire = null)
         {
-            base.OnTurnEnd(targets);
-            if (IsActive)
+            Name = name;
+            Duration = duration;
+            Permanent = permanent;
+            if (Permanent) Duration = 999;
+            EffectPerTurn = effectPerTurn;
+            EffectOnStart = effectOnStart;
+            EffectOnExpire = effectOnExpire;
+            Start = true;
+        }
+
+        public void UpdateDuration(Character target)
+        {
+            if (target == null || target.IsDead()) return;
+            if (IsExpired()) return; // Buff is expired
+            if (Start && EffectOnStart != null)
             {
-                TauntDuration--;
-                Cooldown--;
-                if (Cooldown <= 0)
-                {
-                    IsOnCooldown = false;
-                    Debug.Log($"{Name} is ready to use again.");
-                }
-                if (TauntDuration <= 0)
-                {
-                    IsActive = false;
-                    Debug.Log($"{Name} has expired.");
-                    foreach (var target in targets)
-                    {
-                        if (target != null && target.Buffs.ContainsKey("Taunt"))
-                        {
-                            target.Def -= BuffDefAmount;
-                            if (target.Shield > 0) {
-                                target.Shield -= target.Atk;
-                            }
-                            else {
-                                target.Shield = 0;
-                            }
-                            target.Buffs.Remove("Taunt");
-                            Debug.Log($"{target} is no longer taunting.");
-                        }
-                    }
-                }
+                EffectOnStart(target);
+                Start = false; // Only apply once at the start
             }
+            if (EffectPerTurn != null)
+            {
+                EffectPerTurn(target);
+            }
+            Duration--;
+            if (EffectOnExpire != null && Duration == 0 && !Permanent)
+            {
+                EffectOnExpire(target);
+            }
+        }
+        public bool IsExpired()
+        {
+            return !Permanent && Duration <= 0;
+        }
+
+        public void Apply(Func<Character, int> effect, Character target)
+        {
+            if (target == null || target.IsDead()) return;
+            if (IsExpired()) return; // Buff is expired
+            effect(target);
         }
     }
     #endregion

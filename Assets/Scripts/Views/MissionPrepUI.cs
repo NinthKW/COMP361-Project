@@ -36,7 +36,7 @@ public class MissionPreparationUI : MonoBehaviour
     {
         if (CombatManager.Instance == null)
         {
-            Debug.Log("Debugging Scene");
+            // Debug.Log("Debugging Scene");
             CombatManager.Instance = new GameObject().AddComponent<CombatManager>();
         }
         CombatManager.Instance.UpdateInitialEnemies(CombatManager.Instance.currentMission);
@@ -104,7 +104,7 @@ public class MissionPreparationUI : MonoBehaviour
         // 检查是否所有槽位都没有士兵
         if (formationSlots.All(slot => slot.CurrentSoldier == null))
         {
-            Debug.Log("没有士兵分配到阵型槽位，无法开始战斗！");
+            // Debug.Log("没有士兵分配到阵型槽位，无法开始战斗！");
             return;
         }
 
@@ -121,7 +121,7 @@ public class MissionPreparationUI : MonoBehaviour
         {
             if (slot.CurrentSoldier != null) 
             {
-                Debug.Log($"Slot {slot.SlotIndex} has soldier: {slot.CurrentSoldier.Name}");
+                // Debug.Log($"Slot {slot.SlotIndex} has soldier: {slot.CurrentSoldier.Name}");
                 selectedSoldiers[slot.SlotIndex] = slot.CurrentSoldier;
             } 
             else 
@@ -193,7 +193,7 @@ public class MissionPreparationUI : MonoBehaviour
         }
         else
         {
-            Debug.Log("只能选择士兵卡片分配到阵型槽位");
+            // Debug.Log("只能选择士兵卡片分配到阵型槽位");
         }
     }
 

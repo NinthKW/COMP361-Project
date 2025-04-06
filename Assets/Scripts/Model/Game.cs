@@ -78,7 +78,7 @@ namespace Assets.Scripts.Model
                                     medicine = currentAmount;
                                     break;
                                 default:
-                                    Debug.LogWarning("Unexpected resource id: " + resourceId);
+                                    // Debug.LogWarning("Unexpected resource id: " + resourceId);
                                     break;
                             }
                         }

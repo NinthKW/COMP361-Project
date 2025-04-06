@@ -26,22 +26,22 @@ public class BaseUI : MonoBehaviour
 
     void PopulateBuildingList()
     {
-        Debug.Log("PopulateBuildingList called");
+        // Debug.Log("PopulateBuildingList called");
         if (BaseManager.Instance == null)
         {
-            Debug.LogError("BaseManager.Instance is NULL");
+            // Debug.LogError("BaseManager.Instance is NULL");
             return;
         }
         if (BaseManager.Instance.buildingList == null)
         {
-            Debug.LogError("building list is NULL");
+            // Debug.LogError("building list is NULL");
             return;
         }
 
-        Debug.Log("Building count: " + BaseManager.Instance.buildingList.Count);
+        // Debug.Log("Building count: " + BaseManager.Instance.buildingList.Count);
         foreach (var building in BaseManager.Instance.buildingList)
         {
-            Debug.Log("Adding building: " + building.name);
+            // Debug.Log("Adding building: " + building.name);
             GameObject buttonObj = Instantiate(missionButtonPrefab, missionButtonContainer);
             
             // Increase the button's height (doubling it in this example)
@@ -58,7 +58,7 @@ public class BaseUI : MonoBehaviour
             buttonObj.GetComponent<Image>().sprite = buttonTexture;
             if (buttonTexture == null)
             {
-                Debug.LogError("Sprite not found: " + "base_" + building.name.ToLower());
+                // Debug.LogError("Sprite not found: " + "base_" + building.name.ToLower());
             }
             
             TextMeshProUGUI buttonText = buttonObj.GetComponentInChildren<TextMeshProUGUI>();

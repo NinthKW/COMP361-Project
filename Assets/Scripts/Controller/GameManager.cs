@@ -47,7 +47,7 @@ namespace Assets.Scripts.Controller
 
         public void ChangeState(GameState newState)
         {
-            Debug.Log("Game State changed to: " + newState);
+            // Debug.Log("Game State changed to: " + newState);
         }
 
         public void LoadGameState(GameState newState)
@@ -91,7 +91,7 @@ namespace Assets.Scripts.Controller
         public void NewGame()
         {
             currentGame = new Game();
-            Debug.Log("New game started with default settings.");
+            // Debug.Log("New game started with default settings.");
         }
         public void LoadGame()
         {
@@ -100,7 +100,7 @@ namespace Assets.Scripts.Controller
     
             // Create a new game instance using the constructor that loads data from the database.
             currentGame = new Game(dbPath);
-            Debug.Log("Game loaded from database: " + dbPath);
+            // Debug.Log("Game loaded from database: " + dbPath);
 
         }
 
@@ -111,11 +111,11 @@ namespace Assets.Scripts.Controller
             // Assuming you add a SaveGameData method in your Game class,
             // call it to save all game data to the database.
             currentGame.SaveGameData();
-            Debug.Log("Game saved to database.");
+            // Debug.Log("Game saved to database.");
             }
             else
             {
-                Debug.LogWarning("No game instance available to save.");
+                // Debug.LogWarning("No game instance available to save.");
             }   
         }
 
@@ -128,7 +128,7 @@ namespace Assets.Scripts.Controller
         {
             tempResourceAmounts[resourceId] = currentGame.resourcesData.GetAmount(resourceId);
             tempResourceAmounts[resourceId] += changeAmount;
-            Debug.Log("Temporary value for resource " + resourceId + " is now " + tempResourceAmounts[resourceId]);
+            // Debug.Log("Temporary value for resource " + resourceId + " is now " + tempResourceAmounts[resourceId]);
         }
 
         public void CancelResourceChanges()
@@ -139,7 +139,7 @@ namespace Assets.Scripts.Controller
         {
             currentGame.resourcesData.UpdateAllResources(tempResourceAmounts);
             tempResourceAmounts.Clear();
-            Debug.Log("Resource changes confirmed");
+            // Debug.Log("Resource changes confirmed");
         }
         
         public int GetResourceDisplayValue(int resourceId)
