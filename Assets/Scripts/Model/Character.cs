@@ -162,7 +162,7 @@ namespace Assets.Scripts.Model
 
         protected override int CalculateDamage()
         {
-            int baseDamage = 10;  // 基础伤害
+            int baseDamage = Atk;  // 基础攻击力
             if (_hasGun) baseDamage += 15;
             return baseDamage + Level * 3;
         }
