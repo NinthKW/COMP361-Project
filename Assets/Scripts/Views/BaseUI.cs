@@ -5,99 +5,110 @@ using TMPro;
 using UnityEngine;
 using Assets.Scripts.Controller;
 using UnityEngine.UI;
+using Codice.CM.Common.Checkin.Partial.ConflictCheckers;
 
-public class BaseUI : MonoBehaviour
+namespace Assets.Scripts
 {
-    public Transform missionButtonContainer;
-    public GameObject missionButtonPrefab;
-    private Base selectedBuilding;
-    public Button backButton;
-    private RectTransform tableRect;
-
-    void Start()
+    public class BaseUI : MonoBehaviour
     {
-        PopulateBuildingList();
-        backButton.onClick.AddListener(OnBackButtonClicked);
-    }
+        public Transform missionButtonContainer;
+        public GameObject missionButtonPrefab;
+        private Base selectedBuilding;
+        public Button backButton;
+        private RectTransform tableRect;
+        public GameObject grid2d;
 
-    void Update()
-    {
-    }
-
-    void PopulateBuildingList()
-    {
-        // Debug.Log("PopulateBuildingList called");
-        if (BaseManager.Instance == null)
+        void Start()
         {
-            // Debug.LogError("BaseManager.Instance is NULL");
-            return;
-        }
-        if (BaseManager.Instance.buildingList == null)
-        {
-            // Debug.LogError("building list is NULL");
-            return;
+            PopulateBuildingList();
+            backButton.onClick.AddListener(OnBackButtonClicked);
         }
 
-        // Debug.Log("Building count: " + BaseManager.Instance.buildingList.Count);
-        foreach (var building in BaseManager.Instance.buildingList)
+        void Update()
         {
-            // Debug.Log("Adding building: " + building.name);
-            GameObject buttonObj = Instantiate(missionButtonPrefab, missionButtonContainer);
-            
-            // Increase the button's height (doubling it in this example)
-            RectTransform buttonRect = buttonObj.GetComponent<RectTransform>();
-            buttonRect.sizeDelta = new Vector2(buttonRect.sizeDelta.x, buttonRect.sizeDelta.y * 2);
-            
-            LayoutElement layoutElement = buttonObj.GetComponent<LayoutElement>();
-            if (layoutElement != null)
+        }
+
+        void PopulateBuildingList()
+        {
+            Debug.Log("PopulateBuildingList called");
+            if (BaseManager.Instance == null)
             {
-                layoutElement.preferredHeight = buttonRect.sizeDelta.y;
+                Debug.LogError("BaseManager.Instance is NULL");
+                return;
             }
-            
-            Sprite buttonTexture = UnityEngine.Resources.Load<Sprite>("base_" + building.name.ToLower());
-            buttonObj.GetComponent<Image>().sprite = buttonTexture;
-            if (buttonTexture == null)
+            if (BaseManager.Instance.buildingList == null)
             {
-                // Debug.LogError("Sprite not found: " + "base_" + building.name.ToLower());
+                Debug.LogError("building list is NULL");
+                return;
             }
-            
-            TextMeshProUGUI buttonText = buttonObj.GetComponentInChildren<TextMeshProUGUI>();
-            buttonText.text = building.name;
-            
-            // Assign the building info to the DraggableBuilding component.
-            DraggableBuilding draggable = buttonObj.GetComponent<DraggableBuilding>();
-            if (draggable != null)
+
+            Debug.Log("Building count: " + BaseManager.Instance.buildingList.Count);
+            foreach (var building in BaseManager.Instance.buildingList)
             {
-                draggable.building_id = building.building_id;
-                draggable.buildingName = building.name;
-                draggable.description = building.description;
-                draggable.level = building.level;
-                draggable.cost = building.cost;
-                draggable.resource_amount = building.resource_amount;
-                draggable.resource_type = building.resource_type;
-                draggable.unlocked = building.unlocked;
+                Debug.Log("Adding building: " + building.name);
+                GameObject buttonObj = Instantiate(missionButtonPrefab, missionButtonContainer);
+
+                // Increase the button's height (doubling it in this example)
+                RectTransform buttonRect = buttonObj.GetComponent<RectTransform>();
+                buttonRect.sizeDelta = new Vector2(buttonRect.sizeDelta.x, buttonRect.sizeDelta.y * 2);
+
+                LayoutElement layoutElement = buttonObj.GetComponent<LayoutElement>();
+                if (layoutElement != null)
+                {
+                    layoutElement.preferredHeight = buttonRect.sizeDelta.y;
+                }
+
+                Sprite buttonTexture = UnityEngine.Resources.Load<Sprite>("base_" + building.name.ToLower());
+                buttonObj.GetComponent<Image>().sprite = buttonTexture;
+                if (buttonTexture == null)
+                {
+                    Debug.LogError("Sprite not found: " + "base_" + building.name.ToLower());
+                }
+
+                TextMeshProUGUI buttonText = buttonObj.GetComponentInChildren<TextMeshProUGUI>();
+                buttonText.text = building.name;
+
+                // Assign the building info to the DraggableBuilding component.
+                DraggableBuilding draggable = buttonObj.GetComponent<DraggableBuilding>();
+                if (draggable != null)
+                {
+                    draggable.building = building;
+                }
+
+                Button btn = buttonObj.GetComponent<Button>();
+                btn.onClick.AddListener(() => OnSelectedBuilding(building));
+                buttonObj.SetActive(true);
+
+                //If building should be placed, add it to grid2d
+                if (building.placed)
+                {
+                    buttonObj.transform.parent = grid2d.transform;
+                    RectTransform rectTransform = buttonObj.transform.GetComponent<RectTransform>();
+
+                    rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                    rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+                    rectTransform.pivot = new Vector2(0.5f, 0.5f);
+
+                    rectTransform.anchoredPosition = new Vector2((float) building.x, (float) building.y);
+                }
             }
-            
-            Button btn = buttonObj.GetComponent<Button>();
-            btn.onClick.AddListener(() => OnSelectedBuilding(building));
-            buttonObj.SetActive(true);
+
+            GridLayoutGroup grid = missionButtonContainer.GetComponent<GridLayoutGroup>();
+            if (grid != null)
+            {
+                grid.cellSize = new Vector2(grid.cellSize.x, grid.cellSize.y * 2);
+            }
         }
 
-        GridLayoutGroup grid = missionButtonContainer.GetComponent<GridLayoutGroup>();
-        if (grid != null)
+        void OnSelectedBuilding(Base building)
         {
-            grid.cellSize = new Vector2(grid.cellSize.x, grid.cellSize.y * 2);
+            selectedBuilding = building;
         }
-    }
 
-    void OnSelectedBuilding(Base building)
-    {
-        selectedBuilding = building;
-    }
-
-    void OnBackButtonClicked()
-    {
-        GameManager.Instance.ChangeState(GameState.MainMenuPage);
-        GameManager.Instance.LoadGameState(GameState.MainMenuPage);
+        void OnBackButtonClicked()
+        {
+            GameManager.Instance.ChangeState(GameState.MainMenuPage);
+            GameManager.Instance.LoadGameState(GameState.MainMenuPage);
+        }
     }
 }
