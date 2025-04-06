@@ -78,6 +78,7 @@ public class MissionPreparationUI : MonoBehaviour
         // 加载敌人
         foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
         {
+            // TODO: add enemy types and numbers of enemies, not all of them
             var card = Instantiate(soldierCardPrefab, availableEnemiesPanel).GetComponent<CharacterCard>();
             card.Initialize(enemy, this);
             enemyCards.Add(card);
@@ -143,6 +144,8 @@ public class MissionPreparationUI : MonoBehaviour
     public void OnSoldierSelected(CharacterCard card)
     {
         // 取消之前的选择
+        // TODO: optimize this to avoid unnecessary calls
+        // TODO: display ability info for selected soldier
         if (selectedCharacterCard != null) 
         {
             selectedCharacterCard.SetSelected(false);
@@ -199,8 +202,6 @@ public class MissionPreparationUI : MonoBehaviour
         // Assign按钮状态
         bool canAssign = selectedCharacterCard != null && selectedFormationSlot != null;
         assignButton.interactable = canAssign;
-
-        // 其他按钮状态...
     }
 
     void OnAssignButtonClicked()
