@@ -14,14 +14,38 @@ namespace Assets.Scripts
         public Transform missionButtonContainer;
         public GameObject missionButtonPrefab;
         private Base selectedBuilding;
-        public Button backButton;
         private RectTransform tableRect;
         public GameObject grid2d;
+
+        public GameObject scroll;
+        public Button backButton;
+        public Button modeButton;
+        public int mode = 0; //0 = use, 1 = edit
+
+        public List<GameObject> buttonList = new List<GameObject>();
 
         void Start()
         {
             PopulateBuildingList();
             backButton.onClick.AddListener(OnBackButtonClicked);
+            modeButton.onClick.AddListener(OnModeButtonClicked);
+
+            //Make sure that it is in use mode
+            mode = 0;
+            foreach (GameObject button in buttonList)
+            {
+                button.GetComponent<DraggableBuilding>().enabled = false;
+
+                if (button.GetComponent<DraggableBuilding>().building.placed == true)
+                {
+                    button.GetComponent<Button>().enabled = true;
+                } else
+                {
+                    button.GetComponent <Button>().enabled = false;
+                }
+            }
+
+            modeButton.GetComponentInChildren<TextMeshProUGUI>().text = "Enter Edit Mode";
         }
 
         void Update()
@@ -91,6 +115,19 @@ namespace Assets.Scripts
 
                     rectTransform.anchoredPosition = new Vector2((float) building.x, (float) building.y);
                 }
+
+                //Link each building with its functionality
+                if (building.name.ToLower() == "hospital")
+                {
+                    btn.onClick.AddListener(BuildingFunctionality.hospitalFunctionality);
+                } else if (building.name.ToLower() == "hq")
+                {
+                    btn.onClick.AddListener(BuildingFunctionality.hqFunctionality);
+                }
+
+
+                //Add to buttonsList
+                buttonList.Add(buttonObj);
             }
 
             GridLayoutGroup grid = missionButtonContainer.GetComponent<GridLayoutGroup>();
@@ -109,6 +146,43 @@ namespace Assets.Scripts
         {
             GameManager.Instance.ChangeState(GameState.MainMenuPage);
             GameManager.Instance.LoadGameState(GameState.MainMenuPage);
+        }
+
+        void OnModeButtonClicked()
+        {
+            Debug.Log("Base mode changed");
+
+            ScrollRect scrollRect = scroll.GetComponent<ScrollRect>();
+            if (scrollRect == null) {
+                Debug.LogError("scroll rect not found");
+            }
+
+
+            if (mode == 1) { //change from edit to use
+                mode = 0;
+                foreach(GameObject button in buttonList)
+                {
+                    button.GetComponent<DraggableBuilding>().enabled = false;
+                    
+                    if (button.GetComponent<DraggableBuilding>().building.placed == true)
+                    {
+                        button.GetComponent<Button>().enabled = true;
+                    }
+                }
+
+                modeButton.GetComponentInChildren<TextMeshProUGUI>().text = "Enter Edit Mode";
+            }
+            else if (mode == 0) { //from use to edit
+                mode = 1;
+                foreach (GameObject button in buttonList)
+                {
+                    button.GetComponent<DraggableBuilding>().enabled = true;
+                    button.GetComponent<Button>().enabled = false;
+                }
+
+
+                modeButton.GetComponentInChildren<TextMeshProUGUI>().text = "Enter Use Mode";
+            }
         }
     }
 }

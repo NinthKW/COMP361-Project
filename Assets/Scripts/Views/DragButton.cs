@@ -85,11 +85,6 @@ namespace Assets.Scripts
                 building.placed = true;
                 building.x = (int) System.Math.Round(GetComponent<RectTransform>().anchoredPosition.x);
                 building.y = (int) System.Math.Round(GetComponent<RectTransform>().anchoredPosition.y);
-
-                // --- Option 2: Get Anchored Position (matches Inspector Pos X/Y) ---
-                Debug.Log("Anchored X pos (Inspector Pos X): " + GetComponent<RectTransform>().anchoredPosition.x);
-                Debug.Log("Anchored Y pos (Inspector Pos Y): " + GetComponent<RectTransform>().anchoredPosition.y);
-
             }
         }
 
