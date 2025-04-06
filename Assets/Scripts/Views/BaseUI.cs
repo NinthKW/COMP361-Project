@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using Assets.Scripts.Controller;
 using UnityEngine.UI;
+using Codice.CM.Common.Checkin.Partial.ConflictCheckers;
 
 namespace Assets.Scripts
 {
@@ -15,6 +16,7 @@ namespace Assets.Scripts
         private Base selectedBuilding;
         public Button backButton;
         private RectTransform tableRect;
+        public GameObject grid2d;
 
         void Start()
         {
@@ -76,6 +78,19 @@ namespace Assets.Scripts
                 Button btn = buttonObj.GetComponent<Button>();
                 btn.onClick.AddListener(() => OnSelectedBuilding(building));
                 buttonObj.SetActive(true);
+
+                //If building should be placed, add it to grid2d
+                if (building.placed)
+                {
+                    buttonObj.transform.parent = grid2d.transform;
+                    RectTransform rectTransform = buttonObj.transform.GetComponent<RectTransform>();
+
+                    rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                    rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+                    rectTransform.pivot = new Vector2(0.5f, 0.5f);
+
+                    rectTransform.anchoredPosition = new Vector2((float) building.x, (float) building.y);
+                }
             }
 
             GridLayoutGroup grid = missionButtonContainer.GetComponent<GridLayoutGroup>();

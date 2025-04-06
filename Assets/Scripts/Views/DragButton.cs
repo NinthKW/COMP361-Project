@@ -6,15 +6,6 @@ namespace Assets.Scripts
 {
     public class DraggableBuilding : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
-        public int building_id;
-        public string buildingName;
-        public string description;
-        public int level;
-        public int cost;
-        public int resource_amount;
-        public int resource_type;
-        public bool unlocked;
-
         public Model.Base building;
         public GameObject grid2d;
 

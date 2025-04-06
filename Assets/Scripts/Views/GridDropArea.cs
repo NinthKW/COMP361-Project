@@ -110,7 +110,7 @@ namespace Assets.Scripts
 
                 if (buildingInfoDisplay != null)
                 {
-                    buildingInfoDisplay.text = "Building placed: " + draggable.buildingName;
+                    buildingInfoDisplay.text = "Building placed: " + draggable.name;
                 }
             }
         }
