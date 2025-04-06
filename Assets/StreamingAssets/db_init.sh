@@ -58,14 +58,17 @@ CREATE TABLE Equipment (
 );
 
 CREATE TABLE Infrastructure (
-    building_id INT PRIMARY KEY,
-    name VARCHAR(255),
-    description VARCHAR(1000),
-    level INT, 
-    cost INT, 
-    resource_amount INT,
-    resource_type INT,
-    unlocked BOOL,
+    building_id INTEGER PRIMARY KEY,
+    name TEXT,
+    description TEXT,
+    level INTEGER,
+    cost INTEGER,
+    resource_amount INTEGER,
+    resource_type INTEGER,
+    unlocked BOOLEAN,
+    placed BOOLEAN,
+    x INTEGER,
+    y INTEGER,
     FOREIGN KEY (resource_type) REFERENCES Resource(resource_id)
 );
 
@@ -168,7 +171,7 @@ INSERT INTO Soldier VALUES
 (7, 'Sophia', 4, 85, 85, 16, 11, 'Assault'),
 (8, 'James', 6, 115, 115, 23, 18, 'HeavyGunner'),
 (9, 'Olivia', 3, 75, 75, 14, 9, 'Recon'),
-(10, 'Henry', 7, 130, 130, 27, 22, 'SpecialForces');
+(10, 'Henry', 7, 300, 300, 75, 50, 'SpecialForces');
 
 -- Insert into Weapon
 INSERT INTO Weapon VALUES
@@ -207,42 +210,42 @@ INSERT INTO Weather VALUES
 
 -- Insert into Mission
 INSERT INTO Mission VALUES
-(1, 'Recon', 'Scout enemy territory', 2, 100, 10, 1, 'Plains', 'Sunny', 1),
-(2, 'Sabotage', 'Destroy enemy supplies', 4, 200, 15, 2, 'Forest', 'Rainy', 1),
-(3, 'Rescue', 'Save hostages from enemy capture', 3, 150, 12, 3, 'Mountains', 'Stormy', 1),
-(4, 'Assault', 'Attack and capture an enemy outpost', 5, 300, 20, 4, 'Desert', 'Foggy', 1),
-(5, 'Defense', 'Hold the frontline against enemy attacks', 4, 180, 14, 5, 'Swamp', 'Snowy', 1),
-(6, 'Supply Raid', 'Seize enemy supply convoys', 3, 120, 10, 6, 'Plains', 'Sunny', 1),
-(7, 'Infiltration', 'Gather intel from enemy base', 4, 250, 18, 7, 'Forest', 'Rainy', 1),
-(8, 'Base Defense', 'Defend our main operations base', 5, 350, 25, 8, 'Mountains', 'Stormy', 1),
-(9, 'Elimination', 'Hunt down a high-value target', 6, 400, 30, 9, 'Desert', 'Foggy', 1),
-(10, 'Final Assault', 'Massive attack on enemy headquarters', 7, 500, 40, 10, 'Swamp', 'Snowy', 1);
+(1, 'Shadow Recon', 'Infiltrate a Black Horizon outpost and gather intelligence.', 3, 120, 15, 1, 'Forest', 'Rainy', 1),
+(2, 'Data Extraction', 'Steal crucial data from a secret research lab.', 4, 180, 20, 2, 'Alien Ruins', 'Foggy', 1),
+(3, 'Supply Interdiction', 'Destroy Black Horizon''s resource supply lines.', 4, 150, 18, 3, 'Plains', 'Sunny', 1),
+(4, 'Elite Guard Assault', 'Attack and eliminate a Black Horizon elite squad.', 5, 250, 22, 4, 'Mountains', 'Snowy', 1),
+(5, 'Weapon Cache Raid', 'Seize advanced weapon samples and destroy the storage facility.', 6, 300, 25, 5, 'Desert', 'Heatwave', 1),
+(6, 'Facility Destruction', 'Sabotage a research facility to halt enemy progress.', 7, 400, 28, 6, 'Swamp', 'Stormy', 1),
+(7, 'Stealth Infiltration', 'Sneak into and investigate the Black Horizon command center.', 6, 350, 26, 7, 'Caves', 'Windy', 1),
+(8, 'The Gauntlet', 'Endure the enemy''s desperate counterattack and defend the facility.', 8, 500, 30, 8, 'Alien Ruins', 'Asteroid Shower', 1),
+(9, 'Final Showdown', 'Assault the Black Horizon main lab and end their operations.', 9, 600, 35, 9, 'Mountains', 'Stormy', 1),
+(10, 'Clean Sweep', 'Search and eliminate all remaining Black Horizon forces.', 10, 800, 50, 10, 'Plains', 'Sunny', 1);
 
 -- Insert into ENEMY_TYPES
 INSERT INTO ENEMY_TYPES VALUES
-(1, 'Grunt', 100, 10, 5),
-(2, 'Sniper', 80, 20, 10),
-(3, 'Tank', 200, 30, 15),
-(4, 'Elite', 150, 25, 12),
-(5, 'Commander', 250, 40, 20),
-(6, 'Scout', 90, 15, 7),
-(7, 'Heavy Gunner', 180, 35, 18),
-(8, 'Warrior', 160, 28, 14),
-(9, 'Assassin', 110, 22, 11),
-(10, 'Boss', 500, 50, 25);
+(1, 'Recon Drone', 50, 8, 4),
+(2, 'Heavy Guard', 120, 15, 7),
+(3, 'Experimental Tank', 180, 18, 10),
+(4, 'Black Ops Sniper', 60, 20, 8),
+(5, 'Mech Soldier', 100, 14, 7),
+(6, 'Cyber Assassin', 90, 18, 9),
+(7, 'Bioengineered Beast', 150, 22, 12),
+(8, 'Psyker', 80, 12, 10),
+(9, 'Prototype AI', 200, 25, 15),
+(10, 'Black Horizon Commander', 300, 30, 20);
 
 -- Insert into MISSION_ENEMY (Each mission has multiple enemies)
 INSERT INTO MISSION_ENEMY VALUES
-(1, 1, 10), (1, 2, 5),
-(2, 2, 15), (2, 3, 7),
-(3, 3, 20), (3, 4, 8),
-(4, 4, 25), (4, 5, 12),
-(5, 5, 30), (5, 6, 10),
-(6, 6, 12), (6, 7, 5),
-(7, 7, 15), (7, 8, 7),
-(8, 8, 18), (8, 9, 9),
-(9, 9, 20), (9, 10, 15),
-(10, 10, 30), (10, 1, 20);
+(1, 1, 5), (1, 2, 2),
+(2, 2, 3), (2, 3, 1),
+(3, 1, 4), (3, 2, 2),
+(4, 2, 3), (4, 4, 2),
+(5, 3, 2), (5, 4, 1),
+(6, 7, 2), (6, 8, 1),
+(7, 6, 3), (7, 8, 1),
+(8, 3, 2), (8, 9, 1),
+(9, 9, 1), (9, 10, 1),
+(0, 1, 5), (10, 1, 4), (10, 3, 3);
 
 -- Insert into MISSION_ASSIGNMENT (Ensuring each mission has soldiers assigned)
 INSERT INTO MISSION_ASSIGNMENT VALUES
@@ -256,6 +259,7 @@ INSERT INTO MISSION_ASSIGNMENT VALUES
 (8, 5), (8, 7),
 (9, 6), (9, 8),
 (10, 9), (10, 10);
+
 
 -- Insert into TECHNOLOGY
 INSERT INTO TECHNOLOGY VALUES
@@ -282,16 +286,17 @@ INSERT INTO Equipment VALUES
 (7, 'Personal Shield Generator', 40, 15, 5, 250, 20, 7, 1),
 (8, 'Nano-Fiber Vest', 60, 12, 8, 220, 18, 8, 1);
 
--- Insert into Infrastructure
+
 INSERT INTO Infrastructure VALUES
-(1, 'HQ', 'Central hub for military operations', 3, 1000, 50, 1, 1),
-(2, 'Barracks', 'Housing and training facility for soldiers', 2, 800, 40, 2, 1),
-(3, 'Armory', 'Storage for weapons and ammunition', 2, 600, 30, 3, 1),
-(4, 'Research Lab', 'Facility for developing new technologies', 4, 1200, 60, 4, 1),
-(5, 'Power Station', 'Generates energy for the base', 3, 900, 45, 5, 1),
-(6, 'Hospital', 'Provides healthcare and recovery for soldiers', 2, 700, 35, 6, 1),
-(7, 'Radar Station', 'Monitors enemy movements and signals', 3, 1000, 50, 7, 1),
-(8, 'Shield Generator', 'Defensive structure providing energy shields', 5, 1500, 75, 8, 1);
+(1, 'HQ', 'Central hub for military operations', 3, 1000, 50, 1, 1, 1, 40, -25),
+(2, 'Barracks', 'Housing and training facility for soldiers', 2, 800, 40, 2, 1, 0, 0, 0),
+(3, 'Armory', 'Storage for weapons and ammunition', 2, 600, 30, 3, 1, 0, 0, 0),
+(4, 'Research Lab', 'Facility for developing new technologies', 4, 1200, 60, 4, 1, 0, 0, 0),
+(5, 'Power Station', 'Generates energy for the base', 3, 900, 45, 5, 1, 0, 0, 0),
+(6, 'Hospital', 'Provides healthcare and recovery for soldiers', 2, 700, 35, 6, 1, 0, 0, 0),
+(7, 'Radar Station', 'Monitors enemy movements and signals', 3, 1000, 50, 7, 1, 0, 0, 0),
+(8, 'Shield Generator', 'Defensive structure providing energy shields', 5, 1500, 75, 8, 1, 0, 0, 0);
+
 
 
 EOF

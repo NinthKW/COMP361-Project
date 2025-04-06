@@ -12,7 +12,6 @@ namespace Assets.Scripts.Controller
         public static MissionManager Instance;
         public List<Mission> missions = new List<Mission>();
 
-        // 数据库文件名
         private string dbPath;
 
         void Awake()
@@ -22,7 +21,6 @@ namespace Assets.Scripts.Controller
                 Instance = this;
                 DontDestroyOnLoad(gameObject);
 
-                // 这里是重点：StreamingAssets 路径
                 dbPath = "URI=file:" + Application.streamingAssetsPath + "/database.db";
                 Debug.Log("Database path: " + dbPath);
             }
@@ -67,6 +65,45 @@ namespace Assets.Scripts.Controller
                             string weather = reader.GetString(8);   
                             bool unlocked = reader.GetBoolean(9);
 
+                            // 加载 Terrain 和 Weather 效果
+                            int terrainAtkEffect = 0;
+                            int terrainDefEffect = 0;
+                            int terrainHpEffect = 0;
+
+                            int weatherAtkEffect = 0;
+                            int weatherDefEffect = 0;
+                            int weatherHpEffect = 0;
+
+                            // 读取 Terrain 效果
+                            using (var terrainCommand = connection.CreateCommand())
+                            {
+                                terrainCommand.CommandText = $"SELECT atk_effect, def_effect, hp_effect FROM Terrain WHERE name = '{terrain}';";
+                                using (IDataReader terrainReader = terrainCommand.ExecuteReader())
+                                {
+                                    if (terrainReader.Read())
+                                    {
+                                        terrainAtkEffect += terrainReader.GetInt32(0);
+                                        terrainDefEffect += terrainReader.GetInt32(1);
+                                        terrainHpEffect += terrainReader.GetInt32(2);
+                                    }
+                                }
+                            }
+
+                            // 读取 Weather 效果
+                            using (var weatherCommand = connection.CreateCommand())
+                            {
+                                weatherCommand.CommandText = $"SELECT atk_effect, def_effect, hp_effect FROM Weather WHERE name = '{weather}';";
+                                using (IDataReader weatherReader = weatherCommand.ExecuteReader())
+                                {
+                                    if (weatherReader.Read())
+                                    {
+                                        weatherAtkEffect += weatherReader.GetInt32(0);
+                                        weatherDefEffect += weatherReader.GetInt32(1);
+                                        weatherHpEffect += weatherReader.GetInt32(2);
+                                    }
+                                }
+                            }
+
                             // 创建 Mission 对象
                             Mission mission = new Mission(
                                 id,
@@ -80,6 +117,9 @@ namespace Assets.Scripts.Controller
                                 weather,
                                 unlocked
                             );
+
+                            mission.SetTerrainEffects(terrainAtkEffect, terrainDefEffect, terrainHpEffect);
+                            mission.SetWeatherEffects(weatherAtkEffect, weatherDefEffect, weatherHpEffect);
 
                             LoadMissionEnemiesFromDatabase(mission);
 

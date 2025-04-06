@@ -158,11 +158,12 @@ namespace Assets.Scripts.Model
             MaxAttacksPerTurn = role.BaseAttackChance;
             _experience = 0;
             ObjectTag = "Soldier";
+            Def = defense;
         }
 
         protected override int CalculateDamage()
         {
-            int baseDamage = 10;  // 基础伤害
+            int baseDamage = Atk;  // 基础攻击力
             if (_hasGun) baseDamage += 15;
             return baseDamage + Level * 3;
         }
@@ -191,8 +192,26 @@ namespace Assets.Scripts.Model
 
         public override void TakeDamage(int damage)
         {
-            int mitigatedDamage = Mathf.Max(0, damage - _defense);
+            int mitigatedDamage = Mathf.Max(0, damage - Def);
             base.TakeDamage(mitigatedDamage);
+        }
+
+        public void ModifyAttack(int amount)
+        {
+            Atk += amount;
+            Debug.Log($"{Name}'s Attack modified by {amount}. New Attack: {Atk}");
+        }
+
+        public void ModifyDefense(int amount)
+        {
+            Def += amount;
+            Debug.Log($"{Name}'s Defense modified by {amount}. New Defense: {Def}");
+        }
+
+        public void ModifyHP(int amount)
+        {
+            Health = Mathf.Clamp(Health + amount, 0, MaxHealth);
+            Debug.Log($"{Name}'s HP modified by {amount}. New HP: {Health}/{MaxHealth}");
         }
     }
 }

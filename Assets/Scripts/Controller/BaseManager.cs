@@ -12,7 +12,7 @@ namespace Assets.Scripts.Controller
     public class BaseManager : MonoBehaviour
     {
         public static BaseManager Instance;
-        public List<Base> buildingList = new List<Base>();
+        public List<Base> buildingList;
 
         private string dbPath;
         void Awake()
@@ -33,6 +33,7 @@ namespace Assets.Scripts.Controller
         // Start is called before the first frame update
         void Start()
         {
+            buildingList = GameManager.Instance.currentGame.basesData;
             LoadBase();
         }
 

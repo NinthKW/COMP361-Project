@@ -25,6 +25,11 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     [SerializeField] private Button endTurnButton;
     [SerializeField] private Button retreatButton;
     [SerializeField] private GameObject retreatConfirmationPrefab;
+    [SerializeField] private TextMeshProUGUI enemyCountText;
+
+    [SerializeField] private TextMeshProUGUI WeatherText;
+
+    [SerializeField] private TextMeshProUGUI TerrainText;
 
     [Header("Ability Panel Settings")]
     [SerializeField] private GameObject abilityPanel; // Ability panel (pre-attached in scene)
@@ -76,6 +81,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         UpdateCharacterUIStates();
         UpdateButtonStates();
         UpdateSelectionVisual();
+        UpdateEnemyCountDisplay();
     }
 
     void OnDestroy()
@@ -98,6 +104,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     void InitializeUIComponents()
     {
         CreateCharacterDisplays();
+        DisplayTerrainAndWeatherInfo();
         SetupButtonListeners();
         InitializeCombatLog();
         SetupColors();
@@ -122,73 +129,73 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         CreateSoldierCards();
         CreateEnemyCards();
     }
-    void CreateSoldierCards()
+void CreateSoldierCards()
+{
+    int midX = (Screen.width / 2) - 160;
+    int midY = Screen.height / 2;
+    
+    // Adjust these values until the spacing feels right.
+    float horizontalOffset = 50f;   // Increase this if soldiers are too close horizontally.
+    float verticalSpacing = 50f;    // Increase this if soldiers are too close vertically.
+    
+    allyPositions = new List<Vector3>
     {
-        int midX = (Screen.width / 2) - 160;
-        int midY = Screen.height / 2;
-        
-        // Adjust these values until the spacing feels right.
-        float horizontalOffset = 50f;   // Increase this if soldiers are too close horizontally.
-        float verticalSpacing = 50f;    // Increase this if soldiers are too close vertically.
-        
-        allyPositions = new List<Vector3>
-        {
-            new Vector3(midX - horizontalOffset, midY + verticalSpacing * 2, 0),
-            new Vector3(midX + horizontalOffset, midY + verticalSpacing, 0),
-            new Vector3(midX - horizontalOffset, midY, 0),
-            new Vector3(midX + horizontalOffset, midY - verticalSpacing, 0),
-            new Vector3(midX - horizontalOffset, midY - verticalSpacing * 2, 0)
-        };
+        new Vector3(midX - horizontalOffset, midY + verticalSpacing * 2, 0),
+        new Vector3(midX + horizontalOffset, midY + verticalSpacing, 0),
+        new Vector3(midX - horizontalOffset, midY, 0),
+        new Vector3(midX + horizontalOffset, midY - verticalSpacing, 0),
+        new Vector3(midX - horizontalOffset, midY - verticalSpacing * 2, 0)
+    };
 
-        foreach (var soldier in CombatManager.Instance.GetInBattleSoldiers())
-        {
-            if (soldier is not Soldier validSoldier) continue;
-            
-            var index = CombatManager.Instance.GetInBattleSoldiers().IndexOf(soldier);
-            var card = CreateCharacterCard(validSoldier, true, allyPositions[index]);
-            soldierCards.Add(card);
-            validSoldier.SetGameObject(card);
-        }
+    foreach (var soldier in CombatManager.Instance.GetInBattleSoldiers())
+    {
+        if (soldier is not Soldier validSoldier) continue;
+        
+        var index = CombatManager.Instance.GetInBattleSoldiers().IndexOf(soldier);
+        var card = CreateCharacterCard(validSoldier, true, allyPositions[index]);
+        soldierCards.Add(card);
+        validSoldier.SetGameObject(card);
+    }
+}
+
+
+   void CreateEnemyCards()
+{
+    int midX = (Screen.width / 2) + 120;
+    int midY = Screen.height / 2;
+    
+    // Adjust these values until the spacing feels right.
+    float horizontalOffset = 50f;   // Increase if enemies are too close horizontally.
+    float verticalSpacing = 50f;    // Increase if enemies are too close vertically.
+    
+    enemyPositions = new List<Vector3>
+    {
+        new Vector3(midX - horizontalOffset, midY + verticalSpacing * 2, 0),
+        new Vector3(midX + horizontalOffset, midY + verticalSpacing, 0),
+        new Vector3(midX - horizontalOffset, midY, 0),
+        new Vector3(midX + horizontalOffset, midY - verticalSpacing, 0),
+        new Vector3(midX - horizontalOffset, midY - verticalSpacing * 2, 0),
+        new Vector3(midX + horizontalOffset * 2, midY, 0)
+    };
+
+    foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
+    {
+        var index = CombatManager.Instance.GetAvailableEnemies().IndexOf(enemy);
+        Debug.Log($"Enemy Index: {index}");
+        var card = CreateCharacterCard(enemy, false, enemyPositions[index]);
+        enemyCards.Add(card);
+        enemy.SetGameObject(card);
+    }
+    foreach (var enemy in CombatManager.Instance.GetWaitingEnemies())
+    {
+        var card = CreateCharacterCard(enemy, false, new Vector3(Screen.width + 200, -200, 0));
+        waitingEnemyCards.Add(card);
+        enemy.SetGameObject(card);
     }
 
-
-    void CreateEnemyCards()
-    {
-        int midX = (Screen.width / 2) + 120;
-        int midY = Screen.height / 2;
-        
-        // Adjust these values until the spacing feels right.
-        float horizontalOffset = 50f;   // Increase if enemies are too close horizontally.
-        float verticalSpacing = 50f;    // Increase if enemies are too close vertically.
-        
-        enemyPositions = new List<Vector3>
-        {
-            new Vector3(midX - horizontalOffset, midY + verticalSpacing * 2, 0),
-            new Vector3(midX + horizontalOffset, midY + verticalSpacing, 0),
-            new Vector3(midX - horizontalOffset, midY, 0),
-            new Vector3(midX + horizontalOffset, midY - verticalSpacing, 0),
-            new Vector3(midX - horizontalOffset, midY - verticalSpacing * 2, 0),
-            new Vector3(midX + horizontalOffset * 2, midY, 0)
-        };
-
-        foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
-        {
-            var index = CombatManager.Instance.GetAvailableEnemies().IndexOf(enemy);
-            Debug.Log($"Enemy Index: {index}");
-            var card = CreateCharacterCard(enemy, false, enemyPositions[index]);
-            enemyCards.Add(card);
-            enemy.SetGameObject(card);
-        }
-        foreach (var enemy in CombatManager.Instance.GetWaitingEnemies())
-        {
-            var card = CreateCharacterCard(enemy, false, new Vector3(Screen.width + 200, -200, 0));
-            waitingEnemyCards.Add(card);
-            enemy.SetGameObject(card);
-        }
-
-        // Update enemy count display after positioning cards.
-        UpdateEnemyCountDisplay();
-    }
+    // Update enemy count display after positioning cards.
+    UpdateEnemyCountDisplay();
+}
 
     GameObject CreateCharacterCard(Character character, bool isAlly, Vector2 position)
     {
@@ -210,6 +217,31 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         button.onClick.RemoveAllListeners();
         button.onClick.AddListener(() => OnCharacterClicked(character));
     }
+
+    void DisplayTerrainAndWeatherInfo()
+    {
+        if (CombatManager.Instance.currentMission == null)
+        {
+            TerrainText.text = "Terrain: Unknown";
+            WeatherText.text = "Weather: Unknown";
+            return;
+        }
+
+        var mission = CombatManager.Instance.currentMission;
+
+        // 更新 Terrain 信息
+        TerrainText.text = $"Terrain: {mission.terrain}\n" +
+                        $"ATK Effect: {mission.terrainAtkEffect}\n" +
+                        $"DEF Effect: {mission.terrainDefEffect}\n" +
+                        $"HP Effect: {mission.terrainHpEffect}";
+
+        // 更新 Weather 信息
+        WeatherText.text = $"Weather: {mission.weather}\n" +
+                        $"ATK Effect: {mission.weatherAtkEffect}\n" +
+                        $"DEF Effect: {mission.weatherDefEffect}\n" +
+                        $"HP Effect: {mission.weatherHpEffect}";
+    }
+
     #endregion
 
     #region Combat Logic
@@ -407,6 +439,8 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         ClearSelection();
         CheckTurnEnd();
         UpdateCombatState();
+        // 更新敌人数量显示
+        UpdateEnemyCountDisplay();
     }
 
     void CleanDeadUnits()
@@ -431,6 +465,8 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
     void CleanEnemyUnits()
     {
+        bool anyEnemyRemoved = false; // 用于检查是否有敌人被移除
+
         foreach (var card in enemyCards.ToArray())
         {
             if (card == null) continue;
@@ -441,6 +477,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             var position = card.transform.position;
             enemyCards.Remove(card);
             Destroy(card);
+            anyEnemyRemoved = true; // 标记有敌人被移除
             
             // TODO: replace dead units in new logics
             if (waitingEnemyCards.Count > 0)
@@ -449,6 +486,11 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
                 enemyCards.Add(waitingEnemyCards[0]);
                 waitingEnemyCards.RemoveAt(0);
             }
+        }
+
+        if (anyEnemyRemoved)
+        {
+            UpdateEnemyCountDisplay(); // 在清除敌人后更新显示
         }
     }
     #endregion
@@ -753,6 +795,19 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         selectedAlly != null && 
         selectedTarget != null && 
         selectedAlly is Soldier { AttackChances: > 0 };
+
+    private void UpdateEnemyCountDisplay()
+{
+    if (enemyCountText == null) return;
+
+    int activeEnemies = CombatManager.Instance.CountAliveEnemies();
+    int waitingEnemies = CombatManager.Instance.GetWaitingEnemies().Count;
+
+    Debug.Log($"Active Enemies: {activeEnemies}, Waiting Enemies: {waitingEnemies}");
+
+    enemyCountText.text = $"Enemies Remaining: {activeEnemies + waitingEnemies}";
+}
+    
     #endregion
 
     #region Retreat System
@@ -866,6 +921,8 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
                 button.interactable = state;
         }
     }
+
+    
 
     bool CompareAbility(Ability ability, string type)
     {
