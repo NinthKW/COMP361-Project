@@ -122,6 +122,16 @@ namespace Assets.Scripts.Model
             }
 
             //Initialize maxSoldier
+            foreach (Base building in this.basesData) {
+                if (Equals(building.name.ToLower(), "barracks")) 
+                {
+                    if (building.placed)
+                    {
+                        maxSoldier += 1;
+                    }
+                }
+            }
+
 
             // Missions
             this.MissionsData = new List<Mission>();

@@ -96,7 +96,7 @@ namespace Assets.Scripts.Controller
         public void LoadGame()
         {
             // Define the database connection string.
-            string dbPath = "URI=file:" + Application.persistentDataPath + "/game.db";
+            string dbPath = "URI=file:" + Application.streamingAssetsPath + "/database.db";
     
             // Create a new game instance using the constructor that loads data from the database.
             currentGame = new Game(dbPath);

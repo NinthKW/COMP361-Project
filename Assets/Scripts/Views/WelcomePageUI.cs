@@ -26,6 +26,7 @@ public class WelcomePageUI : MonoBehaviour // Fardin
 
     void ClickedNewGame()
     {
+        GameManager.Instance.LoadGame();
         GameManager.Instance.ChangeState(GameState.MainMenuPage);
         GameManager.Instance.LoadGameState(GameState.MainMenuPage);
     }
