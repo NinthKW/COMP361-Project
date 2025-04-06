@@ -117,25 +117,29 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     #endregion
 
     #region UI Creation
-    // TODO: replace the current stamp with turns count
     void CreateCharacterDisplays()
     {
         CreateSoldierCards();
         CreateEnemyCards();
     }
-
     void CreateSoldierCards()
     {
-        int midX = (Screen.width / 2) - 250;
+        int midX = (Screen.width / 2) - 160;
         int midY = Screen.height / 2;
+        
+        // Adjust these values until the spacing feels right.
+        float horizontalOffset = 50f;   // Increase this if soldiers are too close horizontally.
+        float verticalSpacing = 50f;    // Increase this if soldiers are too close vertically.
+        
         allyPositions = new List<Vector3>
         {
-            new Vector3(midX-100, midY+200, 0),
-            new Vector3(midX+100, midY+100, 0),
-            new Vector3(midX-100, midY, 0),
-            new Vector3(midX+100, midY-100, 0),
-            new Vector3(midX-100, midY-200, 0)
+            new Vector3(midX - horizontalOffset, midY + verticalSpacing * 2, 0),
+            new Vector3(midX + horizontalOffset, midY + verticalSpacing, 0),
+            new Vector3(midX - horizontalOffset, midY, 0),
+            new Vector3(midX + horizontalOffset, midY - verticalSpacing, 0),
+            new Vector3(midX - horizontalOffset, midY - verticalSpacing * 2, 0)
         };
+
         foreach (var soldier in CombatManager.Instance.GetInBattleSoldiers())
         {
             if (soldier is not Soldier validSoldier) continue;
@@ -147,19 +151,26 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         }
     }
 
+
     void CreateEnemyCards()
     {
-        int midX = (Screen.width / 2) + 200;
+        int midX = (Screen.width / 2) + 120;
         int midY = Screen.height / 2;
+        
+        // Adjust these values until the spacing feels right.
+        float horizontalOffset = 50f;   // Increase if enemies are too close horizontally.
+        float verticalSpacing = 50f;    // Increase if enemies are too close vertically.
+        
         enemyPositions = new List<Vector3>
         {
-            new Vector3(midX-100, midY+200, 0),
-            new Vector3(midX+100, midY+100, 0),
-            new Vector3(midX-100, midY, 0),
-            new Vector3(midX+100, midY-100, 0),
-            new Vector3(midX-100, midY-200, 0),
-            new Vector3(midX+300, midY, 0)
+            new Vector3(midX - horizontalOffset, midY + verticalSpacing * 2, 0),
+            new Vector3(midX + horizontalOffset, midY + verticalSpacing, 0),
+            new Vector3(midX - horizontalOffset, midY, 0),
+            new Vector3(midX + horizontalOffset, midY - verticalSpacing, 0),
+            new Vector3(midX - horizontalOffset, midY - verticalSpacing * 2, 0),
+            new Vector3(midX + horizontalOffset * 2, midY, 0)
         };
+
         foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
         {
             var index = CombatManager.Instance.GetAvailableEnemies().IndexOf(enemy);
@@ -174,6 +185,9 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             waitingEnemyCards.Add(card);
             enemy.SetGameObject(card);
         }
+
+        // Update enemy count display after positioning cards.
+        UpdateEnemyCountDisplay();
     }
 
     GameObject CreateCharacterCard(Character character, bool isAlly, Vector2 position)
