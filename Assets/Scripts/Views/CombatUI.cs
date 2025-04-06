@@ -66,6 +66,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     private Color buffColor;
     private Color enemyColor;
     private Color allyColor;
+    private Color transparentColor;
     #endregion
 
     #region Lifecycle Methods
@@ -117,6 +118,8 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         ColorUtility.TryParseHtmlString("#FFA500", out controlColor);
         ColorUtility.TryParseHtmlString("#A0B6FF", out buffColor);
         ColorUtility.TryParseHtmlString("#FFA0A0", out enemyColor);
+        ColorUtility.TryParseHtmlString("#FFFFFF", out transparentColor);
+        transparentColor.a = 0.2f;
     }
 
     void SubscribeToEvents() => 
@@ -124,79 +127,78 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     #endregion
 
     #region UI Creation
-    // TODO: replace the current stamp with turns count
     void CreateCharacterDisplays()
     {
         CreateSoldierCards();
         CreateEnemyCards();
     }
-void CreateSoldierCards()
-{
-    int midX = (Screen.width / 2) - 160;
-    int midY = Screen.height / 2;
-    
-    // Adjust these values until the spacing feels right.
-    float horizontalOffset = 50f;   // Increase this if soldiers are too close horizontally.
-    float verticalSpacing = 50f;    // Increase this if soldiers are too close vertically.
-    
-    allyPositions = new List<Vector3>
+    void CreateSoldierCards()
     {
-        new Vector3(midX - horizontalOffset, midY + verticalSpacing * 2, 0),
-        new Vector3(midX + horizontalOffset, midY + verticalSpacing, 0),
-        new Vector3(midX - horizontalOffset, midY, 0),
-        new Vector3(midX + horizontalOffset, midY - verticalSpacing, 0),
-        new Vector3(midX - horizontalOffset, midY - verticalSpacing * 2, 0)
-    };
-
-    foreach (var soldier in CombatManager.Instance.GetInBattleSoldiers())
-    {
-        if (soldier is not Soldier validSoldier) continue;
+        int midX = (Screen.width / 2) - 160;
+        int midY = Screen.height / 2;
         
-        var index = CombatManager.Instance.GetInBattleSoldiers().IndexOf(soldier);
-        var card = CreateCharacterCard(validSoldier, true, allyPositions[index]);
-        soldierCards.Add(card);
-        validSoldier.SetGameObject(card);
-    }
-}
+        // Adjust these values until the spacing feels right.
+        float horizontalOffset = 50f;   // Increase this if soldiers are too close horizontally.
+        float verticalSpacing = 50f;    // Increase this if soldiers are too close vertically.
+        
+        allyPositions = new List<Vector3>
+        {
+            new Vector3(midX - horizontalOffset, midY + verticalSpacing * 2, 0),
+            new Vector3(midX + horizontalOffset, midY + verticalSpacing, 0),
+            new Vector3(midX - horizontalOffset, midY, 0),
+            new Vector3(midX + horizontalOffset, midY - verticalSpacing, 0),
+            new Vector3(midX - horizontalOffset, midY - verticalSpacing * 2, 0)
+        };
 
-
-   void CreateEnemyCards()
-{
-    int midX = (Screen.width / 2) + 120;
-    int midY = Screen.height / 2;
-    
-    // Adjust these values until the spacing feels right.
-    float horizontalOffset = 50f;   // Increase if enemies are too close horizontally.
-    float verticalSpacing = 50f;    // Increase if enemies are too close vertically.
-    
-    enemyPositions = new List<Vector3>
-    {
-        new Vector3(midX - horizontalOffset, midY + verticalSpacing * 2, 0),
-        new Vector3(midX + horizontalOffset, midY + verticalSpacing, 0),
-        new Vector3(midX - horizontalOffset, midY, 0),
-        new Vector3(midX + horizontalOffset, midY - verticalSpacing, 0),
-        new Vector3(midX - horizontalOffset, midY - verticalSpacing * 2, 0),
-        new Vector3(midX + horizontalOffset * 2, midY, 0)
-    };
-
-    foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
-    {
-        var index = CombatManager.Instance.GetAvailableEnemies().IndexOf(enemy);
-        Debug.Log($"Enemy Index: {index}");
-        var card = CreateCharacterCard(enemy, false, enemyPositions[index]);
-        enemyCards.Add(card);
-        enemy.SetGameObject(card);
-    }
-    foreach (var enemy in CombatManager.Instance.GetWaitingEnemies())
-    {
-        var card = CreateCharacterCard(enemy, false, new Vector3(Screen.width + 200, -200, 0));
-        waitingEnemyCards.Add(card);
-        enemy.SetGameObject(card);
+        foreach (var soldier in CombatManager.Instance.GetInBattleSoldiers())
+        {
+            if (soldier is not Soldier validSoldier) continue;
+            
+            var index = CombatManager.Instance.GetInBattleSoldiers().IndexOf(soldier);
+            var card = CreateCharacterCard(validSoldier, true, allyPositions[index]);
+            soldierCards.Add(card);
+            validSoldier.SetGameObject(card);
+        }
     }
 
-    // Update enemy count display after positioning cards.
-    UpdateEnemyCountDisplay();
-}
+
+    void CreateEnemyCards()
+    {
+        int midX = (Screen.width / 2) + 120;
+        int midY = Screen.height / 2;
+        
+        // Adjust these values until the spacing feels right.
+        float horizontalOffset = 50f;   // Increase if enemies are too close horizontally.
+        float verticalSpacing = 50f;    // Increase if enemies are too close vertically.
+        
+        enemyPositions = new List<Vector3>
+        {
+            new Vector3(midX - horizontalOffset, midY + verticalSpacing * 2, 0),
+            new Vector3(midX + horizontalOffset, midY + verticalSpacing, 0),
+            new Vector3(midX - horizontalOffset, midY, 0),
+            new Vector3(midX + horizontalOffset, midY - verticalSpacing, 0),
+            new Vector3(midX - horizontalOffset, midY - verticalSpacing * 2, 0),
+            new Vector3(midX + horizontalOffset * 2, midY, 0)
+        };
+
+        foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
+        {
+            var index = CombatManager.Instance.GetAvailableEnemies().IndexOf(enemy);
+            Debug.Log($"Enemy Index: {index}");
+            var card = CreateCharacterCard(enemy, false, enemyPositions[index]);
+            enemyCards.Add(card);
+            enemy.SetGameObject(card);
+        }
+        foreach (var enemy in CombatManager.Instance.GetWaitingEnemies())
+        {
+            var card = CreateCharacterCard(enemy, false, new Vector3(Screen.width + 200, -200, 0));
+            waitingEnemyCards.Add(card);
+            enemy.SetGameObject(card);
+        }
+
+        // Update enemy count display after positioning cards.
+        UpdateEnemyCountDisplay();
+    }
 
     GameObject CreateCharacterCard(Character character, bool isAlly, Vector2 position)
     {
@@ -262,15 +264,15 @@ void CreateSoldierCards()
                 return;
             }
             // If the ability requires a target (Heal and Buff) then a target must be selected
-            if ((CompareAbility(selectedAbility, "Heal") || CompareAbility(selectedAbility, "Buff")) && abilityTarget == null)
+            if ((CompareAbility(selectedAbility, "Heal") || 
+                CompareAbility(selectedAbility, "Buff") || 
+                CompareAbility(selectedAbility, "HealBuff")) && 
+                abilityTarget == null)
             {
                 UpdateCombatLog("Please select a valid target first.");
                 return;
             }
-            
-            // Deduct the required action points
-            selectedAlly.AttackChances -= selectedAbility.Cost;
-            
+                        
             List<Character> targets = new List<Character>();
             if (selectedAbility is TauntAbility)
             {
@@ -283,17 +285,22 @@ void CreateSoldierCards()
             }
             
             // Execute ability logic
-            selectedAbility.Activate(targets);
-            UpdateCombatLog($"{selectedAlly.Name} cast {selectedAbility.Name}!");
-            
+            if (!selectedAbility.Activate(targets)) Debug.LogError("Ability activation failed.");
+            else 
+            {
+                selectedAlly.AttackChances -= selectedAbility.Cost;
+                UpdateCombatLog($"{selectedAlly.Name} cast {selectedAbility.Name}!");
+            }
             // Clear skill mode state and restore the Attack button display
             selectedAbility = null;
             abilityTarget = null;
             castable = false; // Reset castable state after attack
             attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "Attack";
-            attackButton.image.color = Color.white;
+            endTurnButton.GetComponentInChildren<TextMeshProUGUI>().text = "End Turn";
+            attackButton.image.color = Color.gray;
             HideAbilityPanel();
             abilityInfoPanel.SetActive(false);
+            PostAttackCleanup();
             return;
         }
         else if (CanAttack()) 
@@ -314,9 +321,17 @@ void CreateSoldierCards()
             endTurnButton.GetComponentInChildren<TextMeshProUGUI>().text = "Cancel";
             attackButton.image.color = Color.green;
             UpdateCombatLog("Please select an injured ally for healing.");
-            castable = true;
+            castable = false;
         }
-        else if (CompareAbility(ability, "Control")) // Taunt
+        else if (CompareAbility(ability, "HealBuff"))
+        {
+            attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "HealBuff";
+            endTurnButton.GetComponentInChildren<TextMeshProUGUI>().text = "Cancel";
+            attackButton.image.color = Color.green;
+            UpdateCombatLog("Please select any ally for applying permanent heal buff.");
+            castable = false;
+        }
+        else if (CompareAbility(ability, "TauntAll")) // Taunt
         {
             attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "Taunt";
             selectedTarget = null; // Clear target selection
@@ -324,12 +339,25 @@ void CreateSoldierCards()
             UpdateCombatLog("Please click to confirm casting taunt ability.");
             castable = true;
         }
-        else if (CompareAbility(ability, "Buff"))
+        else if (CompareAbility(ability, "Buff") || CompareAbility(ability, "Shield"))
         {
             attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "Buff";
             attackButton.image.color = Color.cyan;
             UpdateCombatLog("Please select an ally for buffing.");
-            castable = true;
+            castable = false;
+        }
+        else if (CompareAbility(ability, "Damage") || CompareAbility(ability, "Lifesteal"))
+        {
+            attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "Attack!";
+            attackButton.image.color = Color.magenta;
+            UpdateCombatLog("Please select an enemy for attacking.");
+            castable = false;
+        }
+        else
+        {
+            attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "Attack";
+            attackButton.image.color = Color.gray;
+            castable = false; // Reset castable state if not a valid ability
         }
         
         // Enter skill casting mode; waiting for target selection (if necessary) or direct confirmation
@@ -512,7 +540,10 @@ void CreateSoldierCards()
         if (selectedAbility != null)
         {
             // For Heal and Buff abilities, require selecting an ally target
-            if ((CompareAbility(selectedAbility, "Heal") || CompareAbility(selectedAbility, "Buff")) &&
+            if ((CompareAbility(selectedAbility, "Heal") || 
+                CompareAbility(selectedAbility, "Buff") || 
+                CompareAbility(selectedAbility, "HealBuff") ||
+                CompareAbility(selectedAbility, "Shield")) &&
                 CombatManager.Instance.IsAlly(character) && !character.IsDead())
             {
                 // For Heal ability, only allow selection if the target is injured
@@ -532,9 +563,19 @@ void CreateSoldierCards()
                 else // Buff ability
                 {
                     abilityTarget = character;
-                    UpdateCombatLog($"Selected {character.Name} as buff target.");
+                    UpdateCombatLog($"Selected {character.Name} as {selectedAbility.Type} target.");
                 }
-            } 
+                castable = true; // Set castable state to true
+                UpdateCharacterUIStates();
+            } else if ((CompareAbility(selectedAbility, "Damage") || 
+                CompareAbility(selectedAbility, "Lifesteal")) && 
+                CombatManager.Instance.IsEnemy(character) && !character.IsDead())
+            {
+                abilityTarget = character;
+                UpdateCombatLog($"Selected {character.Name} as attack target.");
+                castable = true; // Set castable state to true
+                UpdateCharacterUIStates();
+            }
             else
             {
                 selectedAbility = null;
@@ -542,9 +583,8 @@ void CreateSoldierCards()
                 castable = false; // Reset castable state after target selection
                 endTurnButton.GetComponentInChildren<TextMeshProUGUI>().text = "End Turn";
                 attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "Attack";
-                attackButton.image.color = Color.white;
+                attackButton.image.color = Color.gray;
                 HideAbilityPanel();
-                abilityInfoPanel.SetActive(false);
             }
             // For Taunt ability, no target selection is needed; just wait for confirmation
             return;
@@ -614,7 +654,7 @@ void CreateSoldierCards()
             castable = false; // Reset castable state after target selection
             attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "Attack";
             endTurnButton.GetComponentInChildren<TextMeshProUGUI>().text = "End Turn";
-            attackButton.image.color = Color.white;
+            attackButton.image.color = Color.gray;
             HideAbilityPanel();
             abilityInfoPanel.SetActive(false);
             return;
@@ -628,10 +668,8 @@ void CreateSoldierCards()
     {
         isAttackExecuting = true;
         UpdateCombatLog("Ending turn...");
-        // TODO: add left enemy numbers
         
         CombatManager.Instance.EndCurrentTurn();
-        ResetAttackChances();
         ClearSelection();
         
         if (!CombatManager.Instance.IsPlayerTurn)
@@ -656,7 +694,6 @@ void CreateSoldierCards()
             yield return StartCoroutine(ExecuteAttackRoutine(enemy, target));
         }
         UpdateCombatLog("Enemy Turn Ends!");
-        ResetAttackChances();
         ClearSelection();
         OnEndTurnButton();
         CleanDeadUnits();
@@ -672,15 +709,6 @@ void CreateSoldierCards()
                 activeEnemies.Add(enemy);
         }
         return activeEnemies;
-    }
-
-    void ResetAttackChances()
-    {
-        foreach (var soldier in CombatManager.Instance.GetAvailableSoldiers())
-            soldier.ResetAttackChances();
-        
-        foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
-            enemy.ResetAttackChances();
     }
     #endregion
 
@@ -712,13 +740,13 @@ void CreateSoldierCards()
         foreach (var ability in soldier.Abilities)
         {
             var abilityButton = Instantiate(abilityButtonPrefab, abilityPanel.transform);
-            abilityButton.SetActive(!ability.IsOnCooldown);
             var btnText = abilityButton.GetComponentInChildren<TextMeshProUGUI>();
             btnText.text = $"{ability.Name}";
             ColorUtility.TryParseHtmlString("#A0B6FF", out var color);
             color.a = 1f;
             btnText.color = color;
             Button btn = abilityButton.GetComponent<Button>();
+            btn.interactable = true;
             btn.onClick.RemoveAllListeners();
             btn.onClick.AddListener(() => OnAbilityButtonClicked(ability));
         }
@@ -734,6 +762,7 @@ void CreateSoldierCards()
             abilityInfoPanel.SetActive(false);
             return;
         }
+        abilityInfoPanel.SetActive(true);
         abilityNameText.text = ability.Name;
         abilityDescriptionText.text = ability.Description;
         abilityStatText.text = $"Cost: {ability.Cost} \n Cooldown: {ability.Cooldown} \n Duration: {ability.Duration} \n Type: {ability.Type}";
@@ -751,9 +780,9 @@ void CreateSoldierCards()
             }
         }
         var color = Color.white;
-        if (CompareAbility(ability, "Heal")) color = healColor;
-        else if (CompareAbility(ability, "Control")) color = controlColor;
-        else if (CompareAbility(ability, "Buff")) color = buffColor;
+        if (CompareAbility(ability, "Heal") || CompareAbility(ability, "HealBuff")) color = healColor;
+        else if (CompareAbility(ability, "TauntAll")) color = controlColor;
+        else if (CompareAbility(ability, "Buff") || CompareAbility(ability, "Shield")) color = buffColor;
         else if (CompareAbility(ability, "Enemy")) color = enemyColor;
         abilityNameText.color = color;
         abilityDescriptionText.color = color;
@@ -770,7 +799,7 @@ void CreateSoldierCards()
     }
 
     bool IsSelected(Character character) => 
-        character == selectedAlly || character == selectedTarget;
+        character == selectedAlly || character == selectedTarget || character == abilityTarget;
 
     bool IsExhausted(Character character) =>
         character is Soldier soldier && soldier.AttackChances <= 0;
@@ -798,16 +827,14 @@ void CreateSoldierCards()
         selectedAlly is Soldier { AttackChances: > 0 };
 
     private void UpdateEnemyCountDisplay()
-{
-    if (enemyCountText == null) return;
+    {
+        if (enemyCountText == null) return;
 
-    int activeEnemies = CombatManager.Instance.CountAliveEnemies();
-    int waitingEnemies = CombatManager.Instance.GetWaitingEnemies().Count;
+        int activeEnemies = CombatManager.Instance.CountAliveEnemies();
+        int waitingEnemies = CombatManager.Instance.GetWaitingEnemies().Count;
 
-    Debug.Log($"Active Enemies: {activeEnemies}, Waiting Enemies: {waitingEnemies}");
-
-    enemyCountText.text = $"Enemies Remaining: {activeEnemies + waitingEnemies}";
-}
+        enemyCountText.text = $"Enemies Remaining: {activeEnemies + waitingEnemies}";
+    }
     
     #endregion
 
@@ -880,7 +907,7 @@ void CreateSoldierCards()
             if (soldier == null || soldier.IsDead()) continue;
             if (soldier.AttackChances > 0) allExhausted = false;
         }
-        endTurnButton.image.color = allExhausted ? Color.red : Color.white;
+        endTurnButton.image.color = allExhausted ? Color.green : transparentColor;
     }
 
     void ClearSelection()

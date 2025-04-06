@@ -17,18 +17,20 @@ namespace Assets.Scripts.Model
         public int Atk { get; set; }
         public int Def { get; set; }
         public int Shield { get; set; } = 0;
+        public int Experience { get; set; } = 0;
         public int Level { get; protected set; }
         public int AttackChances { get; set; }
         public int MaxAttacksPerTurn { get; set; }
         public GameObject GameObject { get; private set; }
         public string ObjectTag { get; protected set; }
-        public Dictionary<string, Ability> Buffs { get; private set; } = new Dictionary<string, Ability>();
+        public Dictionary<Ability, Buff> Buffs { get; private set; } = new Dictionary<Ability, Buff>();
 
         protected Character(string name, int health, int level, int attack, int defense, int maxHealth)
         {
             Name = name;
             Health = health;
             MaxHealth = maxHealth;
+            Experience = level * 100;
             Level = level;
             Atk = attack;
             Def = defense;
@@ -91,7 +93,6 @@ namespace Assets.Scripts.Model
             }
             return false;
         }
-
         protected virtual void UpdateTag()
         {
             if (GameObject != null && !string.IsNullOrEmpty(ObjectTag))
@@ -100,11 +101,15 @@ namespace Assets.Scripts.Model
             }
         }
 
-        protected virtual void HandleDeath()
+        protected virtual void HandleDeath(Character killer = null)
         {
-            Debug.Log($"{Name} has been defeated!");
+            Debug.Log($"{Name} has died!");
             // 可以在这里添加死亡动画、物品掉落等逻辑
+            GameObject.SetActive(false);
+            GameObject.tag = "Untagged";  // 清除tag
+            GameObject = null;  // 清除引用
         }
+
 
         public void ResetAttackChances()
         {
@@ -133,7 +138,7 @@ namespace Assets.Scripts.Model
             return BaseDamage + Level * 2;
         }
 
-        protected override void HandleDeath()
+        protected override void HandleDeath(Character killer = null)
         {
             base.HandleDeath();
             // Enemy特有的死亡逻辑（例如触发任务更新）
@@ -144,9 +149,8 @@ namespace Assets.Scripts.Model
     public class Soldier : Character
     {
         private int _experience;
-        private bool _hasGun;
-        private int _defense;
-        private Role _role;
+        private readonly bool _hasGun;
+        private readonly Role _role;
         public List<Ability> Abilities { get; private set; } = new List<Ability>();
 
 
@@ -154,8 +158,8 @@ namespace Assets.Scripts.Model
         : base(name, health, level, attack, defense, maxHealth)
         {
             _role = role;
-            AttackChances = role.BaseAttackChance;
-            MaxAttacksPerTurn = role.BaseAttackChance;
+            AttackChances = 0;
+            MaxAttacksPerTurn = role.BaseAttackChance + (level / 5 + 1);
             _experience = 0;
             ObjectTag = "Soldier";
             Def = defense;
@@ -186,6 +190,14 @@ namespace Assets.Scripts.Model
                 Level++;
                 MaxHealth += 10;
                 Health = MaxHealth;
+                Atk += 5;
+                Def += 2;
+                if (Level % 5 == 0)
+                {
+                    AttackChances++;
+                    MaxAttacksPerTurn++;
+                }
+                UpdateAbilityValues();
                 Debug.Log($"{Name} has leveled up to {Level}!");
             }
         }
@@ -212,6 +224,14 @@ namespace Assets.Scripts.Model
         {
             Health = Mathf.Clamp(Health + amount, 0, MaxHealth);
             Debug.Log($"{Name}'s HP modified by {amount}. New HP: {Health}/{MaxHealth}");
+        }
+
+        public void UpdateAbilityValues()
+        {
+            foreach (var ability in Abilities)
+            {
+                ability.UpdateAbilityValues(this);
+            }
         }
     }
 }
