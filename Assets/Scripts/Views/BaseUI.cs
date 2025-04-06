@@ -14,14 +14,19 @@ namespace Assets.Scripts
         public Transform missionButtonContainer;
         public GameObject missionButtonPrefab;
         private Base selectedBuilding;
-        public Button backButton;
         private RectTransform tableRect;
         public GameObject grid2d;
+
+        public GameObject scroll;
+        public Button backButton;
+        public Button modeButton;
+        public int mode = 0; //0 = use, 1 = edit
 
         void Start()
         {
             PopulateBuildingList();
             backButton.onClick.AddListener(OnBackButtonClicked);
+            modeButton.onClick.AddListener(OnModeButtonClicked);
         }
 
         void Update()
@@ -109,6 +114,30 @@ namespace Assets.Scripts
         {
             GameManager.Instance.ChangeState(GameState.MainMenuPage);
             GameManager.Instance.LoadGameState(GameState.MainMenuPage);
+        }
+
+        void OnModeButtonClicked()
+        {
+            Debug.Log("Base mode changed");
+
+            ScrollRect scrollRect = scroll.GetComponent<ScrollRect>();
+            if (scrollRect == null) {
+                Debug.LogError("scroll rect not found");
+            }
+
+
+            if (mode == 1) { //change from edit to use
+                mode = 0;
+                scrollRect.scrollSensitivity = 100;
+
+                modeButton.GetComponentInChildren<TextMeshProUGUI>().text = "Enter Edit Mode";
+            }
+            else if (mode == 0) { //from use to edit
+                mode = 1;
+                scrollRect.scrollSensitivity = 1;
+
+                modeButton.GetComponentInChildren<TextMeshProUGUI>().text = "Enter Use Mode";
+            }
         }
     }
 }
