@@ -207,6 +207,8 @@ namespace Assets.Scripts.Controller
                 return;
             }
 
+            currentMission = mission; // 设置当前任务
+
             // 将当前任务的敌人加载到 _availableEnemies 和 _waitingEnemies 中
             for (int i = 0; i < mission.AssignedEnemies.Count; i++)
             {
@@ -233,6 +235,8 @@ namespace Assets.Scripts.Controller
             Debug.Log($"Combat started: {_inBattleSoldiers.Count} vs {_inBattleEnemies.Count}");
 
             CheckAndAssignAbilities(); // 检查并分配技能
+
+            ApplyTerrainAndWeatherEffects(); // 应用地形和天气效果
         }
         #endregion
 
@@ -403,6 +407,51 @@ namespace Assets.Scripts.Controller
                 }
             }
         }
+        #endregion
+
+        #region Weather and Terrain Effects
+        private int terrainAtkEffect;
+        private int terrainDefEffect;
+        private int terrainHpEffect;
+
+        private int weatherAtkEffect;
+        private int weatherDefEffect;
+        private int weatherHpEffect;
+
+        private void ApplyTerrainAndWeatherEffects()
+        {
+            if (currentMission == null) {
+                Debug.LogError("CombatManager: currentMission is null. Cannot apply terrain and weather effects.");
+                return;
+            }
+
+            // 从当前任务中加载 Terrain 和 Weather 的效果
+            terrainAtkEffect = currentMission.terrainAtkEffect;
+            Debug.Log($"Terrain Atk Effect: {terrainAtkEffect}");
+            terrainDefEffect = currentMission.terrainDefEffect;
+            Debug.Log($"Terrain Def Effect: {terrainDefEffect}");
+            terrainHpEffect = currentMission.terrainHpEffect;
+            Debug.Log($"Terrain HP Effect: {terrainHpEffect}");
+
+            weatherAtkEffect = currentMission.weatherAtkEffect;
+            Debug.Log($"Weather Atk Effect: {weatherAtkEffect}");
+            weatherDefEffect = currentMission.weatherDefEffect;
+            Debug.Log($"Weather Def Effect: {weatherDefEffect}");
+            weatherHpEffect = currentMission.weatherHpEffect;
+            Debug.Log($"Weather HP Effect: {weatherHpEffect}");
+
+            // 对士兵应用效果
+            foreach (var soldier in _inBattleSoldiers)
+            {   
+                if (soldier == null || soldier.IsDead()) continue;
+                soldier.ModifyAttack(terrainAtkEffect + weatherAtkEffect);
+                soldier.ModifyDefense(terrainDefEffect + weatherDefEffect);
+                soldier.ModifyHP(terrainHpEffect + weatherHpEffect);
+            }
+
+        }
+        
+
         #endregion
 
         #region Turn Management

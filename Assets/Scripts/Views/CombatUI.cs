@@ -27,6 +27,10 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     [SerializeField] private GameObject retreatConfirmationPrefab;
     [SerializeField] private TextMeshProUGUI enemyCountText;
 
+    [SerializeField] private TextMeshProUGUI WeatherText;
+
+    [SerializeField] private TextMeshProUGUI TerrainText;
+
     [Header("Ability Panel Settings")]
     [SerializeField] private GameObject abilityPanel; // Ability panel (pre-attached in scene)
     [SerializeField] private GameObject abilityButtonPrefab; // Ability button prefab
@@ -100,6 +104,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     void InitializeUIComponents()
     {
         CreateCharacterDisplays();
+        DisplayTerrainAndWeatherInfo();
         SetupButtonListeners();
         InitializeCombatLog();
         SetupColors();
@@ -201,6 +206,31 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         button.onClick.RemoveAllListeners();
         button.onClick.AddListener(() => OnCharacterClicked(character));
     }
+
+    void DisplayTerrainAndWeatherInfo()
+    {
+        if (CombatManager.Instance.currentMission == null)
+        {
+            TerrainText.text = "Terrain: Unknown";
+            WeatherText.text = "Weather: Unknown";
+            return;
+        }
+
+        var mission = CombatManager.Instance.currentMission;
+
+        // 更新 Terrain 信息
+        TerrainText.text = $"Terrain: {mission.terrain}\n" +
+                        $"ATK Effect: {mission.terrainAtkEffect}\n" +
+                        $"DEF Effect: {mission.terrainDefEffect}\n" +
+                        $"HP Effect: {mission.terrainHpEffect}";
+
+        // 更新 Weather 信息
+        WeatherText.text = $"Weather: {mission.weather}\n" +
+                        $"ATK Effect: {mission.weatherAtkEffect}\n" +
+                        $"DEF Effect: {mission.weatherDefEffect}\n" +
+                        $"HP Effect: {mission.weatherHpEffect}";
+    }
+
     #endregion
 
     #region Combat Logic
