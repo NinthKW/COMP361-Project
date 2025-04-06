@@ -17,8 +17,11 @@ namespace Assets.Scripts.Model
         public int resource_amount;
         public int resource_type;
         public bool unlocked;
+        public bool placed;
+        public int x;
+        public int y;
 
-        public Base(int building_id, string name, string description, int level, int cost, int resource_amount, int resource_type, bool unlocked)
+        public Base(int building_id, string name, string description, int level, int cost, int resource_amount, int resource_type, bool unlocked, bool placed, int x, int y)
         {
             this.building_id = building_id;
             this.name = name;
@@ -28,6 +31,9 @@ namespace Assets.Scripts.Model
             this.resource_amount = resource_amount;
             this.resource_type = resource_type;
             this.unlocked = unlocked;
+            this.placed = placed;
+            this.x = x;
+            this.y = y;
         }
     }
 }

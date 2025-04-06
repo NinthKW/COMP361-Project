@@ -11,7 +11,8 @@ public class CharacterUI : MonoBehaviour
     public Slider healthBar;
     public TMP_Text nameText;
     public TMP_Text attackChanceText;
-    public TMP_Text atkDefText;
+    public TMP_Text atkText;
+    public TMP_Text defText;
     public GameObject exhaustedOverlay;
 
     private Character _character;
@@ -43,14 +44,18 @@ public class CharacterUI : MonoBehaviour
         nameText.text = _character.Name;
         nameText.color = isAlly ? _allyTextColor : _enemyTextColor;
         characterImage.color = isAlly ? _allyImageColor : _enemyImageColor;
-        atkDefText.text = ("ATK :" + _character.Atk.ToString() + "   DEF : " + _character.Def.ToString());
+        atkText.text = (_character.Atk.ToString()); 
+        defText.text =(_character.Def.ToString());
+
 
         UpdateState(false, false, isAlly, false);
     }
 
     public void UpdateState(bool isSelected, bool isExhausted, bool isAlly, bool isDead)
     {
-        healthBar.value = (float)_character.Health / _character.MaxHealth;
+        healthBar.value = (float)_character.Health / (_character.MaxHealth + _character.Shield);
+        healthBar.fillRect.GetComponent<Image>().color = isAlly ? _allyImageColor : _enemyImageColor;
+        healthBar.fillRect.GetComponent<Image>().color = new Color(healthBar.fillRect.GetComponent<Image>().color.r, healthBar.fillRect.GetComponent<Image>().color.g, healthBar.fillRect.GetComponent<Image>().color.b, 0.5f);
         
         attackChanceText.text = $"{_character.AttackChances}/{_character.MaxAttacksPerTurn}";
         

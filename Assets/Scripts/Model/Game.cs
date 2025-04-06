@@ -16,18 +16,23 @@ namespace Assets.Scripts.Model
         public List<Base> basesData;
         public Tech techData;
 
+        public int maxSoldier;
+
         public Game()
         {
             this.resourcesData = new Resources();
             this.MissionsData = new List<Mission>();
             this.soldiersData = new List<Character>();
-            this.basesData = new List<Base>();
-            this.basesData.Add(new Base(0, "Main Base", "Default main base", 1, 0, 0, 0, true));
+            this.basesData = new List<Base>(); //list of buildings
+            //this.basesData.Add(new Base(0, "Main Base", "Default main base", 1, 0, 0, 0, true, false, 0, 0));  //i comment this out for now cuz the base class is each building
             this.techData = new Tech();
         }
 
         public Game(string dbName)
         {
+            //Set default maxSoldier
+            maxSoldier = 5;
+
             int food = 0;
             int wood = 0;
             int stone = 0;
@@ -91,7 +96,7 @@ namespace Assets.Scripts.Model
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT building_id, name, description, level, cost, resource_amount, resource_type, unlocked FROM Infrastructure ORDER BY building_id ASC;";
+                    command.CommandText = "SELECT building_id, name, description, level, cost, resource_amount, resource_type, unlocked, placed, x, y FROM Infrastructure ORDER BY building_id ASC;";
                     using (IDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
@@ -104,14 +109,29 @@ namespace Assets.Scripts.Model
                             int resource_amount = int.Parse(reader["resource_amount"].ToString());
                             int resource_type = int.Parse(reader["resource_type"].ToString());
                             bool unlocked = bool.Parse(reader["unlocked"].ToString());
+                            bool placed = bool.Parse(reader["placed"].ToString());
+                            int x = int.Parse(reader["x"].ToString());
+                            int y = int.Parse(reader["y"].ToString());
 
-                            this.basesData.Add(new Base(building_id, name, description, level, cost, resource_amount, resource_type, unlocked));
+                            this.basesData.Add(new Base(building_id, name, description, level, cost, resource_amount, resource_type, unlocked, placed, x, y));
                         }
                         reader.Close();
                     }
                 }
                 connection.Close();
             }
+
+            //Initialize maxSoldier
+            foreach (Base building in this.basesData) {
+                if (Equals(building.name.ToLower(), "barracks")) 
+                {
+                    if (building.placed)
+                    {
+                        maxSoldier += 1;
+                    }
+                }
+            }
+
 
             // Missions
             this.MissionsData = new List<Mission>();

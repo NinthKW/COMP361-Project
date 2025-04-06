@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace Assets.Scripts.Model
 {
@@ -11,15 +12,17 @@ namespace Assets.Scripts.Model
     public abstract class Character
     {
         public string Name { get; protected set; }
-        public int Health { get; protected set; }
+        public int Health { get; set; }
         public int MaxHealth { get; protected set; }
-        public int Atk { get; protected set; }
-        public int Def { get; protected set; }
+        public int Atk { get; set; }
+        public int Def { get; set; }
+        public int Shield { get; set; } = 0;
         public int Level { get; protected set; }
         public int AttackChances { get; set; }
-        public int MaxAttacksPerTurn { get; protected set; }
+        public int MaxAttacksPerTurn { get; set; }
         public GameObject GameObject { get; private set; }
         public string ObjectTag { get; protected set; }
+        public Dictionary<string, Ability> Buffs { get; private set; } = new Dictionary<string, Ability>();
 
         protected Character(string name, int health, int level, int attack, int defense, int maxHealth)
         {
@@ -34,6 +37,19 @@ namespace Assets.Scripts.Model
         public virtual void TakeDamage(int damage)
         {
             damage = Mathf.Max(0, damage);
+            if (Shield > 0)
+            {
+                if (damage > Shield)
+                {
+                    damage -= Shield;
+                    Shield = 0;
+                }
+                else
+                {
+                    Shield -= damage;
+                    damage = 0;
+                }
+            }
             Health = Mathf.Max(Health - damage, 0);
             
             if (Health <= 0)
@@ -49,6 +65,14 @@ namespace Assets.Scripts.Model
             int finalDamage = CalculateDamage();
             Debug.Log($"{Name} attacks {target.Name} with {finalDamage} damage!");
             target.TakeDamage(finalDamage);
+        }
+
+        public virtual int GetAttackAmount(Character target)
+        {
+            if (target == null || target.IsDead()) return 0;
+
+            int finalDamage = CalculateDamage();
+            return finalDamage;
         }
 
         protected abstract int CalculateDamage();
@@ -93,8 +117,8 @@ namespace Assets.Scripts.Model
         public int BaseDamage { get; private set; }
         public int ExperienceReward { get; private set; }
 
-        public Enemy(string name, int health, int damage, int level, int expReward) 
-            : base(name, health, level, damage, 0, 0)
+        public Enemy(string name, int health, int damage, int defense, int maxHealth, int level, int expReward) 
+            : base(name, health, level, damage, defense, maxHealth)
         {
             BaseDamage = damage;
             ExperienceReward = expReward;
@@ -123,6 +147,8 @@ namespace Assets.Scripts.Model
         private bool _hasGun;
         private int _defense;
         private Role _role;
+        public List<Ability> Abilities { get; private set; } = new List<Ability>();
+
 
         public Soldier(string name, Role role, int level, int health, int attack, int defense, int maxHealth) 
         : base(name, health, level, attack, defense, maxHealth)
@@ -167,19 +193,6 @@ namespace Assets.Scripts.Model
         {
             int mitigatedDamage = Mathf.Max(0, damage - _defense);
             base.TakeDamage(mitigatedDamage);
-        }
-    }
-
-    // 随机名称生成器
-    public static class NameGenerator
-    {
-        private static readonly string[] Names = {
-            "Alice", "Bob", "Charlie", "David", "Eve", "Frank", "Grace", "Heidi", "Ivan", "Judy"
-        };
-        
-        public static string GetRandomName()
-        {
-            return Names[UnityEngine.Random.Range(0, Names.Length)];
         }
     }
 }

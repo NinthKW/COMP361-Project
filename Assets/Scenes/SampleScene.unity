@@ -461,7 +461,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyTurnDelay: 1
-  dbName: URI=file:database.db
+  dbPath: URI=file:G:/Unity/Projects/COMP361-Project/Assets/StreamingAssets/database.db
+  currentMission:
+    id: 0
+    name: 
+    description: 
+    difficulty: 0
+    rewardMoney: 0
+    rewardAmount: 0
+    rewardResourceId: 0
+    terrain: 
+    weather: 
+    isCompleted: 0
+    unlocked: 0
 --- !u!4 &1044390040
 Transform:
   m_ObjectHideFlags: 0
