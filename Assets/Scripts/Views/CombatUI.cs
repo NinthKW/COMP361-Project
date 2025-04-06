@@ -97,7 +97,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     {
         if (CombatManager.Instance != null) return;
 
-        // Debug.Log("Initializing Test Combat Manager");
+        Debug.Log("Initializing Test Combat Manager");
         var managerObj = new GameObject("CombatManager");
         CombatManager.Instance = managerObj.AddComponent<CombatManager>();
     }
@@ -184,7 +184,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
         {
             var index = CombatManager.Instance.GetAvailableEnemies().IndexOf(enemy);
-            // Debug.Log($"Enemy Index: {index}");
+            Debug.Log($"Enemy Index: {index}");
             var card = CreateCharacterCard(enemy, false, enemyPositions[index]);
             enemyCards.Add(card);
             enemy.SetGameObject(card);
@@ -407,7 +407,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
         if (canvas == null)
         {
-            // Debug.LogError("No Canvas found in the scene!");
+            Debug.LogError("No Canvas found in the scene!");
             return;
         }
 
@@ -740,7 +740,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             btn.onClick.AddListener(() => OnAbilityButtonClicked(ability));
         }
         
-        // Debug.Log($"Showing ability panel for {soldier.Name}");
+        Debug.Log($"Showing ability panel for {soldier.Name}");
         abilityPanel.SetActive(true);
     }
 

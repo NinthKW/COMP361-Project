@@ -30,24 +30,24 @@ public class MissionSelectUI : MonoBehaviour
 
     void PopulateMissionList()
     {
-        // Debug.Log("PopulateMissionList called");
+        Debug.Log("PopulateMissionList called");
         if (MissionManager.Instance == null)
         {
-            // Debug.LogError("MissionManager.Instance is NULL");
+            Debug.LogError("MissionManager.Instance is NULL");
             return;
         }
 
         if (MissionManager.Instance.missions == null)
         {
-            // Debug.LogError("missions list is NULL");
+            Debug.LogError("missions list is NULL");
             return;
         }
 
-        // Debug.Log("Mission count: " + MissionManager.Instance.missions.Count);
+        Debug.Log("Mission count: " + MissionManager.Instance.missions.Count);
 
         foreach (var mission in MissionManager.Instance.missions)
         {
-            // Debug.Log("Adding mission: " + mission.name);
+            Debug.Log("Adding mission: " + mission.name);
 
             GameObject buttonObj = Instantiate(missionButtonPrefab, missionButtonContainer);
 
@@ -86,7 +86,7 @@ public class MissionSelectUI : MonoBehaviour
         }
         else
         {
-            // Debug.LogWarning("No mission selected");
+            Debug.LogWarning("No mission selected");
         }
     }
 

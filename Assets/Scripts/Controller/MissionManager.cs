@@ -22,7 +22,7 @@ namespace Assets.Scripts.Controller
                 DontDestroyOnLoad(gameObject);
 
                 dbPath = "URI=file:" + Application.streamingAssetsPath + "/database.db";
-                // Debug.Log("Database path: " + dbPath);
+                Debug.Log("Database path: " + dbPath);
             }
             else
             {
@@ -39,12 +39,12 @@ namespace Assets.Scripts.Controller
         {
             missions.Clear();
 
-            // Debug.Log("Trying to open DB at: " + dbPath);
+            Debug.Log("Trying to open DB at: " + dbPath);
 
             using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
-                // Debug.Log("Database Opened Successfully!");
+                Debug.Log("Database Opened Successfully!");
 
                 using (var command = connection.CreateCommand())
                 {
@@ -125,7 +125,7 @@ namespace Assets.Scripts.Controller
 
                             missions.Add(mission);
 
-                            // Debug.Log($"Loaded Mission: {missionName} (Difficulty: {difficulty}, Terrain: {terrain}, Weather: {weather})");
+                            Debug.Log($"Loaded Mission: {missionName} (Difficulty: {difficulty}, Terrain: {terrain}, Weather: {weather})");
                             
                         }
 
@@ -134,7 +134,7 @@ namespace Assets.Scripts.Controller
                 }
 
                 connection.Close();
-                // Debug.Log($"Total Missions Loaded: {missions.Count}");
+                Debug.Log($"Total Missions Loaded: {missions.Count}");
             }
         }
 
@@ -181,7 +181,7 @@ namespace Assets.Scripts.Controller
                                 mission.AssignedEnemies.Add(enemy);
                             }
 
-                            // Debug.Log($"Loaded {count} {name}(s) for Mission {mission.name}");
+                            Debug.Log($"Loaded {count} {name}(s) for Mission {mission.name}");
                         }
                     }
                 }
@@ -195,12 +195,12 @@ namespace Assets.Scripts.Controller
             CombatManager.Instance.SetcurrentMission(selectedMission);
             if (selectedMission != null)
             {
-                // Debug.Log("Starting Mission: " + selectedMission.name);
+                Debug.Log("Starting Mission: " + selectedMission.name);
                 Invoke(nameof(StartCombat), 0.5f);
             }
             else
             {
-                // Debug.LogWarning("Mission not found: ");
+                Debug.LogWarning("Mission not found: ");
             }
         }
 

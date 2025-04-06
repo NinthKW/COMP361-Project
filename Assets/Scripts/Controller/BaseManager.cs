@@ -23,7 +23,7 @@ namespace Assets.Scripts.Controller
                 DontDestroyOnLoad(gameObject);
 
                 dbPath = "URI=file:" + Application.streamingAssetsPath + "/database.db";
-                // Debug.Log("Database path: " + dbPath);
+                Debug.Log("Database path: " + dbPath);
             }
             else
             {
@@ -46,12 +46,12 @@ namespace Assets.Scripts.Controller
         {
             buildingList.Clear();
 
-            // Debug.Log("Trying to open DB at: " + dbPath);
+            Debug.Log("Trying to open DB at: " + dbPath);
 
             using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
-                // Debug.Log("Database Opened Successfully! For base loadout");
+                Debug.Log("Database Opened Successfully! For base loadout");
 
                 using (var command = connection.CreateCommand())
                 {
@@ -96,7 +96,7 @@ namespace Assets.Scripts.Controller
                 }
 
                 connection.Close();
-                // Debug.Log($"Total buildingList Loaded: {buildingList.Count}");
+                Debug.Log($"Total buildingList Loaded: {buildingList.Count}");
             }
         }
     }

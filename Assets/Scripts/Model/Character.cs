@@ -65,7 +65,7 @@ namespace Assets.Scripts.Model
             if (target == null || target.IsDead()) return;
             
             int finalDamage = CalculateDamage();
-            // Debug.Log($"{Name} attacks {target.Name} with {finalDamage} damage!");
+            Debug.Log($"{Name} attacks {target.Name} with {finalDamage} damage!");
             target.TakeDamage(finalDamage);
         }
 
@@ -103,7 +103,7 @@ namespace Assets.Scripts.Model
 
         protected virtual void HandleDeath(Character killer = null)
         {
-            // Debug.Log($"{Name} has died!");
+            Debug.Log($"{Name} has died!");
             // 可以在这里添加死亡动画、物品掉落等逻辑
             GameObject.SetActive(false);
             GameObject.tag = "Untagged";  // 清除tag
@@ -142,7 +142,7 @@ namespace Assets.Scripts.Model
         {
             base.HandleDeath();
             // Enemy特有的死亡逻辑（例如触发任务更新）
-            // Debug.Log($"Dropping {ExperienceReward} experience points!");
+            Debug.Log($"Dropping {ExperienceReward} experience points!");
         }
     }
 
@@ -211,19 +211,19 @@ namespace Assets.Scripts.Model
         public void ModifyAttack(int amount)
         {
             Atk += amount;
-            // Debug.Log($"{Name}'s Attack modified by {amount}. New Attack: {Atk}");
+            Debug.Log($"{Name}'s Attack modified by {amount}. New Attack: {Atk}");
         }
 
         public void ModifyDefense(int amount)
         {
             Def += amount;
-            // Debug.Log($"{Name}'s Defense modified by {amount}. New Defense: {Def}");
+            Debug.Log($"{Name}'s Defense modified by {amount}. New Defense: {Def}");
         }
 
         public void ModifyHP(int amount)
         {
             Health = Mathf.Clamp(Health + amount, 0, MaxHealth);
-            // Debug.Log($"{Name}'s HP modified by {amount}. New HP: {Health}/{MaxHealth}");
+            Debug.Log($"{Name}'s HP modified by {amount}. New HP: {Health}/{MaxHealth}");
         }
 
         public void UpdateAbilityValues()

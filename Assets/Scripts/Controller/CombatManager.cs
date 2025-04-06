@@ -87,11 +87,11 @@ namespace Assets.Scripts.Controller
                             soldier.GainExp(reader.GetInt32(3)); // 单独设置经验值
 
                             _availableSoldiers.Add(soldier);
-                            // Debug.Log($"Loaded soldier: {soldier.Name} ({role.GetRoleName()})");
+                            Debug.Log($"Loaded soldier: {soldier.Name} ({role.GetRoleName()})");
                         }
                         catch (Exception ex)
                         {
-                            // Debug.LogError($"Failed to load soldier: {ex.Message}");
+                            Debug.LogError($"Failed to load soldier: {ex.Message}");
                         }
                     }
                 }
@@ -106,7 +106,7 @@ namespace Assets.Scripts.Controller
             if (_availableSoldiers.Contains(soldier)) return;
             
             _availableSoldiers.Add(soldier);
-            // Debug.Log($"Added soldier: {soldier.Name}");
+            Debug.Log($"Added soldier: {soldier.Name}");
         }
 
         public Soldier CreateNewSoldier(string soldierName, string roleType)
@@ -154,7 +154,7 @@ namespace Assets.Scripts.Controller
             }
             catch (Exception ex)
             {
-                // Debug.LogError($"Failed to create soldier: {ex.Message}");
+                Debug.LogError($"Failed to create soldier: {ex.Message}");
                 return null;
             }
         }
@@ -169,14 +169,14 @@ namespace Assets.Scripts.Controller
 
             if (mission == null || mission.AssignedEnemies == null || mission.AssignedEnemies.Count == 0)
             {
-                // Debug.LogError("No enemies assigned to the mission.");
+                Debug.LogError("No enemies assigned to the mission.");
                 return;
             }
 
             foreach (var enemy in mission.AssignedEnemies)
             {
                 _availableEnemies.Add(enemy);
-                // Debug.Log($"Added enemy: {enemy.Name}");
+                Debug.Log($"Added enemy: {enemy.Name}");
             }
         }
 
@@ -191,19 +191,19 @@ namespace Assets.Scripts.Controller
 
             if (selectedSoldiers == null || selectedSoldiers.Count == 0)
             {
-                // Debug.LogError("Cannot start combat: no soldiers selected.");
+                Debug.LogError("Cannot start combat: no soldiers selected.");
                 return;
             }
             _inBattleSoldiers.AddRange(selectedSoldiers);
 
             if (mission == null)
             {
-                // Debug.LogError("Cannot start combat: mission is null.");
+                Debug.LogError("Cannot start combat: mission is null.");
                 return;
             }
             if (mission.AssignedEnemies == null || mission.AssignedEnemies.Count == 0)
             {
-                // Debug.LogError($"Mission '{mission.name}' has no assigned enemies.");
+                Debug.LogError($"Mission '{mission.name}' has no assigned enemies.");
                 return;
             }
 
@@ -221,18 +221,18 @@ namespace Assets.Scripts.Controller
                 {
                     _waitingEnemies.Add(mission.AssignedEnemies[i]); // 剩下的敌人存入等待列表
                 }
-                // Debug.Log($"Added enemy to _availableEnemies: {mission.AssignedEnemies[i].Name}");
+                Debug.Log($"Added enemy to _availableEnemies: {mission.AssignedEnemies[i].Name}");
             }
 
             if (_inBattleSoldiers.Count == 0 || _inBattleEnemies.Count == 0)
             {
-                // Debug.LogError("Cannot start combat with empty units");
+                Debug.LogError("Cannot start combat with empty units");
                 return;
             }
 
             IsCombatActive = true;
             IsPlayerTurn = true;
-            // Debug.Log($"Combat started: {_inBattleSoldiers.Count} vs {_inBattleEnemies.Count}");
+            Debug.Log($"Combat started: {_inBattleSoldiers.Count} vs {_inBattleEnemies.Count}");
 
             CheckAndAssignAbilities(); // 检查并分配技能
 
@@ -262,25 +262,25 @@ namespace Assets.Scripts.Controller
         {
             if (!IsCombatActive)
             {
-                // Debug.LogWarning("Combat is not active");
+                Debug.LogWarning("Combat is not active");
                 return false;
             }
 
             if (attacker.IsDead() || target.IsDead())
             {
-                // Debug.LogWarning("Cannot attack with/on dead character");
+                Debug.LogWarning("Cannot attack with/on dead character");
                 return false;
             }
 
             if (IsPlayerTurn && !_inBattleSoldiers.Contains(attacker))
             {
-                // Debug.LogWarning("Not a valid player character");
+                Debug.LogWarning("Not a valid player character");
                 return false;
             }
 
             if (!IsPlayerTurn && !_inBattleEnemies.Contains(attacker))
             {
-                // Debug.LogWarning("Not a valid enemy character");
+                Debug.LogWarning("Not a valid enemy character");
                 return false;
             }
 
@@ -302,14 +302,14 @@ namespace Assets.Scripts.Controller
                     _waitingEnemies.RemoveAt(0);
                     _availableEnemies.Add(newEnemy);
                     _inBattleEnemies.Add(newEnemy);
-                    // Debug.Log($"Replaced dead enemy with: {newEnemy.Name}");
+                    Debug.Log($"Replaced dead enemy with: {newEnemy.Name}");
                 }
             }
         }
 
         public bool CheckCombatEnd()
         {
-            // Debug.Log($"Checking combat end: {CountAliveSoldiers()} vs {CountAliveEnemies()}");
+            Debug.Log($"Checking combat end: {CountAliveSoldiers()} vs {CountAliveEnemies()}");
             if (CountAliveSoldiers() == 0)
             {
                 EndCombat(false);
@@ -420,24 +420,24 @@ namespace Assets.Scripts.Controller
         private void ApplyTerrainAndWeatherEffects()
         {
             if (currentMission == null) {
-                // Debug.LogError("CombatManager: currentMission is null. Cannot apply terrain and weather effects.");
+                Debug.LogError("CombatManager: currentMission is null. Cannot apply terrain and weather effects.");
                 return;
             }
 
             // 从当前任务中加载 Terrain 和 Weather 的效果
             terrainAtkEffect = currentMission.terrainAtkEffect;
-            // Debug.Log($"Terrain Atk Effect: {terrainAtkEffect}");
+            Debug.Log($"Terrain Atk Effect: {terrainAtkEffect}");
             terrainDefEffect = currentMission.terrainDefEffect;
-            // Debug.Log($"Terrain Def Effect: {terrainDefEffect}");
+            Debug.Log($"Terrain Def Effect: {terrainDefEffect}");
             terrainHpEffect = currentMission.terrainHpEffect;
-            // Debug.Log($"Terrain HP Effect: {terrainHpEffect}");
+            Debug.Log($"Terrain HP Effect: {terrainHpEffect}");
 
             weatherAtkEffect = currentMission.weatherAtkEffect;
-            // Debug.Log($"Weather Atk Effect: {weatherAtkEffect}");
+            Debug.Log($"Weather Atk Effect: {weatherAtkEffect}");
             weatherDefEffect = currentMission.weatherDefEffect;
-            // Debug.Log($"Weather Def Effect: {weatherDefEffect}");
+            Debug.Log($"Weather Def Effect: {weatherDefEffect}");
             weatherHpEffect = currentMission.weatherHpEffect;
-            // Debug.Log($"Weather HP Effect: {weatherHpEffect}");
+            Debug.Log($"Weather HP Effect: {weatherHpEffect}");
 
             // 对士兵应用效果
             foreach (var soldier in _inBattleSoldiers)
@@ -458,7 +458,7 @@ namespace Assets.Scripts.Controller
         {
             if (!IsPlayerTurn) CheckAndReplaceDeadEnemies();
             IsPlayerTurn = !IsPlayerTurn;
-            // Debug.Log($"Turn switched to: {(IsPlayerTurn ? "Player" : "Enemy")}");
+            Debug.Log($"Turn switched to: {(IsPlayerTurn ? "Player" : "Enemy")}");
             yield return new WaitForSeconds(enemyTurnDelay);
 
             if (IsPlayerTurn)
@@ -477,7 +477,7 @@ namespace Assets.Scripts.Controller
 
             if (validSoldiers.Count == 0)
             {
-                // Debug.LogError("No valid soldiers available. Cannot select any soldier.");
+                Debug.LogError("No valid soldiers available. Cannot select any soldier.");
                 throw new InvalidOperationException("No valid soldier available.");
             }
 
@@ -498,7 +498,7 @@ namespace Assets.Scripts.Controller
         public void EndCombat(bool victory)
         {
             IsCombatActive = false;
-            // Debug.Log($"Combat ended with {(victory ? "victory" : "defeat")}");
+            Debug.Log($"Combat ended with {(victory ? "victory" : "defeat")}");
             
             // Reward experience
             if (victory)
