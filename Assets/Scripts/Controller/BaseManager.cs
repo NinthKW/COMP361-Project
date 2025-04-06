@@ -69,6 +69,9 @@ namespace Assets.Scripts.Controller
                             int resourceAmount = reader.GetInt32(5);
                             int resourceType = reader.GetInt32(6);
                             bool unlocked = reader.GetBoolean(7);
+                            bool placed = reader.GetBoolean(8);
+                            int x = reader.GetInt32(9);
+                            int y = reader.GetInt32(10);
 
 
                             Base building = new Base(
@@ -79,7 +82,10 @@ namespace Assets.Scripts.Controller
                                 cost,
                                 resourceAmount,
                                 resourceType,
-                                unlocked
+                                unlocked,
+                                placed,
+                                x,
+                                y
                             ); 
 
                             buildingList.Add(building);
