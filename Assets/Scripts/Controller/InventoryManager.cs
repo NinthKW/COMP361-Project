@@ -10,47 +10,47 @@ namespace Assets.Scripts.Controller
     public class InventoryManager : MonoBehaviour
     {
         public static InventoryManager Instance;
+        // The player's inventory holding weapons and equipment
         private Inventory playerInventory;
 
-        // Database connection string; can be changed in the Inspector.
+        // Database connection string
         public string dbName;
 
         void Awake()
         {
-            // Make sure only one InventoryManager exists.
+            // Check if an instance already exists
             if (Instance == null)
             {
                 Instance = this;
-                DontDestroyOnLoad(gameObject); // Keep this object between scenes.
+                DontDestroyOnLoad(gameObject); 
             }
             else
             {
-                Destroy(gameObject);
+                Destroy(gameObject); // Remove duplicate instance
                 return;
             }
 
-            // Set up the player's inventory.
+            // Creates the player's inventory
             playerInventory = new Inventory();
 
-            // Use a default database path if none is provided.
+            // Database Pathway
             if (string.IsNullOrEmpty(dbName))
             {
-                dbName = "URI=file:" + Application.persistentDataPath + "/database.db";
+                dbName = "URI=file:" + Application.streamingAssetsPath + "/database.db";
             }
 
-            // Load weapon and equipment data from the database.
+            // Load weapons and equipment data from the database
             LoadWeapons(dbName);
             LoadEquipments(dbName);
         }
 
-        // Return the player's inventory.
+        // Returns the player's inventory
         public Inventory GetInventory()
         {
             return playerInventory;
         }
 
-        #region Database Loading Methods
-        // Read weapon data from the database and add each to the inventory.
+        // Loads weapon data from the database
         public void LoadWeapons(string dbName)
         {
             using (var connection = new SqliteConnection(dbName))
@@ -71,7 +71,7 @@ namespace Assets.Scripts.Controller
                             int resourceAmount = int.Parse(reader["resource_amount"].ToString());
                             int resourceType = int.Parse(reader["resource_type"].ToString());
 
-                            // Make a new weapon and add it to the inventory.
+                            // Create a new weapon and add it to the inventory.
                             Weapon weapon = new Weapon(id, name, description, damage, cost, resourceAmount, resourceType);
                             playerInventory.AddWeapon(weapon);
                         }
@@ -81,7 +81,7 @@ namespace Assets.Scripts.Controller
             }
         }
 
-        // Read equipment data from the database and add each to the inventory.
+        // Loads equipment data from the database
         public void LoadEquipments(string dbName)
         {
             using (var connection = new SqliteConnection(dbName))
@@ -103,7 +103,7 @@ namespace Assets.Scripts.Controller
                             int resourceAmount = int.Parse(reader["resource_amount"].ToString());
                             int resourceType = int.Parse(reader["resource_type"].ToString());
 
-                            // Create a new equipment and put it in the inventory.
+                            // Creates a new equipment item and add it to the inventory
                             Equipment equipment = new Equipment(id, name, hp, def, atk, cost, resourceAmount, resourceType);
                             playerInventory.AddEquipment(equipment);
                         }
@@ -112,9 +112,8 @@ namespace Assets.Scripts.Controller
                 connection.Close();
             }
         }
-        #endregion
 
-        // Empty the inventory of all weapons and equipment.
+        // Clears the inventory of all weapons and equipment
         public void ClearInventory()
         {
             playerInventory.Clear();
