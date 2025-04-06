@@ -172,11 +172,12 @@ namespace Assets.Scripts.Controller
                             int hp = reader.GetInt32(3);
                             int attack = reader.GetInt32(4);
                             int dps = reader.GetInt32(5);
+                            int exp_reward = reader.GetInt32(6); // 经验奖励
                             int maxHealth = hp; // 假设最大生命值等于当前生命值
 
                             for (int i = 0; i < count; i++)
                             {
-                                var enemy = new Enemy(name, hp, attack, dps, maxHealth, 1, 10); // TODO: add level and exp to database
+                                var enemy = new Enemy(name, hp, attack, dps, maxHealth, 1, exp_reward); 
                                 mission.AssignedEnemies.Add(enemy);
                             }
 

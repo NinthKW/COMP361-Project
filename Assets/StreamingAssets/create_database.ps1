@@ -172,7 +172,8 @@ CREATE TABLE IF NOT EXISTS ENEMY_TYPES (
     et_name TEXT NOT NULL,
     HP INTEGER NOT NULL,
     base_ATK INTEGER NOT NULL,
-    base_DPS INTEGER NOT NULL -- Assuming DPS means Damage Per Second, keeping INT
+    base_DPS INTEGER NOT NULL, -- Assuming DPS means Damage Per Second, keeping INT
+    exp_reward INTEGER NOT NULL 
 );
 
 -- Insert data (using INSERT OR IGNORE to prevent errors if data already exists)
@@ -215,10 +216,10 @@ INSERT OR IGNORE INTO Mission (mission_id, name, description, difficulty, reward
 (9, 'Elimination', 'Hunt down a high-value target', 6, 400, 30, 9, 'Desert', 'Foggy', 1),
 (10, 'Final Assault', 'Massive attack on enemy headquarters', 7, 500, 40, 10, 'Swamp', 'Snowy', 1);
 
-INSERT OR IGNORE INTO ENEMY_TYPES (et_ID, et_name, HP, base_ATK, base_DPS) VALUES
-(1, 'Grunt', 100, 10, 5), (2, 'Sniper', 80, 20, 10), (3, 'Tank', 200, 30, 15), (4, 'Elite', 150, 25, 12),
-(5, 'Commander', 250, 40, 20), (6, 'Scout', 90, 15, 7), (7, 'Heavy Gunner', 180, 35, 18), (8, 'Warrior', 160, 28, 14),
-(9, 'Assassin', 110, 22, 11), (10, 'Boss', 500, 50, 25);
+INSERT OR IGNORE INTO ENEMY_TYPES (et_ID, et_name, HP, base_ATK, base_DPS, exp_reward) VALUES
+(1, 'Grunt', 100, 10, 5, 20), (2, 'Sniper', 80, 20, 10, 20), (3, 'Tank', 200, 30, 15, 30), (4, 'Elite', 150, 25, 12, 50),
+(5, 'Commander', 250, 40, 20, 60), (6, 'Scout', 90, 15, 7, 30), (7, 'Heavy Gunner', 180, 35, 18, 60), (8, 'Warrior', 160, 28, 14, 80),
+(9, 'Assassin', 110, 22, 11, 90), (10, 'Boss', 500, 50, 25, 100);
 
 INSERT OR IGNORE INTO MISSION_ENEMY (mission_id, et_id, count) VALUES
 (1, 1, 10), (1, 2, 5), (2, 2, 15), (2, 3, 7), (3, 3, 20), (3, 4, 8), (4, 4, 25), (4, 5, 12),

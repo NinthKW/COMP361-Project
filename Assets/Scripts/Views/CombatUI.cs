@@ -66,6 +66,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     private Color buffColor;
     private Color enemyColor;
     private Color allyColor;
+    private Color transparentColor;
     #endregion
 
     #region Lifecycle Methods
@@ -117,6 +118,8 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         ColorUtility.TryParseHtmlString("#FFA500", out controlColor);
         ColorUtility.TryParseHtmlString("#A0B6FF", out buffColor);
         ColorUtility.TryParseHtmlString("#FFA0A0", out enemyColor);
+        ColorUtility.TryParseHtmlString("#FFFFFF", out transparentColor);
+        transparentColor.a = 0.2f;
     }
 
     void SubscribeToEvents() => 
@@ -294,7 +297,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             castable = false; // Reset castable state after attack
             attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "Attack";
             endTurnButton.GetComponentInChildren<TextMeshProUGUI>().text = "End Turn";
-            attackButton.image.color = Color.white;
+            attackButton.image.color = Color.gray;
             HideAbilityPanel();
             abilityInfoPanel.SetActive(false);
             PostAttackCleanup();
@@ -557,7 +560,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
                 castable = false; // Reset castable state after target selection
                 endTurnButton.GetComponentInChildren<TextMeshProUGUI>().text = "End Turn";
                 attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "Attack";
-                attackButton.image.color = Color.white;
+                attackButton.image.color = Color.gray;
                 HideAbilityPanel();
                 // abilityInfoPanel.SetActive(false);
             }
@@ -629,7 +632,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             castable = false; // Reset castable state after target selection
             attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "Attack";
             endTurnButton.GetComponentInChildren<TextMeshProUGUI>().text = "End Turn";
-            attackButton.image.color = Color.white;
+            attackButton.image.color = Color.gray;
             HideAbilityPanel();
             abilityInfoPanel.SetActive(false);
             return;
@@ -893,7 +896,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             if (soldier == null || soldier.IsDead()) continue;
             if (soldier.AttackChances > 0) allExhausted = false;
         }
-        endTurnButton.image.color = allExhausted ? Color.red : Color.white;
+        endTurnButton.image.color = allExhausted ? Color.green : transparentColor;
     }
 
     void ClearSelection()
