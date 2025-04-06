@@ -25,6 +25,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     [SerializeField] private Button endTurnButton;
     [SerializeField] private Button retreatButton;
     [SerializeField] private GameObject retreatConfirmationPrefab;
+    [SerializeField] private TextMeshProUGUI enemyCountText;
 
     [Header("Ability Panel Settings")]
     [SerializeField] private GameObject abilityPanel; // Ability panel (pre-attached in scene)
@@ -76,6 +77,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         UpdateCharacterUIStates();
         UpdateButtonStates();
         UpdateSelectionVisual();
+        UpdateEnemyCountDisplay();
     }
 
     void OnDestroy()
@@ -174,6 +176,9 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             waitingEnemyCards.Add(card);
             enemy.SetGameObject(card);
         }
+
+        // 更新敌人数量显示
+        UpdateEnemyCountDisplay();
     }
 
     GameObject CreateCharacterCard(Character character, bool isAlly, Vector2 position)
@@ -393,6 +398,8 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         ClearSelection();
         CheckTurnEnd();
         UpdateCombatState();
+        // 更新敌人数量显示
+        UpdateEnemyCountDisplay();
     }
 
     void CleanDeadUnits()
@@ -417,6 +424,8 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
     void CleanEnemyUnits()
     {
+        bool anyEnemyRemoved = false; // 用于检查是否有敌人被移除
+
         foreach (var card in enemyCards.ToArray())
         {
             if (card == null) continue;
@@ -427,6 +436,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             var position = card.transform.position;
             enemyCards.Remove(card);
             Destroy(card);
+            anyEnemyRemoved = true; // 标记有敌人被移除
             
             // TODO: replace dead units in new logics
             if (waitingEnemyCards.Count > 0)
@@ -435,6 +445,11 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
                 enemyCards.Add(waitingEnemyCards[0]);
                 waitingEnemyCards.RemoveAt(0);
             }
+        }
+
+        if (anyEnemyRemoved)
+        {
+            UpdateEnemyCountDisplay(); // 在清除敌人后更新显示
         }
     }
     #endregion
@@ -739,6 +754,19 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         selectedAlly != null && 
         selectedTarget != null && 
         selectedAlly is Soldier { AttackChances: > 0 };
+
+    private void UpdateEnemyCountDisplay()
+{
+    if (enemyCountText == null) return;
+
+    int activeEnemies = CombatManager.Instance.CountAliveEnemies();
+    int waitingEnemies = CombatManager.Instance.GetWaitingEnemies().Count;
+
+    Debug.Log($"Active Enemies: {activeEnemies}, Waiting Enemies: {waitingEnemies}");
+
+    enemyCountText.text = $"Enemies Remaining: {activeEnemies + waitingEnemies}";
+}
+    
     #endregion
 
     #region Retreat System
@@ -852,6 +880,8 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
                 button.interactable = state;
         }
     }
+
+    
 
     bool CompareAbility(Ability ability, string type)
     {

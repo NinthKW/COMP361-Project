@@ -484,7 +484,7 @@ namespace Assets.Scripts.Controller
 
         #region Helper Methods
         private int CountAliveSoldiers() => _inBattleSoldiers.Count(s => s != null && !s.IsDead());
-        private int CountAliveEnemies() => _availableEnemies.Count(e => e != null && !e.IsDead());
+        public int CountAliveEnemies() => _availableEnemies.Count(e => e != null && !e.IsDead());
         private void AbilityCountDown()
         {
             foreach (var soldier in _inBattleSoldiers)
