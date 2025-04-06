@@ -328,7 +328,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "HealBuff";
             endTurnButton.GetComponentInChildren<TextMeshProUGUI>().text = "Cancel";
             attackButton.image.color = Color.green;
-            UpdateCombatLog("Please select any ally for applying permanant heal buff.");
+            UpdateCombatLog("Please select any ally for applying permanent heal buff.");
             castable = false;
         }
         else if (CompareAbility(ability, "TauntAll")) // Taunt
