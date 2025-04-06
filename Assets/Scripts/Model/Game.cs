@@ -21,8 +21,8 @@ namespace Assets.Scripts.Model
             this.resourcesData = new Resources();
             this.MissionsData = new List<Mission>();
             this.soldiersData = new List<Character>();
-            this.basesData = new List<Base>();
-            this.basesData.Add(new Base(0, "Main Base", "Default main base", 1, 0, 0, 0, true, false, 0, 0));
+            this.basesData = new List<Base>(); //list of buildings
+            //this.basesData.Add(new Base(0, "Main Base", "Default main base", 1, 0, 0, 0, true, false, 0, 0));  //i comment this out for now cuz the base class is each building
             this.techData = new Tech();
         }
 
