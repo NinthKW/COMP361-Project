@@ -171,6 +171,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4c034cb661a5964bb9adfe97fb1ca69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  building_id: 0
+  buildingName: 
+  description: 
+  level: 0
+  cost: 0
+  resource_amount: 0
+  resource_type: 0
+  unlocked: 0
+  building:
+    building_id: 0
+    name: 
+    description: 
+    level: 0
+    cost: 0
+    resource_amount: 0
+    resource_type: 0
+    unlocked: 0
+    placed: 0
+    x: 0
+    y: 0
+  grid2d: {fileID: 0}
+  pointerOffset: {x: 0, y: 0}
 --- !u!114 &3182473643541393873
 MonoBehaviour:
   m_ObjectHideFlags: 0

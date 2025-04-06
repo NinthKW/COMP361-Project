@@ -4,6 +4,7 @@ using UnityEngine;
 using Assets.Scripts.Model;
 using System.Data;
 using Mono.Data.Sqlite;
+using Assets.Scripts.Controller;
 
 namespace Assets.Scripts.Model
 {
@@ -120,6 +121,7 @@ namespace Assets.Scripts.Model
                 }
                 connection.Close();
             }
+            BaseManager.Instance.buildingList = basesData;
 
             //Initialize maxSoldier
             foreach (Base building in this.basesData) {
