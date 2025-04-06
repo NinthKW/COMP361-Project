@@ -9,13 +9,12 @@ public class TechButton : MonoBehaviour
     [SerializeField]
     private int techId;              // Unique ID for this tech (e.g., 5 for Laser Rifle)
     [SerializeField]
-    private Button button;           // Reference to the Unity UI Button component
+    private Button button;
     [SerializeField]
     private TextMeshProUGUI techNameText;   // Reference to the name text component
     [SerializeField]
     private TextMeshProUGUI costText;       // Reference to the cost text component
     
-    // Private variables
     private Tech tech;      // Holds the tech data for this button
     private UnlockButtonController unlockController;  // Reference to the unlock button
 

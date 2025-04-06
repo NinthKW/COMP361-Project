@@ -23,10 +23,6 @@ public class TechUI : MonoBehaviour
             DestroyImmediate(controller);
         }
         
-        if (unlockButton != null)
-        {
-            unlockButtonController = unlockButton.gameObject.AddComponent<UnlockButtonController>();
-        }
     }
 
     void Start()
