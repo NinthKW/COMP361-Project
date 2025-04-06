@@ -233,9 +233,8 @@ namespace Assets.Scripts.Controller
             IsCombatActive = true;
             IsPlayerTurn = true;
             Debug.Log($"Combat started: {_inBattleSoldiers.Count} vs {_inBattleEnemies.Count}");
-
             CheckAndAssignAbilities(); // 检查并分配技能
-
+            ResetAttackChances(); // 重置攻击次数
             ApplyTerrainAndWeatherEffects(); // 应用地形和天气效果
         }
         #endregion
@@ -464,6 +463,7 @@ namespace Assets.Scripts.Controller
             if (IsPlayerTurn)
             {
                 BuffsCountDown(); // buffs倒计时
+                ResetAttackChances(); // 重置攻击次数
                 CheckAndAssignAbilities(); // 检查并分配技能
             }
         }
@@ -561,6 +561,21 @@ namespace Assets.Scripts.Controller
 
         public bool IsEnemy(Character character) => 
             character is Enemy;
+
+        public void ResetAttackChances()
+        {
+            foreach (var soldier in _inBattleSoldiers)
+            {
+                if (soldier == null || soldier.IsDead()) continue;
+                soldier.ResetAttackChances();
+            }
+            foreach (var enemy in _inBattleEnemies)
+            {
+                if (enemy == null || enemy.IsDead()) continue;
+                enemy.ResetAttackChances();
+            }
+            return;
+        }
         #endregion
     }
 }

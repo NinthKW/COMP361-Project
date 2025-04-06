@@ -87,12 +87,14 @@ namespace Assets.Scripts.Model
 
     public class InfantryLifestealAbility : Ability
     {
+        private Character _caster;
         public int DamageAmount { get; private set; }
         public int HealAmount { get; private set; }
 
         public void Initialize(string name, int cost, int cooldown, string description, Character caster)
         {
             base.Initialize(name, cost, cooldown, 0, description, "Lifesteal", caster);
+            _caster = caster;
         }
         
         public override bool Activate(List<Character> targets)
@@ -111,10 +113,9 @@ namespace Assets.Scripts.Model
                 return false;
             }
             
-            Character self = GetComponent<Character>();
-            if (self != null && self.Health < self.MaxHealth)
+            if (_caster != null && _caster.Health < _caster.MaxHealth)
             {
-                self.Health = Mathf.Min(self.Health + HealAmount, self.MaxHealth);
+                _caster.Health = Mathf.Min(_caster.Health + HealAmount, _caster.MaxHealth);
             }
             return true;
         }

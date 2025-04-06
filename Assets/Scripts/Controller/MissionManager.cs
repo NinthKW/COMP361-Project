@@ -155,7 +155,8 @@ namespace Assets.Scripts.Controller
                     ENEMY_TYPES.et_name,
                     ENEMY_TYPES.HP,
                     ENEMY_TYPES.base_ATK,
-                    ENEMY_TYPES.base_DPS
+                    ENEMY_TYPES.base_DPS,
+                    ENEMY_TYPES.exp_reward
                 FROM MISSION_ENEMY
                 INNER JOIN ENEMY_TYPES ON MISSION_ENEMY.et_id = ENEMY_TYPES.et_ID
                 WHERE MISSION_ENEMY.mission_id = @missionId;

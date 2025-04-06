@@ -321,7 +321,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             endTurnButton.GetComponentInChildren<TextMeshProUGUI>().text = "Cancel";
             attackButton.image.color = Color.green;
             UpdateCombatLog("Please select an injured ally for healing.");
-            castable = true;
+            castable = false;
         }
         else if (CompareAbility(ability, "HealBuff"))
         {
@@ -329,7 +329,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             endTurnButton.GetComponentInChildren<TextMeshProUGUI>().text = "Cancel";
             attackButton.image.color = Color.green;
             UpdateCombatLog("Please select any ally for applying permanant heal buff.");
-            castable = true;
+            castable = false;
         }
         else if (CompareAbility(ability, "TauntAll")) // Taunt
         {
@@ -344,7 +344,20 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "Buff";
             attackButton.image.color = Color.cyan;
             UpdateCombatLog("Please select an ally for buffing.");
-            castable = true;
+            castable = false;
+        }
+        else if (CompareAbility(ability, "Damage") || CompareAbility(ability, "Lifesteal"))
+        {
+            attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "Attack!";
+            attackButton.image.color = Color.magenta;
+            UpdateCombatLog("Please select an enemy for attacking.");
+            castable = false;
+        }
+        else
+        {
+            attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "Attack";
+            attackButton.image.color = Color.gray;
+            castable = false; // Reset castable state if not a valid ability
         }
         
         // Enter skill casting mode; waiting for target selection (if necessary) or direct confirmation
@@ -552,7 +565,17 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
                     abilityTarget = character;
                     UpdateCombatLog($"Selected {character.Name} as {selectedAbility.Type} target.");
                 }
-            } 
+                castable = true; // Set castable state to true
+                UpdateCharacterUIStates();
+            } else if ((CompareAbility(selectedAbility, "Damage") || 
+                CompareAbility(selectedAbility, "Lifesteal")) && 
+                CombatManager.Instance.IsEnemy(character) && !character.IsDead())
+            {
+                abilityTarget = character;
+                UpdateCombatLog($"Selected {character.Name} as attack target.");
+                castable = true; // Set castable state to true
+                UpdateCharacterUIStates();
+            }
             else
             {
                 selectedAbility = null;
@@ -562,7 +585,6 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
                 attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "Attack";
                 attackButton.image.color = Color.gray;
                 HideAbilityPanel();
-                // abilityInfoPanel.SetActive(false);
             }
             // For Taunt ability, no target selection is needed; just wait for confirmation
             return;
@@ -648,7 +670,6 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         UpdateCombatLog("Ending turn...");
         
         CombatManager.Instance.EndCurrentTurn();
-        ResetAttackChances();
         ClearSelection();
         
         if (!CombatManager.Instance.IsPlayerTurn)
@@ -673,7 +694,6 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             yield return StartCoroutine(ExecuteAttackRoutine(enemy, target));
         }
         UpdateCombatLog("Enemy Turn Ends!");
-        ResetAttackChances();
         ClearSelection();
         OnEndTurnButton();
         CleanDeadUnits();
@@ -689,15 +709,6 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
                 activeEnemies.Add(enemy);
         }
         return activeEnemies;
-    }
-
-    void ResetAttackChances()
-    {
-        foreach (var soldier in CombatManager.Instance.GetAvailableSoldiers())
-            soldier.ResetAttackChances();
-        
-        foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
-            enemy.ResetAttackChances();
     }
     #endregion
 
@@ -788,7 +799,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     }
 
     bool IsSelected(Character character) => 
-        character == selectedAlly || character == selectedTarget;
+        character == selectedAlly || character == selectedTarget || character == abilityTarget;
 
     bool IsExhausted(Character character) =>
         character is Soldier soldier && soldier.AttackChances <= 0;

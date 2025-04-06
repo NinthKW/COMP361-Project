@@ -158,8 +158,8 @@ namespace Assets.Scripts.Model
         : base(name, health, level, attack, defense, maxHealth)
         {
             _role = role;
-            AttackChances = role.BaseAttackChance;
-            MaxAttacksPerTurn = role.BaseAttackChance;
+            AttackChances = 0;
+            MaxAttacksPerTurn = role.BaseAttackChance + (level / 5 + 1);
             _experience = 0;
             ObjectTag = "Soldier";
             Def = defense;
