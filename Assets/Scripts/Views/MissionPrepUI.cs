@@ -70,7 +70,6 @@ public class MissionPreparationUI : MonoBehaviour
         // 加载可用士兵
         foreach (var soldier in CombatManager.Instance.GetAvailableSoldiers())
         {
-            Debug.Log($"From missionprepUI: Loading soldier: {soldier.Name}");
             var card = Instantiate(soldierCardPrefab, availableSoldiersPanel).GetComponent<CharacterCard>();
             card.Initialize(soldier, this);
             characterCards.Add(card);
@@ -79,6 +78,7 @@ public class MissionPreparationUI : MonoBehaviour
         // 加载敌人
         foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
         {
+            // TODO: add enemy types and numbers of enemies, not all of them
             var card = Instantiate(soldierCardPrefab, availableEnemiesPanel).GetComponent<CharacterCard>();
             card.Initialize(enemy, this);
             enemyCards.Add(card);
@@ -144,6 +144,8 @@ public class MissionPreparationUI : MonoBehaviour
     public void OnSoldierSelected(CharacterCard card)
     {
         // 取消之前的选择
+        // TODO: optimize this to avoid unnecessary calls
+        // TODO: display ability info for selected soldier
         if (selectedCharacterCard != null) 
         {
             selectedCharacterCard.SetSelected(false);

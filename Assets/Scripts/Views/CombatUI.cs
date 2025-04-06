@@ -117,6 +117,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     #endregion
 
     #region UI Creation
+    // TODO: replace the current stamp with turns count
     void CreateCharacterDisplays()
     {
         CreateSoldierCards();
@@ -427,10 +428,13 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             enemyCards.Remove(card);
             Destroy(card);
             
-            if (waitingEnemyCards.Count == 0) return;
-            StartCoroutine(MoveToPosition(waitingEnemyCards[0].transform, position, 0.2f));
-            enemyCards.Add(waitingEnemyCards[0]);
-            waitingEnemyCards.RemoveAt(0);
+            // TODO: replace dead units in new logics
+            if (waitingEnemyCards.Count > 0)
+            {
+                StartCoroutine(MoveToPosition(waitingEnemyCards[0].transform, position, 0.2f));
+                enemyCards.Add(waitingEnemyCards[0]);
+                waitingEnemyCards.RemoveAt(0);
+            }
         }
     }
     #endregion
@@ -444,6 +448,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
     void OnCharacterClicked(Character character)
     {
+        // TODO: Increase attack changes, level, etc. to test abilities
         if (isAttackExecuting) return;
 
         // If in skill casting mode
@@ -566,6 +571,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     {
         isAttackExecuting = true;
         UpdateCombatLog("Ending turn...");
+        // TODO: add left enemy numbers
         
         CombatManager.Instance.EndCurrentTurn();
         ResetAttackChances();
@@ -649,6 +655,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         foreach (var ability in soldier.Abilities)
         {
             var abilityButton = Instantiate(abilityButtonPrefab, abilityPanel.transform);
+            abilityButton.SetActive(!ability.IsOnCooldown);
             var btnText = abilityButton.GetComponentInChildren<TextMeshProUGUI>();
             btnText.text = $"{ability.Name}";
             ColorUtility.TryParseHtmlString("#A0B6FF", out var color);
@@ -657,8 +664,6 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             Button btn = abilityButton.GetComponent<Button>();
             btn.onClick.RemoveAllListeners();
             btn.onClick.AddListener(() => OnAbilityButtonClicked(ability));
-            if (ability.IsOnCooldown) btn.interactable = false;
-            else btn.interactable = true;
         }
         
         Debug.Log($"Showing ability panel for {soldier.Name}");
@@ -857,6 +862,9 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     #region Combat Events
     void OnCombatEnd(bool victory)
     {
+        // TODO: Handle combat end logic (e.g., show results, update game state)
+        // TODO: add autosave?
+        // TODO: add mission success/fail page
         DisableAllControls();
         ShowEndMessage(victory);
         StartCoroutine(ReturnToBaseAfterDelay(3f));

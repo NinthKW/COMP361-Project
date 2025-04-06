@@ -47,9 +47,27 @@ namespace Assets.Scripts.Model
             return true;
         }
 
-        public virtual void ResetCooldown()
+        public virtual void OnTurnEnd(List<Character> targets)
         {
-            IsOnCooldown = false;
+            if (IsActive)
+            {
+                Duration--;
+                if (Duration <= 0)
+                {
+                    IsActive = false;
+                    IsOnCooldown = true;
+                    Debug.Log($"{Name} has expired.");
+                }
+            }
+            if (IsOnCooldown)
+            {
+                Cooldown--;
+                if (Cooldown <= 0)
+                {
+                    IsOnCooldown = false;
+                    Debug.Log($"{Name} is ready to use again.");
+                }
+            }
         }
     }
 
@@ -222,6 +240,29 @@ namespace Assets.Scripts.Model
                 }
             }
             return true;
+        }
+
+        public override void OnTurnEnd(List<Character> targets)
+        {
+            base.OnTurnEnd(targets);
+            if (IsActive)
+            {
+                foreach (var target in targets)
+                {
+                    if (target != null && target.Buffs.ContainsKey("Taunt"))
+                    {
+                        target.Def -= BuffDefAmount;
+                        if (target.Shield > 0) {
+                            target.Shield -= target.Atk;
+                        }
+                        else {
+                            target.Shield = 0;
+                        }
+                        target.Buffs.Remove("Taunt");
+                        Debug.Log($"{target} is no longer taunting.");
+                    }
+                }
+            }
         }
     }
     #endregion

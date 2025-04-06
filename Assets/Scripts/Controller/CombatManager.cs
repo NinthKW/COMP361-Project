@@ -183,6 +183,7 @@ namespace Assets.Scripts.Controller
         // 修改后的 StartCombat 方法，传入 Mission 对象和玩家选定的士兵列表
         public void StartCombat(Mission mission, List<Soldier> selectedSoldiers)
         {
+            // TODO: add effects for weather and terrain
             _inBattleEnemies.Clear();
             _inBattleSoldiers.Clear();
             _availableEnemies.Clear();
@@ -379,7 +380,7 @@ namespace Assets.Scripts.Controller
                     {
                         int buffDefAmount = (int)(soldier.Def * 0.2f);  // e.g., 20% defense increase
                         var tauntAbility = gameObject.AddComponent<TauntAbility>();
-                        tauntAbility.Initialize("Defiant Roar", cost: soldier.MaxAttacksPerTurn, cooldown: 3, duration: 2,
+                        tauntAbility.Initialize("Defiant Roar", cost: soldier.MaxAttacksPerTurn, cooldown: 1, duration: 2,
                             description: "Taunt ability lasting fixed rounds, defense buff based on percentage defense.", buffDefAmount: buffDefAmount);
                         soldier.Abilities.Add(tauntAbility);
                         Debug.Log($"{soldier.Name} acquired Taunt ability with defense buff of {buffDefAmount}.");
@@ -414,6 +415,7 @@ namespace Assets.Scripts.Controller
 
             if (IsPlayerTurn)
             {
+                AbilityCountDown(); // 玩家回合结束时，技能冷却
                 CheckAndAssignAbilities(); // 检查并分配技能
             }
         }
@@ -483,7 +485,17 @@ namespace Assets.Scripts.Controller
         #region Helper Methods
         private int CountAliveSoldiers() => _inBattleSoldiers.Count(s => s != null && !s.IsDead());
         private int CountAliveEnemies() => _availableEnemies.Count(e => e != null && !e.IsDead());
-
+        private void AbilityCountDown()
+        {
+            foreach (var soldier in _inBattleSoldiers)
+            {
+                if (soldier == null || soldier.IsDead()) continue;
+                foreach (var ability in soldier.Abilities)
+                {
+                    ability.OnTurnEnd(new List<Character> { soldier });
+                }
+            }
+        }
         public List<Soldier> GetAvailableSoldiers() => new(_availableSoldiers);
         public List<Enemy> GetAvailableEnemies() => new(_availableEnemies);
         public List<Character> GetInBattleSoldiers() => new(_inBattleSoldiers);
