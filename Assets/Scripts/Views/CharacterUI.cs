@@ -53,7 +53,7 @@ public class CharacterUI : MonoBehaviour
 
     public void UpdateState(bool isSelected, bool isExhausted, bool isAlly, bool isDead)
     {
-        healthBar.value = (float)_character.Health / _character.MaxHealth;
+        healthBar.value = (float)_character.Health / (_character.MaxHealth + _character.Shield);
         healthBar.fillRect.GetComponent<Image>().color = isAlly ? _allyImageColor : _enemyImageColor;
         healthBar.fillRect.GetComponent<Image>().color = new Color(healthBar.fillRect.GetComponent<Image>().color.r, healthBar.fillRect.GetComponent<Image>().color.g, healthBar.fillRect.GetComponent<Image>().color.b, 0.5f);
         

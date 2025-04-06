@@ -20,14 +20,19 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     [SerializeField] private TextMeshProUGUI combatLog;
     [SerializeField] private TextMeshProUGUI unitName;
     [SerializeField] private TextMeshProUGUI unitRole;
+    [SerializeField] private TextMeshProUGUI missionName;
     [SerializeField] private Button attackButton;
     [SerializeField] private Button endTurnButton;
     [SerializeField] private Button retreatButton;
     [SerializeField] private GameObject retreatConfirmationPrefab;
 
     [Header("Ability Panel Settings")]
-    [SerializeField] private GameObject abilityPanel; // 能力面板（在场景中提前挂好）
-    [SerializeField] private GameObject abilityButtonPrefab; // 能力按钮预制件
+    [SerializeField] private GameObject abilityPanel; // Ability panel (pre-attached in scene)
+    [SerializeField] private GameObject abilityButtonPrefab; // Ability button prefab
+    [SerializeField] private GameObject abilityInfoPanel; // Ability info panel (pre-attached in scene)
+    [SerializeField] private TextMeshProUGUI abilityNameText; // Text for ability name
+    [SerializeField] private TextMeshProUGUI abilityDescriptionText; // Text for ability description
+    [SerializeField] private TextMeshProUGUI abilityStatText; // Text for ability stats
 
     [Header("Position Settings")]
     [SerializeField] private List<Vector3> allyPositions = new();
@@ -35,19 +40,27 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
     [Header("Combat Settings")]
     [SerializeField] private float attackDelay = 0.5f;
-    [SerializeField] private Color exhaustedColor = new(0.5f, 0.5f, 0.5f, 0.5f);
     #endregion
 
     #region Combat State
     private Character selectedAlly;
-    private Character selectedEnemy;
+    private Character selectedTarget;
     private GameObject selectionFrame;
-    private Ability selectedAbility = null;  // 当前选中的技能
-    private Character abilityTarget = null;    // 技能目标（如果需要选择目标）
+    private Ability selectedAbility = null;  // Currently selected ability
+    private Character abilityTarget = null;    // Ability target (if target selection needed)
     private bool isAttackExecuting;
+    private bool castable = false; // Flag to indicate if the ability is castable
     private readonly List<GameObject> soldierCards = new();
     private readonly List<GameObject> enemyCards = new();
     private readonly List<GameObject> waitingEnemyCards = new();
+    #endregion
+
+    #region Colors
+    private Color healColor;
+    private Color controlColor;
+    private Color buffColor;
+    private Color enemyColor;
+    private Color allyColor;
     #endregion
 
     #region Lifecycle Methods
@@ -87,6 +100,16 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         CreateCharacterDisplays();
         SetupButtonListeners();
         InitializeCombatLog();
+        SetupColors();
+    }
+
+    void SetupColors()
+    {
+        ColorUtility.TryParseHtmlString("#A0B6FF", out allyColor);
+        ColorUtility.TryParseHtmlString("#A0FFB6", out healColor);
+        ColorUtility.TryParseHtmlString("#FFA500", out controlColor);
+        ColorUtility.TryParseHtmlString("#A0B6FF", out buffColor);
+        ColorUtility.TryParseHtmlString("#FFA0A0", out enemyColor);
     }
 
     void SubscribeToEvents() => 
@@ -106,11 +129,11 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         int midY = Screen.height / 2;
         allyPositions = new List<Vector3>
         {
-            new (x: midX-100, midY+200, 0),
-            new (midX+100, midY+100, 0),
-            new (midX-100, midY, 0),
-            new (midX+100, midY-100, 0),
-            new (midX-100, midY-200, 0)
+            new Vector3(midX-100, midY+200, 0),
+            new Vector3(midX+100, midY+100, 0),
+            new Vector3(midX-100, midY, 0),
+            new Vector3(midX+100, midY-100, 0),
+            new Vector3(midX-100, midY-200, 0)
         };
         foreach (var soldier in CombatManager.Instance.GetInBattleSoldiers())
         {
@@ -129,12 +152,12 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         int midY = Screen.height / 2;
         enemyPositions = new List<Vector3>
         {
-            new (x: midX-100, midY+200, 0),
-            new (midX+100, midY+100, 0),
-            new (midX-100, midY, 0),
-            new (midX+100, midY-100, 0),
-            new (midX-100, midY-200, z: 0),
-            new (midX+300, midY, 0)
+            new Vector3(midX-100, midY+200, 0),
+            new Vector3(midX+100, midY+100, 0),
+            new Vector3(midX-100, midY, 0),
+            new Vector3(midX+100, midY-100, 0),
+            new Vector3(midX-100, midY-200, 0),
+            new Vector3(midX+300, midY, 0)
         };
         foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
         {
@@ -177,8 +200,92 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     #region Combat Logic
     public void OnAttackButton()
     {
-        if (!CanAttack()) return;
-        StartCoroutine(ExecuteAttackRoutine(selectedAlly, selectedEnemy));
+        if (selectedAbility != null)
+        {
+            // In skill mode: Check if enough action points (using AttackChances)
+            if (selectedAlly == null)
+            {
+                UpdateCombatLog("No casting unit selected.");
+                return;
+            }
+            if (selectedAbility.Cost > selectedAlly.AttackChances)
+            {
+                UpdateCombatLog("Not enough action points to cast this ability.");
+                return;
+            }
+            // If the ability requires a target (Heal and Buff) then a target must be selected
+            if ((CompareAbility(selectedAbility, "Heal") || CompareAbility(selectedAbility, "Buff")) && abilityTarget == null)
+            {
+                UpdateCombatLog("Please select a valid target first.");
+                return;
+            }
+            
+            // Deduct the required action points
+            selectedAlly.AttackChances -= selectedAbility.Cost;
+            
+            List<Character> targets = new List<Character>();
+            if (selectedAbility is TauntAbility)
+            {
+                // Taunt ability defaults to targeting the caster itself
+                targets.Add(selectedAlly);
+            }
+            else
+            {
+                targets.Add(abilityTarget);
+            }
+            
+            // Execute ability logic
+            selectedAbility.Activate(targets);
+            UpdateCombatLog($"{selectedAlly.Name} cast {selectedAbility.Name}!");
+            
+            // Clear skill mode state and restore the Attack button display
+            selectedAbility = null;
+            abilityTarget = null;
+            castable = false; // Reset castable state after attack
+            attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "Attack";
+            attackButton.image.color = Color.white;
+            HideAbilityPanel();
+            abilityInfoPanel.SetActive(false);
+            return;
+        }
+        else if (CanAttack()) 
+        {
+            StartCoroutine(ExecuteAttackRoutine(selectedAlly, selectedTarget));
+            HideAbilityPanel();
+            abilityInfoPanel.SetActive(false);
+        }
+    }
+
+    private void OnAbilityButtonClicked(Ability ability)
+    {
+        selectedAbility = ability;
+        // Update Attack button style and prompt based on ability type
+        if (CompareAbility(ability, "Heal"))
+        {
+            attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "Heal";
+            endTurnButton.GetComponentInChildren<TextMeshProUGUI>().text = "Cancel";
+            attackButton.image.color = Color.green;
+            UpdateCombatLog("Please select an injured ally for healing.");
+            castable = true;
+        }
+        else if (CompareAbility(ability, "Control")) // Taunt
+        {
+            attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "Taunt";
+            selectedTarget = null; // Clear target selection
+            attackButton.image.color = new Color(1f, 0.5f, 0f); // Orange
+            UpdateCombatLog("Please click to confirm casting taunt ability.");
+            castable = true;
+        }
+        else if (CompareAbility(ability, "Buff"))
+        {
+            attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "Buff";
+            attackButton.image.color = Color.cyan;
+            UpdateCombatLog("Please select an ally for buffing.");
+            castable = true;
+        }
+        
+        // Enter skill casting mode; waiting for target selection (if necessary) or direct confirmation
+        UpdateAbilityInfo(ability);
     }
 
     IEnumerator ExecuteAttackRoutine(Character attacker, Character target)
@@ -201,14 +308,14 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         var originalPos = attacker.GameObject.transform.position;
         var targetPos = target.GameObject.transform.position;
 
-        // 冲锋动画
+        // Charge animation
         yield return MoveToPosition(attacker.GameObject.transform, 
             targetPos - new Vector3(1, 0, 0), 0.2f);
 
         ShowDamageText(target, damage);
         CombatManager.Instance.ProcessAttack(attacker, target);
 
-        // 返回动画
+        // Return animation
         yield return MoveToPosition(attacker.GameObject.transform, 
             originalPos, 0.2f);
     }
@@ -241,7 +348,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             return;
         }
 
-        // 创建一个新的 TextMeshProUGUI 对象
+        // Create a new TextMeshProUGUI object
         GameObject damageTextObj = new GameObject("DamageText");
         damageTextObj.transform.SetParent(canvas.transform, false);
 
@@ -252,27 +359,25 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         textMesh.alignment = TextAlignmentOptions.Center;
         textMesh.raycastTarget = false;
 
-        // 设置位置到目标上方（从世界坐标转化为屏幕坐标）
+        // Set position to above the target (converted from world to screen coordinates)
         Vector3 screenPosition = (target.GameObject.transform.position + new Vector3(0, 2f, 0));
         damageTextObj.transform.position = screenPosition;
 
-        // 开始淡出协程
+        // Start fade-out coroutine
         StartCoroutine(FadeAndDestroyText(textMesh));
     }
 
     private IEnumerator FadeAndDestroyText(TextMeshProUGUI textMesh)
     {
         float duration = 2f;
-        //float fadeSpeed = 0.5f;
-
         Color originalColor = textMesh.color;
 
         for (float t = 0; t < duration; t += Time.deltaTime)
         {
-            // 让文字慢慢上升
+            // Gradually move the text upward
             textMesh.transform.Translate(Vector3.up * Time.deltaTime * 20f);
 
-            // 控制透明度
+            // Adjust transparency
             float alpha = Mathf.Lerp(1f, 0f, t / duration);
             textMesh.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
 
@@ -341,13 +446,56 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     {
         if (isAttackExecuting) return;
 
+        // If in skill casting mode
+        if (selectedAbility != null)
+        {
+            // For Heal and Buff abilities, require selecting an ally target
+            if ((CompareAbility(selectedAbility, "Heal") || CompareAbility(selectedAbility, "Buff")) &&
+                CombatManager.Instance.IsAlly(character) && !character.IsDead())
+            {
+                // For Heal ability, only allow selection if the target is injured
+                if (CompareAbility(selectedAbility, "Heal"))
+                {
+                    Soldier soldierTarget = character as Soldier;
+                    if (soldierTarget.Health < soldierTarget.MaxHealth)
+                    {
+                        abilityTarget = character;
+                        UpdateCombatLog($"Selected {character.Name} as healing target.");
+                    }
+                    else
+                    {
+                        UpdateCombatLog($"{character.Name} is not injured.");
+                    }
+                }
+                else // Buff ability
+                {
+                    abilityTarget = character;
+                    UpdateCombatLog($"Selected {character.Name} as buff target.");
+                }
+            } 
+            else
+            {
+                selectedAbility = null;
+                abilityTarget = null;
+                castable = false; // Reset castable state after target selection
+                endTurnButton.GetComponentInChildren<TextMeshProUGUI>().text = "End Turn";
+                attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "Attack";
+                attackButton.image.color = Color.white;
+                HideAbilityPanel();
+                abilityInfoPanel.SetActive(false);
+            }
+            // For Taunt ability, no target selection is needed; just wait for confirmation
+            return;
+        }
+
+        // Normal selection mode
         switch (character)
         {
             case Soldier soldier when CombatManager.Instance.IsAlly(soldier):
                 HandleAllySelection(soldier);
                 break;
             case Enemy enemy when CombatManager.Instance.IsEnemy(enemy):
-                HandleEnemySelection(enemy);
+                HandleTargetSelection(enemy);
                 break;
         }
         
@@ -359,16 +507,19 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         if (soldier.IsDead() || soldier.AttackChances <= 0) return;
         
         selectedAlly = soldier;
-        selectedEnemy = null;
+        selectedTarget = null;
         UpdateCombatLog($"Chosen {soldier.Name}");
+        
+        // Show the soldier's ability buttons
+        ShowAbilityPanel(soldier);
     }
 
-    void HandleEnemySelection(Character enemy)
+    void HandleTargetSelection(Character target)
     {
-        if (selectedAlly == null || enemy.IsDead()) return;
+        if (selectedAlly == null || target.IsDead()) return;
         
-        selectedEnemy = enemy;
-        UpdateCombatLog($"Targeting {enemy.Name}");
+        selectedTarget = target;
+        UpdateCombatLog($"Targeting {target.Name}");
     }
 
     void UpdateUnitInfoDisplay(Character character)
@@ -382,7 +533,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     {
         Destroy(selectionFrame);
         
-        var target = selectedEnemy ?? selectedAlly;
+        var target = selectedTarget ?? selectedAlly;
         if (target?.GameObject == null) return;
 
         selectionFrame = Instantiate(selectionFramePrefab, 
@@ -392,14 +543,29 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     #endregion
 
     #region Turn Management
-    public void OnEndTurnButton() => StartCoroutine(EndTurnRoutine());
+    public void OnEndTurnButton() 
+    {
+        if (castable) 
+        {
+            selectedAbility = null;
+            abilityTarget = null;
+            castable = false; // Reset castable state after target selection
+            attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "Attack";
+            endTurnButton.GetComponentInChildren<TextMeshProUGUI>().text = "End Turn";
+            attackButton.image.color = Color.white;
+            HideAbilityPanel();
+            abilityInfoPanel.SetActive(false);
+            return;
+        }
+        else {
+            StartCoroutine(EndTurnRoutine());
+        }
+    }
 
     IEnumerator EndTurnRoutine()
     {
         isAttackExecuting = true;
         UpdateCombatLog("Ending turn...");
-        
-        // yield return new WaitForSeconds(attackDelay);
         
         CombatManager.Instance.EndCurrentTurn();
         ResetAttackChances();
@@ -471,16 +637,85 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             );
         }
     }
+    private void ShowAbilityPanel(Soldier soldier)
+    {
+        // Clear existing buttons
+        foreach (Transform child in abilityPanel.transform)
+        {
+            Destroy(child.gameObject);
+        }
+        
+        // Create a button for each ability of the soldier
+        foreach (var ability in soldier.Abilities)
+        {
+            var abilityButton = Instantiate(abilityButtonPrefab, abilityPanel.transform);
+            var btnText = abilityButton.GetComponentInChildren<TextMeshProUGUI>();
+            btnText.text = $"{ability.Name}";
+            ColorUtility.TryParseHtmlString("#A0B6FF", out var color);
+            color.a = 1f;
+            btnText.color = color;
+            Button btn = abilityButton.GetComponent<Button>();
+            btn.onClick.RemoveAllListeners();
+            btn.onClick.AddListener(() => OnAbilityButtonClicked(ability));
+            if (ability.IsOnCooldown) btn.interactable = false;
+            else btn.interactable = true;
+        }
+        
+        Debug.Log($"Showing ability panel for {soldier.Name}");
+        abilityPanel.SetActive(true);
+    }
+
+    private void UpdateAbilityInfo(Ability ability)
+    {
+        if (ability == null)
+        {
+            abilityInfoPanel.SetActive(false);
+            return;
+        }
+        abilityNameText.text = ability.Name;
+        abilityDescriptionText.text = ability.Description;
+        abilityStatText.text = $"Cost: {ability.Cost} \n Cooldown: {ability.Cooldown} \n Duration: {ability.Duration} \n Type: {ability.Type}";
+
+        // Append additional numeric stats if they exist on the ability
+        var type = ability.GetType();
+        var statProperties = new string[] { "Damage", "HealAmount", "Range", "Multiplier" };
+        foreach (var stat in statProperties)
+        {
+            var prop = type.GetProperty(stat);
+            if (prop != null)
+            {
+                var value = prop.GetValue(ability);
+                abilityStatText.text += $"\n{stat}: {value}";
+            }
+        }
+        var color = Color.white;
+        if (CompareAbility(ability, "Heal")) color = healColor;
+        else if (CompareAbility(ability, "Control")) color = controlColor;
+        else if (CompareAbility(ability, "Buff")) color = buffColor;
+        else if (CompareAbility(ability, "Enemy")) color = enemyColor;
+        abilityNameText.color = color;
+        abilityDescriptionText.color = color;
+        abilityStatText.color = color;
+    }
+
+    private void HideAbilityPanel()
+    {
+        foreach (Transform child in abilityPanel.transform)
+        {
+            Destroy(child.gameObject);
+        }
+        abilityPanel.SetActive(false);
+    }
 
     bool IsSelected(Character character) => 
-        character == selectedAlly || character == selectedEnemy;
+        character == selectedAlly || character == selectedTarget;
 
     bool IsExhausted(Character character) =>
         character is Soldier soldier && soldier.AttackChances <= 0;
 
     void UpdateButtonStates()
     {
-        attackButton.interactable = CanAttack() && !isAttackExecuting;
+        attackButton.interactable = (CanAttack() && !isAttackExecuting) || castable;
         endTurnButton.interactable = !isAttackExecuting;
         retreatButton.interactable = !isAttackExecuting && CombatManager.Instance.IsPlayerTurn;
         
@@ -497,7 +732,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
     bool CanAttack() => 
         selectedAlly != null && 
-        selectedEnemy != null && 
+        selectedTarget != null && 
         selectedAlly is Soldier { AttackChances: > 0 };
     #endregion
 
@@ -539,6 +774,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     {
         combatLog.text = "Combat Begins!";
         turnText.text = "Player's Turn";
+        missionName.text = CombatManager.Instance.currentMission.name;
         turnText.color = Color.white;
     }
 
@@ -575,7 +811,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     void ClearSelection()
     {
         selectedAlly = null;
-        selectedEnemy = null;
+        selectedTarget = null;
         Destroy(selectionFrame);
     }
 
@@ -583,6 +819,14 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     {
         isAttackExecuting = true;
         SetControlsInteractable(false);
+        turnText.enabled = false;
+        combatLog.enabled = false;
+        unitName.enabled = false;
+        unitRole.enabled = false;
+        missionName.enabled = false;
+        abilityNameText.enabled = false;
+        abilityDescriptionText.enabled = false;
+        abilityStatText.enabled = false;
     }
 
     void EnableAllControls()
@@ -602,6 +846,11 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             if (child.TryGetComponent<Button>(out var button))
                 button.interactable = state;
         }
+    }
+
+    bool CompareAbility(Ability ability, string type)
+    {
+        return ability.Type.Equals(type, System.StringComparison.OrdinalIgnoreCase);
     }
     #endregion
 

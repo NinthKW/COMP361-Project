@@ -96,13 +96,6 @@ namespace Assets.Scripts.Controller
                     }
                 }
             }
-            // Enemy initialization
-            // TODO: Load enemies from database
-            //_availableEnemies.Clear();
-            //_availableEnemies.Add(new Enemy("Slime", 20, 3, 1, 5));
-            //_availableEnemies.Add(new Enemy("Goblin", 30, 5, 1, 10));
-            //_availableEnemies.Add(new Enemy("Orc", 60, 10, 2, 20));
-            //_availableEnemies.Add(new Enemy("Dragon", 150, 20, 5, 50));
         }
         #endregion
 
@@ -257,10 +250,7 @@ namespace Assets.Scripts.Controller
                 soldier.GainExp((target as Enemy)?.ExperienceReward ?? 0);
             }
 
-
-
-            // Check combat status
-            if (CheckCombatEnd()) return;
+            CheckCombatEnd();
         }
 
         private bool ValidateAttack(Character attacker, Character target)
@@ -314,13 +304,14 @@ namespace Assets.Scripts.Controller
 
         public bool CheckCombatEnd()
         {
-            if (_inBattleSoldiers.Count == 0)
+            Debug.Log($"Checking combat end: {CountAliveSoldiers()} vs {CountAliveEnemies()}");
+            if (CountAliveSoldiers() == 0)
             {
                 EndCombat(false);
                 return true;
             }
 
-            if (_inBattleEnemies.Count == 0)
+            if (CountAliveEnemies() == 0)
             {
                 EndCombat(true);
                 return true;
@@ -346,7 +337,8 @@ namespace Assets.Scripts.Controller
                         if (!soldier.Abilities.Any(a => a is HealAbility))
                         {
                             int healAmount = Mathf.Abs(soldier.Atk);
-                            var healAbility = new HealAbility("Nano Heal", cost: 1, cooldown: 3, duration: 1,
+                            var healAbility = gameObject.AddComponent<HealAbility>();
+                            healAbility.Initialize("Nano Heal", cost: 1, cooldown: 3, duration: 1,
                                 description: "Base healing ability, heal amount scales with attack.", healAmount: healAmount);
                             soldier.Abilities.Add(healAbility);
                             Debug.Log($"{soldier.Name} acquired Heal ability with heal amount of {healAmount}.");
@@ -357,10 +349,11 @@ namespace Assets.Scripts.Controller
                         if (!soldier.Abilities.Any(a => a is HealAbility))
                         {
                             int healAmount = Mathf.Abs(soldier.Atk) * 3;
-                            var healAbility = new HealAbility("Nano Surge", cost: 1, cooldown: 3, duration: 1,
-                                description: "Advanced healing ability, heal more amount scales with attack per turn.", healAmount: healAmount);
-                            soldier.Abilities.Add(healAbility);
-                            Debug.Log($"{soldier.Name} acquired Advanced Heal ability with heal amount of {healAmount}.");
+                            var healBuffAbility = gameObject.AddComponent<HealBuffAbility>();
+                            healBuffAbility.Initialize("Nano Revival", cost: 1, cooldown: 3, duration: 1,
+                                description: "Heal and buff ability, heal amount scales with attack.", healAmount: healAmount, buffDefAmount: (int) (soldier.Def * 0.5));
+                            soldier.Abilities.Add(healBuffAbility);
+                            Debug.Log($"{soldier.Name} acquired Heal Buff ability with heal amount of {healAmount} and defense buff.");
                         }
                     }
                     if (soldier.Level > 7)
@@ -370,15 +363,10 @@ namespace Assets.Scripts.Controller
                             if (!soldier.Abilities.Any(a => a is ShieldAbility))
                             {
                                 int shieldAmount = soldier.Atk * 2; // Adjust scaling as needed
-                                var nanoShield = new ShieldAbility(
-                                    "Nano Shield",
-                                    cost: 2,
-                                    cooldown: 4,
-                                    duration: 3,
-                                    description: "Provides a damage-absorbing shield scaling with attack power.",
-                                    shieldAmount: shieldAmount
-                                );
-                                soldier.Abilities.Add(nanoShield);
+                                var shieldAbility = gameObject.AddComponent<ShieldAbility>();
+                                shieldAbility.Initialize("Aegis Surge", cost: 2, cooldown: 3, duration: 1,
+                                    description: "Shield ability, shield amount scales with attack.", shieldAmount: shieldAmount);
+                                soldier.Abilities.Add(shieldAbility);
                                 Debug.Log($"{soldier.Name} acquired Nano Shield ability with shield amount of {shieldAmount}.");
                             }
                         }
@@ -390,7 +378,8 @@ namespace Assets.Scripts.Controller
                     if (!soldier.Abilities.Any(a => a is TauntAbility))
                     {
                         int buffDefAmount = (int)(soldier.Def * 0.2f);  // e.g., 20% defense increase
-                        var tauntAbility = new TauntAbility("Defiant Roar", cost: soldier.MaxAttacksPerTurn, cooldown: 3, duration: 2,
+                        var tauntAbility = gameObject.AddComponent<TauntAbility>();
+                        tauntAbility.Initialize("Defiant Roar", cost: soldier.MaxAttacksPerTurn, cooldown: 3, duration: 2,
                             description: "Taunt ability lasting fixed rounds, defense buff based on percentage defense.", buffDefAmount: buffDefAmount);
                         soldier.Abilities.Add(tauntAbility);
                         Debug.Log($"{soldier.Name} acquired Taunt ability with defense buff of {buffDefAmount}.");
@@ -404,7 +393,8 @@ namespace Assets.Scripts.Controller
                         int duration = soldier.Level;  // Duration scales with level
                         int buffAtkAmount = soldier.Atk; // Attack buff scales with attack
                         int buffSpeedAmount = Math.Max(1, soldier.Atk / 10); // Speed buff
-                        var buffAbility = new BuffAtkAbility("Adrenaline Rush", cost: soldier.MaxAttacksPerTurn, cooldown: 2, duration: duration,
+                        var buffAbility = gameObject.AddComponent<BuffAtkAbility>();
+                        buffAbility.Initialize("Adrenaline Rush", cost: soldier.MaxAttacksPerTurn, cooldown: 2, duration: duration,
                             description: "Buff ability, attack and speed buffs scale with attack.", buffAtkAmount: buffAtkAmount, buffSpeedAmount: buffSpeedAmount);
                         soldier.Abilities.Add(buffAbility);
                         Debug.Log($"{soldier.Name} acquired Attack Buff ability lasting {duration} rounds with attack buff of {buffAtkAmount} and speed buff of {buffSpeedAmount}.");
@@ -430,8 +420,27 @@ namespace Assets.Scripts.Controller
 
         public Soldier GetRandomSoldier()
         {
-            if (_inBattleSoldiers.Count == 0) return null;
-            return (Soldier)_inBattleSoldiers[UnityEngine.Random.Range(0, _inBattleSoldiers.Count)];
+            var validSoldiers = _inBattleSoldiers
+                .Where(s => s != null)
+                .Cast<Soldier>()
+                .ToList();
+
+            if (validSoldiers.Count == 0)
+            {
+                Debug.LogError("No valid soldiers available. Cannot select any soldier.");
+                throw new InvalidOperationException("No valid soldier available.");
+            }
+
+            var tauntSoldiers = validSoldiers
+                .Where(s => s.Buffs.ContainsKey("Taunt"))
+                .ToList();
+
+            if (tauntSoldiers.Count > 0)
+            {
+                return tauntSoldiers[UnityEngine.Random.Range(0, tauntSoldiers.Count)];
+            }
+
+            return validSoldiers[UnityEngine.Random.Range(0, validSoldiers.Count)];
         }
         #endregion
 
@@ -472,6 +481,9 @@ namespace Assets.Scripts.Controller
         }
 
         #region Helper Methods
+        private int CountAliveSoldiers() => _inBattleSoldiers.Count(s => s != null && !s.IsDead());
+        private int CountAliveEnemies() => _availableEnemies.Count(e => e != null && !e.IsDead());
+
         public List<Soldier> GetAvailableSoldiers() => new(_availableSoldiers);
         public List<Enemy> GetAvailableEnemies() => new(_availableEnemies);
         public List<Character> GetInBattleSoldiers() => new(_inBattleSoldiers);

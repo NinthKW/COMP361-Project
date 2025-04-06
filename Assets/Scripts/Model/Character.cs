@@ -19,7 +19,7 @@ namespace Assets.Scripts.Model
         public int Shield { get; set; } = 0;
         public int Level { get; protected set; }
         public int AttackChances { get; set; }
-        public int MaxAttacksPerTurn { get; protected set; }
+        public int MaxAttacksPerTurn { get; set; }
         public GameObject GameObject { get; private set; }
         public string ObjectTag { get; protected set; }
         public Dictionary<string, Ability> Buffs { get; private set; } = new Dictionary<string, Ability>();

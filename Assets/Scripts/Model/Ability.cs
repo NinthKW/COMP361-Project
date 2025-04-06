@@ -19,7 +19,8 @@ namespace Assets.Scripts.Model
         public bool IsActive { get; private set; } = false;
         public bool IsOnCooldown { get; private set; } = false;
         
-        public Ability(string name, int cost, int cooldown, int duration, string description, string type)
+        // Remove constructor and add Initialize method
+        public virtual void Initialize(string name, int cost, int cooldown, int duration, string description, string type)
         {
             Name = name;
             Cost = cost;
@@ -29,20 +30,21 @@ namespace Assets.Scripts.Model
             Type = type;
         }
 
-        public virtual void Activate(List<Character> targets)
+        public virtual bool Activate(List<Character> targets)
         {
             if (IsOnCooldown) 
             {
                 Debug.LogWarning($"Ability {Name} is on cooldown.");
-                return;
+                return false;
             }
             if (targets == null || targets.Count == 0) 
             {
                 Debug.LogWarning($"No targets available for ability {Name}.");
-                return;
+                return false;
             }
             IsActive = true;
             IsOnCooldown = true;
+            return true;
         }
 
         public virtual void ResetCooldown()
@@ -55,15 +57,16 @@ namespace Assets.Scripts.Model
     public class HealAbility : Ability
     {
         public int HealAmount { get; private set; }
-        public HealAbility(string name, int cost, int cooldown, int duration, string description, int healAmount) 
-            : base(name, cost, cooldown, duration, description, "Heal")
+        
+        public void Initialize(string name, int cost, int cooldown, int duration, string description, int healAmount)
         {
+            base.Initialize(name, cost, cooldown, duration, description, "Heal");
             HealAmount = healAmount;
         }
 
-        public override void Activate(List<Character> targets)
+        public override bool Activate(List<Character> targets)
         {
-            base.Activate(targets);
+            if (!base.Activate(targets)) return false;
             foreach (var target in targets)
             {
                 if (target != null && target.Health < target.MaxHealth)
@@ -72,6 +75,7 @@ namespace Assets.Scripts.Model
                     Debug.Log($"{target.Name} healed for {HealAmount} health!");
                 }
             }
+            return true;
         }
     }
 
@@ -80,16 +84,16 @@ namespace Assets.Scripts.Model
         public int HealAmount { get; private set; }
         public int BuffDefAmount { get; private set; }
 
-        public HealBuffAbility(string name, int cost, int cooldown, int duration, string description, int healAmount, int buffDefAmount) 
-            : base(name, cost, cooldown, duration, description, "HealBuff")
+        public void Initialize(string name, int cost, int cooldown, int duration, string description, int healAmount, int buffDefAmount)
         {
+            base.Initialize(name, cost, cooldown, duration, description, "HealBuff");
             HealAmount = healAmount;
             BuffDefAmount = buffDefAmount;
         }
 
-        public override void Activate(List<Character> targets)
+        public override bool Activate(List<Character> targets)
         {
-            base.Activate(targets);
+            if (!base.Activate(targets)) return false;
             float healPerTurn = (float)HealAmount / Duration;
             foreach (var target in targets)
             {
@@ -104,10 +108,12 @@ namespace Assets.Scripts.Model
                     Debug.Log($"{target.Name} will heal for {healPerTurn} per turn for {Duration} turns and defense increased by {BuffDefAmount}!");
                 }
             }
+            return true;
         }
 
         private System.Collections.IEnumerator HealOverTime(Character target, float healPerTurn)
         {
+            // Method implementation unchanged
             int turns = Duration;
             while (turns-- > 0)
             {
@@ -137,15 +143,15 @@ namespace Assets.Scripts.Model
     {
         public int ShieldAmount { get; private set; }
 
-        public ShieldAbility(string name, int cost, int cooldown, int duration, string description, int shieldAmount) 
-            : base(name, cost, cooldown, duration, description, "Shield")
+        public void Initialize(string name, int cost, int cooldown, int duration, string description, int shieldAmount)
         {
+            base.Initialize(name, cost, cooldown, duration, description, "Shield");
             ShieldAmount = shieldAmount;
         }
 
-        public override void Activate(List<Character> targets)
+        public override bool Activate(List<Character> targets)
         {
-            base.Activate(targets);
+            if (!base.Activate(targets)) return false;
             foreach (var target in targets)
             {
                 if (target != null)
@@ -155,23 +161,25 @@ namespace Assets.Scripts.Model
                     Debug.Log($"{target.Name} gains a shield of {ShieldAmount}!");
                 }
             }
+            return true;
         }
     }
+    
     public class BuffAtkAbility : Ability
     {
         public int BuffAtkAmount { get; private set; }
         public int BuffSpeedAmount { get; private set; }
 
-        public BuffAtkAbility(string name, int cost, int cooldown, int duration, string description, int buffAtkAmount, int buffSpeedAmount=1) 
-            : base(name, cost, cooldown, duration, description, "Buff")
+        public void Initialize(string name, int cost, int cooldown, int duration, string description, int buffAtkAmount, int buffSpeedAmount=1)
         {
+            base.Initialize(name, cost, cooldown, duration, description, "Buff");
             BuffAtkAmount = buffAtkAmount;
             BuffSpeedAmount = buffSpeedAmount;
         }
 
-        public override void Activate(List<Character> targets)
+        public override bool Activate(List<Character> targets)
         {
-            base.Activate(targets);
+            if (!base.Activate(targets)) return false;
             foreach (var target in targets)
             {
                 if (target != null)
@@ -182,6 +190,7 @@ namespace Assets.Scripts.Model
                     Debug.Log($"{target.Name}'s attack increased by {BuffAtkAmount} and speed increased by {BuffSpeedAmount}!");
                 }
             }
+            return true;
         }
     }
     #endregion
@@ -192,25 +201,27 @@ namespace Assets.Scripts.Model
         public int TauntDuration { get; private set; }
         public int BuffDefAmount { get; private set; }
 
-        public TauntAbility(string name, int cost, int cooldown, int duration, string description, int buffDefAmount) 
-            : base(name, cost, cooldown, duration, description, "Control")
+        public void Initialize(string name, int cost, int cooldown, int duration, string description, int buffDefAmount)
         {
+            base.Initialize(name, cost, cooldown, duration, description, "Control");
             TauntDuration = duration;
             BuffDefAmount = buffDefAmount;
         }
 
-        public override void Activate(List<Character> targets)
+        public override bool Activate(List<Character> targets)
         {
-            base.Activate(targets);
+            if (!base.Activate(targets)) return false;
             foreach (var target in targets)
             {
                 if (target != null)
                 {
                     target.Buffs.Add("Taunt", this);
                     target.Def += BuffDefAmount;
+                    target.Shield += target.Atk;
                     Debug.Log($"{target} taunts enemies for {TauntDuration} turns!");
                 }
             }
+            return true;
         }
     }
     #endregion
