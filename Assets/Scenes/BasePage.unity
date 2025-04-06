@@ -634,7 +634,6 @@ GameObject:
   - component: {fileID: 211542981}
   - component: {fileID: 211542985}
   - component: {fileID: 211542984}
-  - component: {fileID: 211542983}
   - component: {fileID: 211542982}
   m_Layer: 5
   m_Name: BaseEditPanel
@@ -679,24 +678,7 @@ MonoBehaviour:
   missionButtonContainer: {fileID: 13296011}
   missionButtonPrefab: {fileID: 2153828838381728940, guid: d519a059879fe1d45a2cebae72445002, type: 3}
   backButton: {fileID: 950102096}
---- !u!114 &211542983
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 211542980}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc2432cb088e83749ba420a7a899b8cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  missionButtonContainer: {fileID: 13296011}
-  missionButtonPrefab: {fileID: 2153828838381728940, guid: 80c1e8878dd05bd41877e2d0af6cbc02, type: 3}
-  missionNameText: {fileID: 0}
-  missionDescriptionText: {fileID: 0}
-  startButton: {fileID: 0}
-  backButton: {fileID: 950102096}
+  grid2d: {fileID: 1741637233}
 --- !u!114 &211542984
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -4,6 +4,7 @@ using UnityEngine;
 using Assets.Scripts.Model;
 using System.Data;
 using Mono.Data.Sqlite;
+using Assets.Scripts.Controller;
 
 namespace Assets.Scripts.Model
 {
@@ -120,6 +121,7 @@ namespace Assets.Scripts.Model
                 }
                 connection.Close();
             }
+            BaseManager.Instance.buildingList = basesData;
 
             //Initialize maxSoldier
             foreach (Base building in this.basesData) {
@@ -277,7 +279,10 @@ namespace Assets.Scripts.Model
                                 "cost = @cost, " +
                                 "resource_amount = @resource_amount, " +
                                 "resource_type = @resource_type, " +
-                                "unlocked = @unlocked " +
+                                "unlocked = @unlocked, " +
+                                "placed = @placed, " + 
+                                "x = @x, " +
+                                "y = @y " + 
                                 "WHERE building_id = @building_id;";
                             command.Parameters.Add(new SqliteParameter("@name", b.name));
                             command.Parameters.Add(new SqliteParameter("@description", b.description));
@@ -286,6 +291,9 @@ namespace Assets.Scripts.Model
                             command.Parameters.Add(new SqliteParameter("@resource_amount", b.resource_amount));
                             command.Parameters.Add(new SqliteParameter("@resource_type", b.resource_type));
                             command.Parameters.Add(new SqliteParameter("@unlocked", b.unlocked ? 1 : 0));
+                            command.Parameters.Add(new SqliteParameter("@unlocked", b.placed ? 1 : 0));
+                            command.Parameters.Add(new SqliteParameter("@cost", b.x));
+                            command.Parameters.Add(new SqliteParameter("@cost", b.y));
                             command.Parameters.Add(new SqliteParameter("@building_id", b.building_id));
                             command.ExecuteNonQuery();
                         }

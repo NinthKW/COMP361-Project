@@ -33,8 +33,7 @@ namespace Assets.Scripts.Controller
         // Start is called before the first frame update
         void Start()
         {
-            buildingList = GameManager.Instance.currentGame.basesData;
-            LoadBase();
+
         }
 
         // Update is called once per frame
