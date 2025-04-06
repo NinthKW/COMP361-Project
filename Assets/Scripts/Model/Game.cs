@@ -16,6 +16,8 @@ namespace Assets.Scripts.Model
         public List<Base> basesData;
         public Tech techData;
 
+        public int maxSoldier;
+
         public Game()
         {
             this.resourcesData = new Resources();
@@ -28,6 +30,9 @@ namespace Assets.Scripts.Model
 
         public Game(string dbName)
         {
+            //Set default maxSoldier
+            maxSoldier = 5;
+
             int food = 0;
             int wood = 0;
             int stone = 0;
@@ -115,6 +120,8 @@ namespace Assets.Scripts.Model
                 }
                 connection.Close();
             }
+
+            //Initialize maxSoldier
 
             // Missions
             this.MissionsData = new List<Mission>();
