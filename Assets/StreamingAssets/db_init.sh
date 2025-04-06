@@ -44,13 +44,6 @@ CREATE TABLE Weapon (
     FOREIGN KEY (resource_type) REFERENCES Resource(resource_id)
 );
 
-CREATE TABLE Ability (
-    ability_id INT PRIMARY KEY,
-    name VARCHAR(255),
-    description VARCHAR(255),
-    unlocked BOOL
-);
-
 CREATE TABLE Equipment (
     equipment_id INT PRIMARY KEY,
     name VARCHAR(255),
@@ -73,6 +66,9 @@ CREATE TABLE Infrastructure (
     resource_amount INT,
     resource_type INT,
     unlocked BOOL,
+    placed BOOL,
+    x INT,
+    y INT,
     FOREIGN KEY (resource_type) REFERENCES Resource(resource_id)
 );
 
@@ -173,9 +169,9 @@ INSERT INTO Soldier VALUES
 (5, 'Charlie', 6, 110, 110, 22, 17, 'Engineer'),
 (6, 'David', 5, 95, 95, 19, 14, 'Medic'),
 (7, 'Sophia', 4, 85, 85, 16, 11, 'Assault'),
-(8, 'James', 6, 115, 115, 23, 18, 'Heavy Gunner'),
+(8, 'James', 6, 115, 115, 23, 18, 'HeavyGunner'),
 (9, 'Olivia', 3, 75, 75, 14, 9, 'Recon'),
-(10, 'Henry', 7, 130, 130, 27, 22, 'Special Forces');
+(10, 'Henry', 7, 130, 130, 27, 22, 'SpecialForces');
 
 -- Insert into Weapon
 INSERT INTO Weapon VALUES
@@ -277,16 +273,6 @@ INSERT INTO TECHNOLOGY VALUES
 (9, 'AI Combat Assist', 'Integrate AI-assisted targeting', 600, 9, 55, 350, 4, 9, 9, 9, 1),
 (10, 'Orbital Strike', 'Unlock powerful satellite-based attacks', 700, 10, 65, 400, 5, 10, 10, 10, 1);
 
--- Insert into Ability
-INSERT INTO Ability VALUES
-(1, 'Adrenaline Boost', 'Temporarily increases speed and attack power', 1),
-(2, 'Energy Shield', 'Creates a temporary shield that absorbs damage', 1),
-(3, 'Holographic Decoy', 'Projects a fake image to distract enemies', 1),
-(4, 'EMP Blast', 'Disables enemy electronics in a small radius', 1),
-(5, 'Nano Healing', 'Heals minor wounds over time', 1),
-(6, 'Plasma Surge', 'Boosts weapon energy output for increased damage', 1),
-(7, 'Cloaking Device', 'Renders the user invisible for a short time', 1),
-(8, 'Gravity Manipulation', 'Allows brief levitation or immobilizes enemies', 1);
 
 -- Insert into Equipment
 INSERT INTO Equipment VALUES
@@ -301,14 +287,14 @@ INSERT INTO Equipment VALUES
 
 -- Insert into Infrastructure
 INSERT INTO Infrastructure VALUES
-(1, 'HQ', 'Central hub for military operations', 3, 1000, 50, 1, 1),
-(2, 'Barracks', 'Housing and training facility for soldiers', 2, 800, 40, 2, 1),
-(3, 'Armory', 'Storage for weapons and ammunition', 2, 600, 30, 3, 1),
-(4, 'Research Lab', 'Facility for developing new technologies', 4, 1200, 60, 4, 1),
-(5, 'Power Station', 'Generates energy for the base', 3, 900, 45, 5, 1),
-(6, 'Hospital', 'Provides healthcare and recovery for soldiers', 2, 700, 35, 6, 1),
-(7, 'Radar Station', 'Monitors enemy movements and signals', 3, 1000, 50, 7, 1),
-(8, 'Shield Generator', 'Defensive structure providing energy shields', 5, 1500, 75, 8, 1);
+(1, 'HQ', 'Central hub for military operations', 3, 1000, 50, 1, 1, 1, 40, -25),
+(2, 'Barracks', 'Housing and training facility for soldiers', 2, 800, 40, 2, 1, 0, 0, 0),
+(3, 'Armory', 'Storage for weapons and ammunition', 2, 600, 30, 3, 1, 0, 0, 0),
+(4, 'Research Lab', 'Facility for developing new technologies', 4, 1200, 60, 4, 1, 0, 0, 0),
+(5, 'Power Station', 'Generates energy for the base', 3, 900, 45, 5, 1, 0, 0, 0),
+(6, 'Hospital', 'Provides healthcare and recovery for soldiers', 2, 700, 35, 6, 1, 0, 0, 0),
+(7, 'Radar Station', 'Monitors enemy movements and signals', 3, 1000, 50, 7, 1, 0, 0, 0),
+(8, 'Shield Generator', 'Defensive structure providing energy shields', 5, 1500, 75, 8, 1, 0, 0, 0);
 
 
 EOF
