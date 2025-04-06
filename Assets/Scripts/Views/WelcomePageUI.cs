@@ -19,15 +19,9 @@ public class WelcomePageUI : MonoBehaviour // Fardin
         quitButton.onClick.AddListener(ClickedQuit);
     }
 
-    void ClickedPlay() 
-    {
-        Debug.Log("Clicked Play");
-    }
-
     void ClickedNewGame()
     {
-        GameManager.Instance.LoadGame();
-        GameManager.Instance.ChangeState(GameState.MainMenuPage);
+        GameManager.Instance.NewGame();
         GameManager.Instance.LoadGameState(GameState.MainMenuPage);
     }
     

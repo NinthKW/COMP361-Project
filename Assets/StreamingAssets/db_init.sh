@@ -66,9 +66,6 @@ CREATE TABLE Infrastructure (
     resource_amount INT,
     resource_type INT,
     unlocked BOOL,
-    placed BOOL,
-    x INT,
-    y INT,
     FOREIGN KEY (resource_type) REFERENCES Resource(resource_id)
 );
 
@@ -287,14 +284,14 @@ INSERT INTO Equipment VALUES
 
 -- Insert into Infrastructure
 INSERT INTO Infrastructure VALUES
-(1, 'HQ', 'Central hub for military operations', 3, 1000, 50, 1, 1, 1, 40, -25),
-(2, 'Barracks', 'Housing and training facility for soldiers', 2, 800, 40, 2, 1, 0, 0, 0),
-(3, 'Armory', 'Storage for weapons and ammunition', 2, 600, 30, 3, 1, 0, 0, 0),
-(4, 'Research Lab', 'Facility for developing new technologies', 4, 1200, 60, 4, 1, 0, 0, 0),
-(5, 'Power Station', 'Generates energy for the base', 3, 900, 45, 5, 1, 0, 0, 0),
-(6, 'Hospital', 'Provides healthcare and recovery for soldiers', 2, 700, 35, 6, 1, 0, 0, 0),
-(7, 'Radar Station', 'Monitors enemy movements and signals', 3, 1000, 50, 7, 1, 0, 0, 0),
-(8, 'Shield Generator', 'Defensive structure providing energy shields', 5, 1500, 75, 8, 1, 0, 0, 0);
+(1, 'HQ', 'Central hub for military operations', 3, 1000, 50, 1, 1),
+(2, 'Barracks', 'Housing and training facility for soldiers', 2, 800, 40, 2, 1),
+(3, 'Armory', 'Storage for weapons and ammunition', 2, 600, 30, 3, 1),
+(4, 'Research Lab', 'Facility for developing new technologies', 4, 1200, 60, 4, 1),
+(5, 'Power Station', 'Generates energy for the base', 3, 900, 45, 5, 1),
+(6, 'Hospital', 'Provides healthcare and recovery for soldiers', 2, 700, 35, 6, 1),
+(7, 'Radar Station', 'Monitors enemy movements and signals', 3, 1000, 50, 7, 1),
+(8, 'Shield Generator', 'Defensive structure providing energy shields', 5, 1500, 75, 8, 1);
 
 
 EOF
