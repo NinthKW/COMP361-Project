@@ -679,9 +679,11 @@ MonoBehaviour:
   missionButtonContainer: {fileID: 13296011}
   missionButtonPrefab: {fileID: 2153828838381728940, guid: d519a059879fe1d45a2cebae72445002, type: 3}
   grid2d: {fileID: 1741637233}
+  scroll: {fileID: 849967047}
   backButton: {fileID: 950102096}
   modeButton: {fileID: 346522580}
   mode: 0
+  buttonList: []
 --- !u!114 &211542984
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1016,7 +1018,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -92.626, y: 373}
+  m_AnchoredPosition: {x: 441, y: 386}
   m_SizeDelta: {x: -1444.334, y: -1002.155}
   m_Pivot: {x: 0.5, y: -0.35287756}
 --- !u!114 &346522580
