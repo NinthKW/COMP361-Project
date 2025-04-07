@@ -130,7 +130,7 @@ namespace Assets.Scripts.Model
                             string roleName = reader["role"].ToString();
                             
                             Role role = new Role(roleName);
-                            Soldier soldier = new Soldier(name, role, level, health, attack, defense, maxHealth);
+                            Soldier soldier = new Soldier(name, role, level, health, attack, defense, maxHealth, soldierId);
                             this.soldiersData.Add(soldier);
                         }
                     }
@@ -385,7 +385,7 @@ namespace Assets.Scripts.Model
                             string roleName = reader["role"].ToString();
 
                             Role role = new Role(roleName);
-                            Soldier soldier = new Soldier(name, role, level, health, attack, defense, maxHealth);
+                            Soldier soldier = new(name, role, level, health, attack, defense, maxHealth, soldierId);
                             this.soldiersData.Add(soldier);
                         }
                         reader.Close();
@@ -615,10 +615,11 @@ namespace Assets.Scripts.Model
                             command.Parameters.Add(new SqliteParameter("@name", soldier.Name));
                             command.Parameters.Add(new SqliteParameter("@level", soldier.Level));
                             command.Parameters.Add(new SqliteParameter("@health", soldier.Health));
+                            command.Parameters.Add(new SqliteParameter("@maxHealth", soldier.MaxHealth));
                             command.Parameters.Add(new SqliteParameter("@attack", soldier.Atk));
                             command.Parameters.Add(new SqliteParameter("@defense", soldier.Def));
                             command.Parameters.Add(new SqliteParameter("@roleName", soldier.GetRoleName()));
-                            command.Parameters.Add(new SqliteParameter("@id", soldier.Name));
+                            command.Parameters.Add(new SqliteParameter("@id", soldier.id));
                             command.ExecuteNonQuery();
                         }
                     }
@@ -664,6 +665,44 @@ namespace Assets.Scripts.Model
                 }
             }
             return soldiers;
+        }
+
+        public void SaveSoldierData() 
+        {            
+            string dbPath = "URI=file:" + Application.streamingAssetsPath + "/database.db";
+
+            using (var connection = new SqliteConnection(dbPath))
+            {
+                connection.Open();
+                foreach (var character in this.soldiersData)
+                {
+                    using (var command = connection.CreateCommand())
+                    {
+                        if (character is Soldier soldier)
+                        {
+                            command.CommandText = @"UPDATE Soldier SET 
+                                name = @name, 
+                                level = @level, 
+                                hp = @health, 
+                                max_hp = @maxHealth, 
+                                atk = @attack, 
+                                def = @defense,
+                                role = @roleName
+                                WHERE soldier_id = @id;";
+                            command.Parameters.Add(new SqliteParameter("@name", soldier.Name));
+                            command.Parameters.Add(new SqliteParameter("@level", soldier.Level));
+                            command.Parameters.Add(new SqliteParameter("@health", soldier.Health));
+                            command.Parameters.Add(new SqliteParameter("@maxHealth", soldier.MaxHealth));
+                            command.Parameters.Add(new SqliteParameter("@attack", soldier.Atk));
+                            command.Parameters.Add(new SqliteParameter("@defense", soldier.Def));
+                            command.Parameters.Add(new SqliteParameter("@roleName", soldier.GetRoleName()));
+                            command.Parameters.Add(new SqliteParameter("@id", soldier.id));
+                            command.ExecuteNonQuery();
+                        }
+                    }
+                }
+                connection.Close();
+            }
         }
     }
 }

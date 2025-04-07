@@ -711,7 +711,7 @@ MonoBehaviour:
   musicSource: {fileID: 0}
   musicVolume: 0.5
   sfxSource: {fileID: 0}
-  sfxVolume: 0.9
+  sfxVolume: 0.5
   backgroundMusic:
   - {fileID: 8300000, guid: c8f1abee00e0d4772a1ffed0ff978063, type: 3}
   - {fileID: 8300000, guid: 1f952e3b647864d3c970ba1ead2b60cf, type: 3}

@@ -123,7 +123,8 @@ namespace Assets.Scripts.Controller
                     health: role.MaxHealth,
                     attack: role.BaseAtk,
                     defense: role.BaseDef,
-                    maxHealth: role.MaxHealth
+                    maxHealth: role.MaxHealth,
+                    soldierID: _availableSoldiers.Count + 1 // Assuming soldierID is just an index
                 );
                 
                 // 将新士兵存入数据库
@@ -538,7 +539,7 @@ namespace Assets.Scripts.Controller
                 Debug.LogError("Mission is null. Cannot apply rewards.");
                 return;
             }
-
+            mission.AssignedEnemies.FindAll(e => e.IsDead()).ForEach(e => e.Health = e.MaxHealth);
             Debug.Log($"Applying rewards for mission: {mission.name}");
 
             using (var connection = new SqliteConnection(dbPath))
@@ -570,10 +571,10 @@ namespace Assets.Scripts.Controller
                     command.ExecuteNonQuery();
                 }
 
-                Game.Instance.SaveGameData();
 
                 connection.Close();
             }
+            Game.Instance.SaveSoldierData();
 
             Debug.Log($"Rewards applied successfully: Money +{mission.rewardMoney}, Resource ID {mission.rewardResourceId} +{mission.rewardAmount}");
         }

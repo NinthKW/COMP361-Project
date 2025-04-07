@@ -80,6 +80,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     void Update()
     {
         UpdateCharacterUIStates();
+        CheckTurnEnd();
         UpdateButtonStates();
         UpdateSelectionVisual();
         UpdateEnemyCountDisplay();
@@ -118,8 +119,8 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         ColorUtility.TryParseHtmlString("#FFA500", out controlColor);
         ColorUtility.TryParseHtmlString("#A0B6FF", out buffColor);
         ColorUtility.TryParseHtmlString("#FFA0A0", out enemyColor);
-        ColorUtility.TryParseHtmlString("#FFFFFF", out transparentColor);
-        transparentColor.a = 0.2f;
+        ColorUtility.TryParseHtmlString("#000000", out transparentColor);
+        transparentColor.a = 0.01f;
     }
 
     void SubscribeToEvents() => 
@@ -350,7 +351,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         else if (CompareAbility(ability, "Damage") || CompareAbility(ability, "Lifesteal"))
         {
             attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "Attack!";
-            attackButton.image.color = Color.magenta;
+            attackButton.image.color = Color.red;
             UpdateCombatLog("Please select an enemy for attacking.");
             castable = false;
         }
@@ -686,8 +687,6 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             yield return StartCoroutine(ExecuteEnemyTurn());
         
         isAttackExecuting = false;
-        UpdateCombatState();
-        CheckTurnEnd();
     }
 
     IEnumerator ExecuteEnemyTurn()
@@ -974,6 +973,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     {
         DisableAllControls();
         ShowEndMessage(victory);
+        AudioManager.Instance.PlayMusic("Menu");
         if (victory == false){
             CombatManager.Instance.SaveCombatResults(victory, "");
         }

@@ -136,13 +136,26 @@ namespace Assets.Scripts.Controller
                 }
 
                 connection.Close();
+                missions.Add(CreateDummyMission()); // 添加一个虚拟任务
                 Debug.Log($"Total Missions Loaded: {missions.Count}");
             }
         }
 
+        Mission CreateDummyMission()
+        {
+            var dummyMission = new Mission(999, "Dummy Mission", "This is a dummy mission.", 1, 0, 0, 0, "None", "None", true, false);
+            dummyMission.SetTerrainEffects(0, 0, 0);
+            dummyMission.SetWeatherEffects(0, 0, 0);
+
+            for (int i = 0; i < 3; i++)
+            {
+                dummyMission.AssignedEnemies.Add(new Enemy("Dummy Enemy", 100, 10, 5, 100, 1, 0));
+            }
+            return dummyMission;
+        }
 
 
-        void LoadMissionEnemiesFromDatabase(Mission mission)
+        public void LoadMissionEnemiesFromDatabase(Mission mission)
         {
             using (var connection = new SqliteConnection(dbPath))
             {

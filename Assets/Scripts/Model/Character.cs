@@ -165,10 +165,11 @@ namespace Assets.Scripts.Model
         private int _experience;
         private readonly bool _hasGun;
         private readonly Role _role;
+        public int id;
         public List<Ability> Abilities { get; private set; } = new List<Ability>();
 
 
-        public Soldier(string name, Role role, int level, int health, int attack, int defense, int maxHealth) 
+        public Soldier(string name, Role role, int level, int health, int attack, int defense, int maxHealth, int soldierID) 
         : base(name, health, level, attack, defense, maxHealth)
         {
             _role = role;
@@ -177,6 +178,7 @@ namespace Assets.Scripts.Model
             _experience = 0;
             ObjectTag = "Soldier";
             Def = defense;
+            id = soldierID;
         }
 
         protected override int CalculateDamage(Character target)
