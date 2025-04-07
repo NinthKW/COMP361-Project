@@ -21,6 +21,7 @@ public class LoadoutUI : MonoBehaviour
     void Start()
     {
         backButton.GetComponent<Button>().onClick.AddListener(OnBackButtonClicked);
+        populateFields();
     }
 
     // Update is called once per frame
@@ -31,15 +32,38 @@ public class LoadoutUI : MonoBehaviour
 
     void populateFields()
     {
-        //foreach (Character soldier in LoadoutManager.Instance.soldiers)
-        //{
-        //    Debug.Log("Adding soldier: " + soldier.Name);
-        //    GameObject buttonGameObject = Instantiate(soldierPrefab, soldierGrid);
-        //    Button button = buttonGameObject.GetComponent<Button>();
+        //Soldier
+        foreach (Character soldier in LoadoutManager.Instance.soldiers)
+        {
+            Debug.Log("Adding soldier: " + soldier.Name);
+            GameObject buttonGameObject = Instantiate(buttonPrefab, soldierField);
+            Button button = buttonGameObject.GetComponent<Button>();
 
-        //    buttonGameObject.GetComponent<TextMeshProUGUI>().text = soldier.Name;
-        //    buttonGameObject.GetComponent<HospitalSoldier>().soldier = soldier;
-        //}
+            buttonGameObject.GetComponent<TextMeshProUGUI>().text = soldier.Name;
+            buttonGameObject.GetComponent<LoadoutButton>().soldier = soldier;
+        }
+
+        //Weapon
+        foreach (Weapon weapon in LoadoutManager.Instance.weapons)
+        {
+            Debug.Log("Adding weapon: " + weapon.name);
+            GameObject buttonGameObject = Instantiate(buttonPrefab, weaponField);
+            Button button = buttonGameObject.GetComponent<Button>();
+
+            buttonGameObject.GetComponent<TextMeshProUGUI>().text = weapon.name;
+            buttonGameObject.GetComponent<LoadoutButton>().weapon = weapon;
+        }
+
+        //Equipment
+        foreach (Equipment equipment in LoadoutManager.Instance.equipments)
+        {
+            Debug.Log("Adding soldier: " + equipment.name);
+            GameObject buttonGameObject = Instantiate(buttonPrefab, equipmentField);
+            Button button = buttonGameObject.GetComponent<Button>();
+
+            buttonGameObject.GetComponent<TextMeshProUGUI>().text = equipment.name;
+            buttonGameObject.GetComponent<LoadoutButton>().equipment = equipment;
+        }
 
     }
     void OnBackButtonClicked()
