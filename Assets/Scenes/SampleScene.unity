@@ -197,9 +197,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6f4f42f22327545a1852494f54cfb39d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dbName: 
+  m_Name:
+  m_EditorClassIdentifier:
+  dbName:
 --- !u!1 &271742664
 GameObject:
   m_ObjectHideFlags: 0
@@ -227,8 +227,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a8bdeb3e0ac3eac4ba7a24e848100926, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   levels: []
 --- !u!4 &271742666
 Transform:
@@ -282,8 +282,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   m_RenderShadows: 1
   m_RequiresDepthTextureOption: 2
   m_RequiresOpaqueTextureOption: 2
@@ -409,8 +409,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   m_ComponentVersion: 1
   m_LightType: 4
   m_BlendStyleIndex: 0
@@ -491,8 +491,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d3869062a99108749947f257f6fe16ab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   buildingList: []
 --- !u!4 &1023047853
 Transform:
@@ -536,19 +536,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7fc36b7d4c4391a45ae39d495fcf578d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   enemyTurnDelay: 1
   currentMission:
     id: 0
-    name: 
-    description: 
+    name:
+    description:
     difficulty: 0
     rewardMoney: 0
     rewardAmount: 0
     rewardResourceId: 0
-    terrain: 
-    weather: 
+    terrain:
+    weather:
     isCompleted: 0
     unlocked: 0
     terrainAtkEffect: 0
@@ -599,16 +599,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 61ba951bc3e0258428d7224422692dff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   currentState: 0
   currentGame:
     MissionsData: []
     basesData: []
     techData:
       techId: 0
-      techName: 
-      description: 
+      techName:
+      description:
       costMoney: 0
       costResourceId: 0
       costResourceAmount: 0
@@ -656,8 +656,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e9a2c43a2116e6047881f00c9b251c1d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   missions: []
 --- !u!4 &1498107045
 Transform:
@@ -701,8 +701,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a0ae3ac71737d4aa89c283492a4729f4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   musicSource: {fileID: 0}
   musicVolume: 0.7
   sfxSource: {fileID: 0}
@@ -739,6 +739,63 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &2142777017
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2006875511728491967, guid: 410f2c28d07712c44baaa7e580c59f10, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2006875511728491967, guid: 410f2c28d07712c44baaa7e580c59f10, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2006875511728491967, guid: 410f2c28d07712c44baaa7e580c59f10, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2006875511728491967, guid: 410f2c28d07712c44baaa7e580c59f10, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2006875511728491967, guid: 410f2c28d07712c44baaa7e580c59f10, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2006875511728491967, guid: 410f2c28d07712c44baaa7e580c59f10, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2006875511728491967, guid: 410f2c28d07712c44baaa7e580c59f10, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2006875511728491967, guid: 410f2c28d07712c44baaa7e580c59f10, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2006875511728491967, guid: 410f2c28d07712c44baaa7e580c59f10, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2006875511728491967, guid: 410f2c28d07712c44baaa7e580c59f10, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3892466982682379992, guid: 410f2c28d07712c44baaa7e580c59f10, type: 3}
+      propertyPath: m_Name
+      value: HospitalManager
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 410f2c28d07712c44baaa7e580c59f10, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -750,5 +807,6 @@ SceneRoots:
   - {fileID: 271742666}
   - {fileID: 1498107045}
   - {fileID: 1023047853}
+  - {fileID: 2142777017}
   - {fileID: 157686841}
   - {fileID: 2011980347}

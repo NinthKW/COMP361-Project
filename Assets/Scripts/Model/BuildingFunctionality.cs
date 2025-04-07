@@ -1,3 +1,5 @@
+using Assets.Scripts.Controller;
+using Assets.Scripts.Model;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,6 +22,7 @@ public class BuildingFunctionality : MonoBehaviour
     public static void hospitalFunctionality()
     {
         Debug.Log("HOSPITAL FUNC CALLED");
+        GameManager.Instance.LoadGameState(GameState.HospitalPage);
     }
 
     public static void hqFunctionality()

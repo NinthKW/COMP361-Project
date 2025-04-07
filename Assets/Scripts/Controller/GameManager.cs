@@ -94,6 +94,9 @@ namespace Assets.Scripts.Controller
                     AudioManager.Instance.PlayMusic("Battle1");
                     SceneManager.LoadScene("MissionPrepPageUI");
                     break;
+                case GameState.HospitalPage:
+                    SceneManager.LoadScene("HospitalPage");
+                    break;
                 case GameState.CombatResultPage:
                     SceneManager.LoadScene("CombatResultPage");
                     break;
