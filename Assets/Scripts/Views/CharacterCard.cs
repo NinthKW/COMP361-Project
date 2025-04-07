@@ -16,6 +16,8 @@ public class CharacterCard : MonoBehaviour
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private TextMeshProUGUI levelText;
     [SerializeField] private Button selectButton;
+    [SerializeField] private Image roleImage;
+
 
     public Character Character { get; private set; }
     private MissionPreparationUI ui;
@@ -26,6 +28,23 @@ public class CharacterCard : MonoBehaviour
         Character = character;
         ui = uiController;
         selectButton.onClick.AddListener(OnClicked);
+          // Set a role-specific sprite for soldiers
+    if (Character is Soldier soldier)
+    {
+        string roleName = soldier.GetRoleName(); // e.g., "Tank", "Medic", etc.
+        // Load sprite from Resources (adjust path if your images are in a subfolder)
+        Sprite roleSprite = UnityEngine.Resources.Load<Sprite>(roleName);
+        if (roleSprite != null)
+        {
+            roleImage.sprite = roleSprite;
+        }
+        else
+        {
+            Debug.LogWarning("No sprite found for role: " + roleName);
+        }
+    }
+    
+    UpdateVisuals();
         UpdateVisuals();
     }
 
