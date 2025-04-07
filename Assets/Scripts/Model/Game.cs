@@ -21,13 +21,148 @@ namespace Assets.Scripts.Model
 
         public Game()
         {
+            // Resources
             this.resourcesData = new Resources();
             this.MissionsData = new List<Mission>();
             this.soldiersData = new List<Character>();
-            this.basesData = new List<Base>(); //list of buildings
-            //this.basesData.Add(new Base(0, "Main Base", "Default main base", 1, 0, 0, 0, true, false, 0, 0));  //i comment this out for now cuz the base class is each building
+            this.basesData = new List<Base>();
             this.techData = new Tech();
+
+            maxSoldier = 5;
+            
+            string dbName = "URI=file:" + Application.persistentDataPath + "/game.db";
+            // Bases
+            using (var connection = new SqliteConnection(dbName))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT building_id, name, description, level, cost, resource_amount, resource_type, x, y FROM Infrastructure ORDER BY building_id ASC;";
+                    using (IDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int building_id = int.Parse(reader["building_id"].ToString());
+                            string name = reader["name"].ToString();
+                            string description = reader["description"].ToString();
+                            int level = int.Parse(reader["level"].ToString());
+                            int cost = int.Parse(reader["cost"].ToString());
+                            int resource_amount = int.Parse(reader["resource_amount"].ToString());
+                            int resource_type = int.Parse(reader["resource_type"].ToString());
+                            int x = int.Parse(reader["x"].ToString());
+                            int y = int.Parse(reader["y"].ToString());
+                            
+                            // For a new game, all bases start locked and not placed.
+                            this.basesData.Add(new Base(building_id, name, description, level, cost, resource_amount, resource_type, false, false, x, y));
+                        }
+                    }
+                }
+                connection.Close();
+            }
+            BaseManager.Instance.buildingList = basesData;
+            
+            foreach (Base building in this.basesData) {
+                if (building.name.ToLower().Equals("barracks"))
+                {
+                    if (building.placed)
+                    {
+                        maxSoldier += 1;
+                    }
+                }
+            }
+
+            // Missions
+            using (var connection = new SqliteConnection(dbName))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT mission_id, name, description, difficulty, reward_money, reward_amount, reward_resource, terrain, weather FROM Mission ORDER BY mission_id ASC;";
+                    using (IDataReader reader = command.ExecuteReader())
+                    {
+                        bool isFirstMission = true;
+                        while (reader.Read())
+                        {
+                            int id = int.Parse(reader["mission_id"].ToString());
+                            string name = reader["name"].ToString();
+                            string description = reader["description"].ToString();
+                            int difficulty = int.Parse(reader["difficulty"].ToString());
+                            int rewardMoney = int.Parse(reader["reward_money"].ToString());
+                            int rewardAmount = int.Parse(reader["reward_amount"].ToString());
+                            int rewardResourceId = int.Parse(reader["reward_resource"].ToString());
+                            string terrain = reader["terrain"].ToString();
+                            string weather = reader["weather"].ToString();
+                            bool isCompleted = false;
+                            bool unlocked = isFirstMission;
+                            Mission mission = new Mission(id, name, description, difficulty, rewardMoney, rewardAmount, rewardResourceId, terrain, weather, unlocked, isCompleted);
+                            
+                            
+                            
+                            this.MissionsData.Add(mission);
+                            isFirstMission = false;
+                        }
+                    }
+                }
+                connection.Close();
+            }
+
+            using (var connection = new SqliteConnection(dbName))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT * FROM Soldier ORDER BY soldier_id ASC;";
+                    using (IDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int soldierId = int.Parse(reader["soldier_id"].ToString());
+                            string name = reader["name"].ToString();
+                            // Override soldier level to 1 for a new game.
+                            int level = 1;
+                            int health = int.Parse(reader["hp"].ToString());
+                            int maxHealth = int.Parse(reader["max_hp"].ToString());
+                            int attack = int.Parse(reader["atk"].ToString());
+                            int defense = int.Parse(reader["def"].ToString());
+                            string roleName = reader["role"].ToString();
+                            
+                            Role role = new Role(roleName);
+                            Soldier soldier = new Soldier(name, role, level, health, attack, defense, maxHealth);
+                            this.soldiersData.Add(soldier);
+                        }
+                    }
+                }
+                connection.Close();
+            }
+            HospitalManager.Instance.soldiers = soldiersData;
+
+            using (var connection = new SqliteConnection(dbName))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT tech_id, tech_name, description, cost_money, cost_resources_id, cost_resources_amount FROM TECHNOLOGY LIMIT 1;";
+                    using (IDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            int techId = int.Parse(reader["tech_id"].ToString());
+                            string techName = reader["tech_name"].ToString();
+                            string description = reader["description"].ToString();
+                            float costMoney = float.Parse(reader["cost_money"].ToString());
+                            int costResourceId = int.Parse(reader["cost_resources_id"].ToString());
+                            int costResourceAmount = int.Parse(reader["cost_resources_amount"].ToString());
+                            
+                            Tech tech = new Tech(techId, techName, description, costMoney, costResourceId, costResourceAmount);
+                            tech.isUnlocked = false;
+                            this.techData = tech;
+                        }
+                    }
+                }
+                connection.Close();
+            }
         }
+
 
         public Game(string dbName)
         {
@@ -157,8 +292,9 @@ namespace Assets.Scripts.Model
                             string terrain = reader["terrain"].ToString();
                             string weather = reader["weather"].ToString();
                             bool isUnlocked = bool.Parse(reader["unlocked"].ToString());
+                            bool isCompleted = bool.Parse(reader["cleared"].ToString());
 
-                            Mission mission = new Mission(id, name, description, difficulty, rewardMoney, rewardAmount, rewardResourceId, terrain, weather, isUnlocked);
+                            Mission mission = new Mission(id, name, description, difficulty, rewardMoney, rewardAmount, rewardResourceId, terrain, weather, isUnlocked, isCompleted);
                             this.MissionsData.Add(mission);
                         }
                         reader.Close();

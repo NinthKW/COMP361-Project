@@ -64,6 +64,7 @@ namespace Assets.Scripts.Controller
                             string terrain = reader.GetString(7);   
                             string weather = reader.GetString(8);   
                             bool unlocked = reader.GetBoolean(9);
+                            bool isCompleted = reader.GetBoolean(10);
 
                             // 加载 Terrain 和 Weather 效果
                             int terrainAtkEffect = 0;
@@ -115,7 +116,8 @@ namespace Assets.Scripts.Controller
                                 rewardResourceId,
                                 terrain,
                                 weather,
-                                unlocked
+                                unlocked,
+                                isCompleted
                             );
 
                             mission.SetTerrainEffects(terrainAtkEffect, terrainDefEffect, terrainHpEffect);
