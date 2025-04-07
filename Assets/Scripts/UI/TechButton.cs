@@ -43,16 +43,15 @@ public class TechButton : MonoBehaviour
     // Called when trying to unlock this tech
     public void TryUnlock()
     {
-        // Ask TechManager to unlock this tech
         if (TechManager.Instance.UnlockTech(techId))
         {
-            // If successful, update the button's appearance
             UpdateTechInfo();
         }
         else
         {
-            // If unsuccessful (not enough resources), log a message
-            Debug.Log("Cannot unlock tech - insufficient resources");
+            // Add these debug lines
+            Debug.Log($"Current wood amount: {PlayerResources.Instance.GetResource(1)}");
+            Debug.Log($"Current money: {PlayerResources.Instance.GetMoney()}");
         }
     }
 

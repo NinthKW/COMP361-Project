@@ -6,39 +6,47 @@ using Assets.Scripts.Model;
 using Assets.Scripts.Controller;
 using TMPro;
 
-public class TechUI : MonoBehaviour
+namespace Assets.Scripts.Views
 {
-    public Button exitButton;
-    public Button unlockButton;
-    public TechButton[] techButtons; // Array of all tech buttons
-    private UnlockButtonController unlockButtonController;
-    
-    void Awake()
+    public class TechUI : MonoBehaviour
     {
-
-        // Remove any existing UnlockButtonController components from the entire hierarchy
-        var controllers = GetComponentsInChildren<UnlockButtonController>(true);
-        foreach (var controller in controllers)
-        {
-            DestroyImmediate(controller);
-        }
+        public Button exitButton;
+        public Button unlockButton;
+        public TechButton[] techButtons; // Array of all tech buttons
+        private UnlockButtonController unlockButtonController;
         
-    }
-
-    void Start()
-    {
-        exitButton.onClick.AddListener(OnBackButtonClicked1);
-        
-        // Make sure TechManager is initialized
-        if (TechManager.Instance == null)
+        void Awake()
         {
-            Debug.LogError("TechManager not found in scene!");
+            // Remove any existing UnlockButtonController components from the entire hierarchy
+            var controllers = GetComponentsInChildren<UnlockButtonController>(true);
+            foreach (var controller in controllers)
+            {
+                DestroyImmediate(controller);
+            }
+            
+            // Add PlayerResources if it doesn't exist
+            if (PlayerResources.Instance == null)
+            {
+                GameObject resourceManager = new GameObject("PlayerResources");
+                resourceManager.AddComponent<PlayerResources>();
+            }
         }
-    }
 
-    void OnBackButtonClicked1()
-    {
-        GameManager.Instance.ChangeState(GameState.MainMenuPage);
-        GameManager.Instance.LoadGameState(GameState.MainMenuPage);
+        void Start()
+        {
+            exitButton.onClick.AddListener(OnBackButtonClicked1);
+            
+            // Make sure TechManager is initialized
+            if (TechManager.Instance == null)
+            {
+                Debug.LogError("TechManager not found in scene!");
+            }
+        }
+
+        void OnBackButtonClicked1()
+        {
+            GameManager.Instance.ChangeState(GameState.MainMenuPage);
+            GameManager.Instance.LoadGameState(GameState.MainMenuPage);
+        }
     }
 }

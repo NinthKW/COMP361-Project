@@ -28,16 +28,40 @@ namespace Assets.Scripts.Model
             Tech tech = availableTechs.Find(t => t.techId == techId);
             if (tech == null) return false;
             
-            // Here you would add checks for resources/money
-            // For example:
-            // if (PlayerResources.Money < tech.costMoney) return false;
-            // if (PlayerResources.GetResource(tech.costResourceId) < tech.costResourceAmount) return false;
+            // Check if already unlocked
+            if (tech.isUnlocked) return false;
             
-            // Deduct resources
-            // PlayerResources.DeductMoney(tech.costMoney);
-            // PlayerResources.DeductResource(tech.costResourceId, tech.costResourceAmount);
+            // Check if player has enough resources
+            if (PlayerResources.Instance == null)
+            {
+                Debug.LogError("PlayerResources not found!");
+                return false;
+            }
+            
+            if (PlayerResources.Instance.GetMoney() < tech.costMoney)
+            {
+                Debug.Log($"Not enough money! Need {tech.costMoney}, have {PlayerResources.Instance.GetMoney()}");
+                return false;
+            }
+            
+            if (PlayerResources.Instance.GetResource(tech.costResourceId) < tech.costResourceAmount)
+            {
+                string resourceName = new Resources().GetName(tech.costResourceId);
+                Debug.Log($"Not enough {resourceName}! Need {tech.costResourceAmount}, have {PlayerResources.Instance.GetResource(tech.costResourceId)}");
+                return false;
+            }
+            
+            // If we have enough resources, deduct them and unlock
+            PlayerResources.Instance.DeductMoney(tech.costMoney);
+            PlayerResources.Instance.DeductResource(tech.costResourceId, tech.costResourceAmount);
             
             tech.isUnlocked = true;
+
+            // Add debug logs to show remaining resources after purchase
+            Debug.Log($"Successfully unlocked {tech.techName}!");
+            Debug.Log($"Remaining money: ${PlayerResources.Instance.GetMoney()}");
+            Debug.Log($"Remaining {PlayerResources.Instance.GetResourceName(tech.costResourceId)}: {PlayerResources.Instance.GetResource(tech.costResourceId)}");
+            
             return true;
         }
 
