@@ -322,7 +322,6 @@ namespace Assets.Scripts.Model
                 }
                 connection.Close();
             }
-            BaseManager.Instance.buildingList = basesData;
 
             //Initialize maxSoldier
             foreach (Base building in this.basesData) {

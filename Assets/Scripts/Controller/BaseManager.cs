@@ -41,7 +41,6 @@ namespace Assets.Scripts.Controller
 
         public void LoadBase()
         {
-            buildingList.Clear();
             buildingList = Game.Instance.basesData;
 
             HospitalManager.Instance.soldiers = Game.Instance.soldiersData;
