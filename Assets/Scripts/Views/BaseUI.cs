@@ -123,6 +123,9 @@ namespace Assets.Scripts
                 } else if (building.name.ToLower() == "hq")
                 {
                     btn.onClick.AddListener(BuildingFunctionality.hqFunctionality);
+                } else if (building.name.ToLower() == "training room")
+                {
+                    btn.onClick.AddListener(BuildingFunctionality.trainingFunctionality);
                 }
 
 

@@ -16,5 +16,6 @@ namespace Assets.Scripts.Model
         MissionPreparationPage,
         HospitalPage,
         CombatResultPage,
+        TrainingPage,
     }
 }

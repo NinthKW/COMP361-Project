@@ -89,6 +89,9 @@ namespace Assets.Scripts.Controller
                 case GameState.CombatResultPage:
                     SceneManager.LoadScene("CombatResultPage");
                     break;
+                case GameState.TrainingPage:
+                    SceneManager.LoadScene("TrainingPage");
+                    break;
             }
 
             ChangeState(newState);
