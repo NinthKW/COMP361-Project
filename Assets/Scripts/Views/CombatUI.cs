@@ -169,7 +169,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     int midY = Screen.height / 2;
     
     // Base values for spacing
-    float horizontalOffset = 90f;
+    float horizontalOffset = 95f;
     float verticalSpacing = 120f;
     
     // Extra adjustments for moving the formation further right and increasing spacing
