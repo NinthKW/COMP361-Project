@@ -50,6 +50,18 @@ namespace Assets.Scripts.Controller
             return playerInventory;
         }
 
+        // Shows the list of loaded weapons
+        public List<Weapon> GetWeapons()
+        {
+            return playerInventory.GetWeapons();
+        }
+
+        // Shows the list of loaded equipment
+        public List<Equipment> GetEquipments()
+        {
+            return playerInventory.GetEquipments();
+        }
+
         // Loads weapon data from the database
         public void LoadWeapons(string dbName)
         {
