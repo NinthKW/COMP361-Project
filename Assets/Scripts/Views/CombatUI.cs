@@ -372,7 +372,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         
         attacker.AttackChances--;
         AudioManager.Instance.PlaySound("Attack");
-        
+
         yield return StartCoroutine(PlayAttackAnimation(attacker, target, attacker.GetAttackAmount(target)));
         PostAttackCleanup();
         
@@ -426,12 +426,19 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             return;
         }
 
-        // Create a new TextMeshProUGUI object
+        // Calculate effective damage considering defense
+        int reducedDamage = Mathf.Max(0, damage - target.Def);
+
+        if (reducedDamage <= 0) reducedDamage = 1; // Ensure minimum damage of 1
+
+        Debug.Log($"Damage: {damage}, Defense: {target.Def}, Reduced Damage: {reducedDamage}");
+
+        // Create Damage Text
         GameObject damageTextObj = new GameObject("DamageText");
         damageTextObj.transform.SetParent(canvas.transform, false);
 
         TextMeshProUGUI textMesh = damageTextObj.AddComponent<TextMeshProUGUI>();
-        textMesh.text = $"-{damage}";
+        textMesh.text = $"-{reducedDamage} HP";
         textMesh.fontSize = 36;
         textMesh.color = Color.red;
         textMesh.alignment = TextAlignmentOptions.Center;
