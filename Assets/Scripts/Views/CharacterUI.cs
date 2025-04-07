@@ -37,6 +37,22 @@ public class CharacterUI : MonoBehaviour
         this._allyImageColor.a = 1;
         this._enemyImageColor.a = 1;
 
+        // Set a role-specific sprite for soldiers
+    if (_character is Soldier soldier)
+    {
+        string roleName = soldier.GetRoleName(); // e.g., "Tank", "Medic", etc.
+        // Load sprite from Resources/SoldierImages folder.
+        Sprite roleSprite = UnityEngine.Resources.Load<Sprite>(roleName);
+        if (roleSprite != null)
+        {
+            characterImage.sprite = roleSprite;
+        }
+        else
+        {
+            Debug.LogWarning("No sprite found for role: " + roleName);
+        }
+    }
+
         UpdateVisuals(isAlly);
     }
 
