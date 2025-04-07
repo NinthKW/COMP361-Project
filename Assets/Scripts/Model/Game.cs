@@ -30,9 +30,9 @@ namespace Assets.Scripts.Model
 
             maxSoldier = 5;
             
-            string dbName = "URI=file:" + Application.persistentDataPath + "/game.db";
+            string dbPath = "URI=file:" + Application.streamingAssetsPath + "/database.db";
             // Bases
-            using (var connection = new SqliteConnection(dbName))
+            using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
                 using (var command = connection.CreateCommand())
@@ -72,7 +72,7 @@ namespace Assets.Scripts.Model
             }
 
             // Missions
-            using (var connection = new SqliteConnection(dbName))
+            using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
                 using (var command = connection.CreateCommand())
@@ -106,7 +106,7 @@ namespace Assets.Scripts.Model
                 connection.Close();
             }
 
-            using (var connection = new SqliteConnection(dbName))
+            using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
                 using (var command = connection.CreateCommand())
@@ -136,7 +136,7 @@ namespace Assets.Scripts.Model
             }
             HospitalManager.Instance.soldiers = soldiersData;
 
-            using (var connection = new SqliteConnection(dbName))
+            using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
                 using (var command = connection.CreateCommand())

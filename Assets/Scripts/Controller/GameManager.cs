@@ -115,10 +115,8 @@ namespace Assets.Scripts.Controller
         }
         public void LoadGame()
         {
-            // Define the database connection string.
             string dbPath = "URI=file:" + Application.streamingAssetsPath + "/database.db";
     
-            // Create a new game instance using the constructor that loads data from the database.
             currentGame = new Game(dbPath);
             Debug.Log("Game loaded from database: " + dbPath);
 
@@ -128,10 +126,8 @@ namespace Assets.Scripts.Controller
         {
             if (currentGame != null)
             {
-            // Assuming you add a SaveGameData method in your Game class,
-            // call it to save all game data to the database.
-            currentGame.SaveGameData();
-            Debug.Log("Game saved to database.");
+                currentGame.SaveGameData();
+                Debug.Log("Game saved to database.");
             }
             else
             {
