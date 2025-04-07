@@ -26,6 +26,7 @@ namespace Assets.Scripts.Controller
                 Destroy(gameObject);
             }
         }
+
         // Start is called before the first frame update
         void Start()
         {
@@ -36,6 +37,12 @@ namespace Assets.Scripts.Controller
         void Update()
         {
 
+        }
+
+        void LoadBase()
+        {
+            buildingList.Clear();
+            buildingList = Game.Instance.basesData;
         }
     }
 
