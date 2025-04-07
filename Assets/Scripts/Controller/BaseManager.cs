@@ -43,6 +43,9 @@ namespace Assets.Scripts.Controller
         {
             buildingList.Clear();
             buildingList = Game.Instance.basesData;
+
+            HospitalManager.Instance.soldiers = Game.Instance.soldiersData;
+            TrainingManager.Instance.soldiers = Game.Instance.soldiersData;
         }
     }
 
