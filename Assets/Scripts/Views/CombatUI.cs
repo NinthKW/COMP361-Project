@@ -165,7 +165,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
     void CreateEnemyCards()
     {
-        int midX = (Screen.width / 2) + 90;
+        int midX = (Screen.width / 2) + 110;
         int midY = Screen.height / 2;
         
         // Adjust these values until the spacing feels right.

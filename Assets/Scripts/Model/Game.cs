@@ -550,9 +550,9 @@ namespace Assets.Scripts.Model
                             command.Parameters.Add(new SqliteParameter("@resource_amount", b.resource_amount));
                             command.Parameters.Add(new SqliteParameter("@resource_type", b.resource_type));
                             command.Parameters.Add(new SqliteParameter("@unlocked", b.unlocked ? 1 : 0));
-                            command.Parameters.Add(new SqliteParameter("@unlocked", b.placed ? 1 : 0));
-                            command.Parameters.Add(new SqliteParameter("@cost", b.x));
-                            command.Parameters.Add(new SqliteParameter("@cost", b.y));
+                            command.Parameters.Add(new SqliteParameter("@placed", b.placed ? 1 : 0));
+                            command.Parameters.Add(new SqliteParameter("@x", b.x));
+                            command.Parameters.Add(new SqliteParameter("@y", b.y));
                             command.Parameters.Add(new SqliteParameter("@building_id", b.building_id));
                             command.ExecuteNonQuery();
                         }

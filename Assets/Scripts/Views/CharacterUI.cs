@@ -55,6 +55,20 @@ public class CharacterUI : MonoBehaviour
             Debug.LogWarning("No sprite found for role: " + roleName);
         }
     }
+    else if (_character is Enemy)
+    {
+        // Load the default enemy sprite from Resources.
+        // If stored in a folder like "EnemyImages", use: Resources.Load<Sprite>("EnemyImages/DefaultEnemy");
+        Sprite enemySprite = UnityEngine.Resources.Load<Sprite>("enemydefault");
+        if (enemySprite != null)
+        {
+            characterImage.sprite = enemySprite;
+        }
+        else
+        {
+            Debug.LogWarning("No default enemy sprite found.");
+        }
+    }
 
         UpdateVisuals(isAlly);
     }
