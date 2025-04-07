@@ -51,51 +51,53 @@ namespace Assets.Scripts.Controller
         private void InitializeAvailableUnits()
         {
             _availableSoldiers.Clear();
+            _availableSoldiers = Game.Instance.GetSoldiers();
+            Debug.Log($"Loaded {_availableSoldiers.Count} soldiers from Game instance.");
 
-            using (var connection = new SqliteConnection(dbPath))
-            {
-                connection.Open();
+            // using (var connection = new SqliteConnection(dbPath))
+            // {
+            //     connection.Open();
                 
-                using (var command = connection.CreateCommand())
-                {
-                    command.CommandText = @"
-                        SELECT 
-                            name, 
-                            role, 
-                            level,
-                            hp,
-                            atk,
-                            def,
-                            max_hp
-                        FROM Soldier";
+            //     using (var command = connection.CreateCommand())
+            //     {
+            //         command.CommandText = @"
+            //             SELECT 
+            //                 name, 
+            //                 role, 
+            //                 level,
+            //                 hp,
+            //                 atk,
+            //                 def,
+            //                 max_hp
+            //             FROM Soldier";
 
-                    using var reader = command.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        try
-                        {
-                            var role = new Role(reader.GetString(1));
-                            var soldier = new Soldier(
-                                name: reader.GetString(0),
-                                role: role,
-                                level: reader.GetInt32(2),
-                                health: reader.GetInt32(3),
-                                attack: reader.GetInt32(4),
-                                defense: reader.GetInt32(5),
-                                maxHealth: reader.GetInt32(6)
-                            );
-                            soldier.GainExp(reader.GetInt32(3)); // 单独设置经验值
+            //         using var reader = command.ExecuteReader();
+            //         while (reader.Read())
+            //         {
+            //             try
+            //             {
+            //                 var role = new Role(reader.GetString(1));
+            //                 var soldier = new Soldier(
+            //                     name: reader.GetString(0),
+            //                     role: role,
+            //                     level: reader.GetInt32(2),
+            //                     health: reader.GetInt32(3),
+            //                     attack: reader.GetInt32(4),
+            //                     defense: reader.GetInt32(5),
+            //                     maxHealth: reader.GetInt32(6)
+            //                 );
+            //                 soldier.GainExp(reader.GetInt32(3)); // 单独设置经验值
 
-                            _availableSoldiers.Add(soldier);
-                            Debug.Log($"Loaded soldier: {soldier.Name} ({role.GetRoleName()})");
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.LogError($"Failed to load soldier: {ex.Message}");
-                        }
-                    }
-                }
-            }
+            //                 _availableSoldiers.Add(soldier);
+            //                 Debug.Log($"Loaded soldier: {soldier.Name} ({role.GetRoleName()})");
+            //             }
+            //             catch (Exception ex)
+            //             {
+            //                 Debug.LogError($"Failed to load soldier: {ex.Message}");
+            //             }
+            //         }
+            //     }
+            // }
         }
         #endregion
 
@@ -183,7 +185,6 @@ namespace Assets.Scripts.Controller
         // 修改后的 StartCombat 方法，传入 Mission 对象和玩家选定的士兵列表
         public void StartCombat(Mission mission, List<Soldier> selectedSoldiers)
         {
-            // TODO: add effects for weather and terrain
             _inBattleEnemies.Clear();
             _inBattleSoldiers.Clear();
             _availableEnemies.Clear();
@@ -508,11 +509,14 @@ namespace Assets.Scripts.Controller
                 ApplyMissionRewards(currentMission);  // 调用奖励分发函数
 
                 string soldierExpDetails = "";
+
+                // Grant each in-battle soldier experience equal to the sum of all in-battle enemies' experience rewards.
+                int totalEnemyExp = _inBattleEnemies.Sum(enemy => enemy.Experience);
                 _inBattleSoldiers.ForEach(c => {
                     if (c is Soldier soldier) 
                     {
-                        soldier.GainExp(50);  // 士兵获得经验
-                        soldierExpDetails += $"- {soldier.Name}: Gained 50 EXP\n";
+                        soldier.GainExp(totalEnemyExp);  // 士兵获得经验
+                        soldierExpDetails += $"- {soldier.Name}: Gained {totalEnemyExp} EXP\n";
                     }
                 });
 
@@ -565,6 +569,8 @@ namespace Assets.Scripts.Controller
                     command.Parameters.AddWithValue("@rewardResourceId", mission.rewardResourceId);
                     command.ExecuteNonQuery();
                 }
+
+                Game.Instance.SaveGameData();
 
                 connection.Close();
             }

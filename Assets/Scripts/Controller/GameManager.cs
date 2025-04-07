@@ -59,8 +59,7 @@ namespace Assets.Scripts.Controller
         public void LoadGameState(GameState newState)
         {
             currentState = newState;
-            AudioManager.Instance.PlaySound("Select");
-
+            if (newState != GameState.WelcomePage) AudioManager.Instance.PlaySound("Select");
 
             switch (newState)
             {

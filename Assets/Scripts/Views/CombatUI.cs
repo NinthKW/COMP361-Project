@@ -542,7 +542,6 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
     void OnCharacterClicked(Character character)
     {
-        // TODO: Increase attack changes, level, etc. to test abilities
         if (isAttackExecuting) return;
         if (character.IsDead()) return;
 
@@ -688,6 +687,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         
         isAttackExecuting = false;
         UpdateCombatState();
+        CheckTurnEnd();
     }
 
     IEnumerator ExecuteEnemyTurn()
@@ -972,9 +972,6 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     #region Combat Events
     void OnCombatEnd(bool victory)
     {
-        // TODO: Handle combat end logic (e.g., show results, update game state)
-        // TODO: add autosave?
-        // TODO: add mission success/fail page
         DisableAllControls();
         ShowEndMessage(victory);
         if (victory == false){

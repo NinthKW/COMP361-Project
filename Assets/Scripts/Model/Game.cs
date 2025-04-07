@@ -652,5 +652,18 @@ namespace Assets.Scripts.Model
                 connection.Close();
             }
         }
+
+        public List<Soldier> GetSoldiers()
+        {
+            List<Soldier> soldiers = new ();
+            foreach (var character in this.soldiersData)
+            {
+                if (character is Soldier soldier)
+                {
+                    soldiers.Add(soldier);
+                }
+            }
+            return soldiers;
+        }
     }
 }
