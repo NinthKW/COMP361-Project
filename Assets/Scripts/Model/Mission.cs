@@ -19,9 +19,19 @@ namespace Assets.Scripts.Model
         public bool isCompleted;
         public bool unlocked;
 
+        // Terrain Effects
+        public int terrainAtkEffect;
+        public int terrainDefEffect;
+        public int terrainHpEffect;
+
+        // Weather Effects
+        public int weatherAtkEffect;
+        public int weatherDefEffect;
+        public int weatherHpEffect;
+
         public List<Enemy> AssignedEnemies;  //enemy info
 
-        public Mission(int id, string name, string description, int difficulty, int rewardMoney, int rewardAmount, int rewardResourceId, string terrain, string weather, bool isCompleted)
+        public Mission(int id, string name, string description, int difficulty, int rewardMoney, int rewardAmount, int rewardResourceId, string terrain, string weather, bool unlocked, bool isCompleted)
         {
             this.id = id;
             this.name = name;
@@ -32,8 +42,24 @@ namespace Assets.Scripts.Model
             this.rewardResourceId = rewardResourceId;
             this.terrain = terrain;
             this.weather = weather;
+            this.unlocked = unlocked;
             this.isCompleted = isCompleted;
             this.AssignedEnemies = new List<Enemy>();
         }
+
+        public void SetTerrainEffects(int atkEffect, int defEffect, int hpEffect)
+        {
+            this.terrainAtkEffect = atkEffect;
+            this.terrainDefEffect = defEffect;
+            this.terrainHpEffect = hpEffect;
+        }
+
+        public void SetWeatherEffects(int atkEffect, int defEffect, int hpEffect)
+        {
+            this.weatherAtkEffect = atkEffect;
+            this.weatherDefEffect = defEffect;
+            this.weatherHpEffect = hpEffect;
+        }
+
     }
 }

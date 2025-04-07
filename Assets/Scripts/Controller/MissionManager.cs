@@ -12,7 +12,6 @@ namespace Assets.Scripts.Controller
         public static MissionManager Instance;
         public List<Mission> missions = new List<Mission>();
 
-        // 数据库文件名
         private string dbPath;
 
         void Awake()
@@ -22,7 +21,6 @@ namespace Assets.Scripts.Controller
                 Instance = this;
                 DontDestroyOnLoad(gameObject);
 
-                // 这里是重点：StreamingAssets 路径
                 dbPath = "URI=file:" + Application.streamingAssetsPath + "/database.db";
                 Debug.Log("Database path: " + dbPath);
             }
@@ -66,6 +64,46 @@ namespace Assets.Scripts.Controller
                             string terrain = reader.GetString(7);   
                             string weather = reader.GetString(8);   
                             bool unlocked = reader.GetBoolean(9);
+                            bool isCompleted = reader.GetBoolean(10);
+
+                            // 加载 Terrain 和 Weather 效果
+                            int terrainAtkEffect = 0;
+                            int terrainDefEffect = 0;
+                            int terrainHpEffect = 0;
+
+                            int weatherAtkEffect = 0;
+                            int weatherDefEffect = 0;
+                            int weatherHpEffect = 0;
+
+                            // 读取 Terrain 效果
+                            using (var terrainCommand = connection.CreateCommand())
+                            {
+                                terrainCommand.CommandText = $"SELECT atk_effect, def_effect, hp_effect FROM Terrain WHERE name = '{terrain}';";
+                                using (IDataReader terrainReader = terrainCommand.ExecuteReader())
+                                {
+                                    if (terrainReader.Read())
+                                    {
+                                        terrainAtkEffect += terrainReader.GetInt32(0);
+                                        terrainDefEffect += terrainReader.GetInt32(1);
+                                        terrainHpEffect += terrainReader.GetInt32(2);
+                                    }
+                                }
+                            }
+
+                            // 读取 Weather 效果
+                            using (var weatherCommand = connection.CreateCommand())
+                            {
+                                weatherCommand.CommandText = $"SELECT atk_effect, def_effect, hp_effect FROM Weather WHERE name = '{weather}';";
+                                using (IDataReader weatherReader = weatherCommand.ExecuteReader())
+                                {
+                                    if (weatherReader.Read())
+                                    {
+                                        weatherAtkEffect += weatherReader.GetInt32(0);
+                                        weatherDefEffect += weatherReader.GetInt32(1);
+                                        weatherHpEffect += weatherReader.GetInt32(2);
+                                    }
+                                }
+                            }
 
                             // 创建 Mission 对象
                             Mission mission = new Mission(
@@ -78,8 +116,12 @@ namespace Assets.Scripts.Controller
                                 rewardResourceId,
                                 terrain,
                                 weather,
-                                unlocked
+                                unlocked,
+                                isCompleted
                             );
+
+                            mission.SetTerrainEffects(terrainAtkEffect, terrainDefEffect, terrainHpEffect);
+                            mission.SetWeatherEffects(weatherAtkEffect, weatherDefEffect, weatherHpEffect);
 
                             LoadMissionEnemiesFromDatabase(mission);
 
@@ -115,7 +157,8 @@ namespace Assets.Scripts.Controller
                     ENEMY_TYPES.et_name,
                     ENEMY_TYPES.HP,
                     ENEMY_TYPES.base_ATK,
-                    ENEMY_TYPES.base_DPS
+                    ENEMY_TYPES.base_DPS,
+                    ENEMY_TYPES.exp_reward
                 FROM MISSION_ENEMY
                 INNER JOIN ENEMY_TYPES ON MISSION_ENEMY.et_id = ENEMY_TYPES.et_ID
                 WHERE MISSION_ENEMY.mission_id = @missionId;
@@ -132,11 +175,12 @@ namespace Assets.Scripts.Controller
                             int hp = reader.GetInt32(3);
                             int attack = reader.GetInt32(4);
                             int dps = reader.GetInt32(5);
+                            int exp_reward = reader.GetInt32(6); // 经验奖励
                             int maxHealth = hp; // 假设最大生命值等于当前生命值
 
                             for (int i = 0; i < count; i++)
                             {
-                                var enemy = new Enemy(name, hp, attack, dps, maxHealth, 1, 10); // TODO: add level and exp to database
+                                var enemy = new Enemy(name, hp, attack, dps, maxHealth, 1, exp_reward); 
                                 mission.AssignedEnemies.Add(enemy);
                             }
 

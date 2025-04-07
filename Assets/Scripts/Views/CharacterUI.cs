@@ -14,6 +14,7 @@ public class CharacterUI : MonoBehaviour
     public TMP_Text atkText;
     public TMP_Text defText;
     public GameObject exhaustedOverlay;
+    public GameObject buffPanel;
 
     private Character _character;
 
@@ -47,17 +48,34 @@ public class CharacterUI : MonoBehaviour
         atkText.text = (_character.Atk.ToString()); 
         defText.text =(_character.Def.ToString());
 
-
         UpdateState(false, false, isAlly, false);
     }
 
     public void UpdateState(bool isSelected, bool isExhausted, bool isAlly, bool isDead)
     {
         healthBar.value = (float)_character.Health / (_character.MaxHealth + _character.Shield);
+        healthBar.maxValue = 1f;
+        healthBar.minValue = 0f;
         healthBar.fillRect.GetComponent<Image>().color = isAlly ? _allyImageColor : _enemyImageColor;
         healthBar.fillRect.GetComponent<Image>().color = new Color(healthBar.fillRect.GetComponent<Image>().color.r, healthBar.fillRect.GetComponent<Image>().color.g, healthBar.fillRect.GetComponent<Image>().color.b, 0.5f);
         
         attackChanceText.text = $"{_character.AttackChances}/{_character.MaxAttacksPerTurn}";
+        foreach (Transform child in buffPanel.transform)
+        {
+            Destroy(child.gameObject);
+        }
+        foreach (var buffPair in _character.Buffs)
+        {
+            GameObject buffTextObj = new GameObject("BuffText");
+            buffTextObj.transform.SetParent(buffPanel.transform);
+            buffTextObj.transform.localScale = Vector3.one;
+            TextMeshProUGUI buffText = buffTextObj.AddComponent<TextMeshProUGUI>();
+            // Assuming each buff has Name and Duration properties
+            buffText.text = $"{buffPair.Value.Name} ({buffPair.Value.Duration} rounds)";
+            buffText.fontSize = 18;
+            buffText.color = isAlly ? _allyTextColor : _enemyTextColor;
+            buffText.font = UnityEngine.Resources.Load<TMP_FontAsset>("Assets/TextMesh Pro/Examples & Extras/Resources/Fonts & Materials/Electronic Highway Sign SDF.asset"); // Load your font here
+        }
         
         exhaustedOverlay.SetActive(isExhausted || isDead);
         // Get the base color based on whether it's an ally

@@ -4,32 +4,228 @@ using UnityEngine;
 using Assets.Scripts.Model;
 using System.Data;
 using Mono.Data.Sqlite;
+using Assets.Scripts.Controller;
 
 namespace Assets.Scripts.Model
 {
     [System.Serializable]
     public class Game
     {
+        public static Game Instance;
         public Resources resourcesData;
         public List<Mission> MissionsData;
         public List<Character> soldiersData;
         public List<Base> basesData;
         public Tech techData;
+        public Inventory inventory;
 
         public int maxSoldier;
 
         public Game()
         {
+            Instance = this;
+            // Resources
             this.resourcesData = new Resources();
             this.MissionsData = new List<Mission>();
             this.soldiersData = new List<Character>();
-            this.basesData = new List<Base>(); //list of buildings
-            //this.basesData.Add(new Base(0, "Main Base", "Default main base", 1, 0, 0, 0, true, false, 0, 0));  //i comment this out for now cuz the base class is each building
+            this.basesData = new List<Base>();
             this.techData = new Tech();
+            this.inventory = new Inventory();
+
+            maxSoldier = 5;
+            
+            string dbPath = "URI=file:" + Application.streamingAssetsPath + "/database.db";
+            // Bases
+            using (var connection = new SqliteConnection(dbPath))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT building_id, name, description, level, cost, resource_amount, resource_type, x, y FROM Infrastructure ORDER BY building_id ASC;";
+                    using (IDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int building_id = int.Parse(reader["building_id"].ToString());
+                            string name = reader["name"].ToString();
+                            string description = reader["description"].ToString();
+                            int level = int.Parse(reader["level"].ToString());
+                            int cost = int.Parse(reader["cost"].ToString());
+                            int resource_amount = int.Parse(reader["resource_amount"].ToString());
+                            int resource_type = int.Parse(reader["resource_type"].ToString());
+                            int x = int.Parse(reader["x"].ToString());
+                            int y = int.Parse(reader["y"].ToString());
+                            
+                            // For a new game, all bases start locked and not placed.
+                            this.basesData.Add(new Base(building_id, name, description, level, cost, resource_amount, resource_type, false, false, x, y));
+                        }
+                    }
+                }
+                connection.Close();
+            }
+            
+            foreach (Base building in this.basesData) {
+                if (building.name.ToLower().Equals("barracks"))
+                {
+                    if (building.placed)
+                    {
+                        maxSoldier += 1;
+                    }
+                }
+            }
+
+            // Missions
+            using (var connection = new SqliteConnection(dbPath))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT mission_id, name, description, difficulty, reward_money, reward_amount, reward_resource, terrain, weather FROM Mission ORDER BY mission_id ASC;";
+                    using (IDataReader reader = command.ExecuteReader())
+                    {
+                        bool isFirstMission = true;
+                        while (reader.Read())
+                        {
+                            int id = int.Parse(reader["mission_id"].ToString());
+                            string name = reader["name"].ToString();
+                            string description = reader["description"].ToString();
+                            int difficulty = int.Parse(reader["difficulty"].ToString());
+                            int rewardMoney = int.Parse(reader["reward_money"].ToString());
+                            int rewardAmount = int.Parse(reader["reward_amount"].ToString());
+                            int rewardResourceId = int.Parse(reader["reward_resource"].ToString());
+                            string terrain = reader["terrain"].ToString();
+                            string weather = reader["weather"].ToString();
+                            bool isCompleted = false;
+                            bool unlocked = isFirstMission;
+                            Mission mission = new Mission(id, name, description, difficulty, rewardMoney, rewardAmount, rewardResourceId, terrain, weather, unlocked, isCompleted);
+                            
+                            
+                            
+                            this.MissionsData.Add(mission);
+                            isFirstMission = false;
+                        }
+                    }
+                }
+                connection.Close();
+            }
+
+            using (var connection = new SqliteConnection(dbPath))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT * FROM Soldier ORDER BY soldier_id ASC;";
+                    using (IDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int soldierId = int.Parse(reader["soldier_id"].ToString());
+                            string name = reader["name"].ToString();
+                            // Override soldier level to 1 for a new game.
+                            int level = 1;
+                            int health = int.Parse(reader["hp"].ToString());
+                            int maxHealth = int.Parse(reader["max_hp"].ToString());
+                            int attack = int.Parse(reader["atk"].ToString());
+                            int defense = int.Parse(reader["def"].ToString());
+                            string roleName = reader["role"].ToString();
+                            
+                            Role role = new Role(roleName);
+                            Soldier soldier = new Soldier(name, role, level, health, attack, defense, maxHealth);
+                            this.soldiersData.Add(soldier);
+                        }
+                    }
+                }
+                connection.Close();
+            }
+
+            using (var connection = new SqliteConnection(dbPath))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT tech_id, tech_name, description, cost_money, cost_resources_id, cost_resources_amount FROM TECHNOLOGY LIMIT 1;";
+                    using (IDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            int techId = int.Parse(reader["tech_id"].ToString());
+                            string techName = reader["tech_name"].ToString();
+                            string description = reader["description"].ToString();
+                            float costMoney = float.Parse(reader["cost_money"].ToString());
+                            int costResourceId = int.Parse(reader["cost_resources_id"].ToString());
+                            int costResourceAmount = int.Parse(reader["cost_resources_amount"].ToString());
+                            
+                            Tech tech = new Tech(techId, techName, description, costMoney, costResourceId, costResourceAmount);
+                            tech.isUnlocked = false;
+                            this.techData = tech;
+                        }
+                    }
+                }
+                connection.Close();
+            }
+
+            // weapons
+            using (var connection = new SqliteConnection(dbPath))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT weapon_id, name, description, damage, cost, resource_amount, resource_type FROM Weapon;";
+                    using (IDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int id = int.Parse(reader["weapon_id"].ToString());
+                            string name = reader["name"].ToString();
+                            string description = reader["description"].ToString();
+                            int damage = int.Parse(reader["damage"].ToString());
+                            int cost = int.Parse(reader["cost"].ToString());
+                            int resourceAmount = int.Parse(reader["resource_amount"].ToString());
+                            int resourceType = int.Parse(reader["resource_type"].ToString());
+
+                            // Create a new weapon and add it to the inventory.
+                            Weapon weapon = new Weapon(id, name, description, damage, cost, resourceAmount, resourceType);
+                            inventory.AddWeapon(weapon);
+                        }
+                    }
+                }
+                connection.Close();
+            }
+
+            // equipments
+            using (var connection = new SqliteConnection(dbPath))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT equipment_id, name, hp, def, atk, cost, resource_amount, resource_type FROM Equipment;";
+                    using (IDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int id = int.Parse(reader["equipment_id"].ToString());
+                            string name = reader["name"].ToString();
+                            int hp = int.Parse(reader["hp"].ToString());
+                            int def = int.Parse(reader["def"].ToString());
+                            int atk = int.Parse(reader["atk"].ToString());
+                            int cost = int.Parse(reader["cost"].ToString());
+                            int resourceAmount = int.Parse(reader["resource_amount"].ToString());
+                            int resourceType = int.Parse(reader["resource_type"].ToString());
+
+                            // Creates a new equipment item and add it to the inventory
+                            Equipment equipment = new Equipment(id, name, hp, def, atk, cost, resourceAmount, resourceType);
+                            inventory.AddEquipment(equipment);
+                        }
+                    }
+                }
+                connection.Close();
+            }
         }
 
-        public Game(string dbName)
+
+        public Game(string dbPath)
         {
+            Instance = this;
             //Set default maxSoldier
             maxSoldier = 5;
 
@@ -42,7 +238,7 @@ namespace Assets.Scripts.Model
             int medicine = 0;
 
             // resources
-            using (var connection = new SqliteConnection(dbName))
+            using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
                 using (var command = connection.CreateCommand())
@@ -91,7 +287,7 @@ namespace Assets.Scripts.Model
 
             // Bases
             this.basesData = new List<Base>();
-            using (var connection = new SqliteConnection(dbName))
+            using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
                 using (var command = connection.CreateCommand())
@@ -120,6 +316,7 @@ namespace Assets.Scripts.Model
                 }
                 connection.Close();
             }
+            BaseManager.Instance.buildingList = basesData;
 
             //Initialize maxSoldier
             foreach (Base building in this.basesData) {
@@ -135,7 +332,7 @@ namespace Assets.Scripts.Model
 
             // Missions
             this.MissionsData = new List<Mission>();
-            using (var connection = new SqliteConnection(dbName))
+            using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
                 using (var command = connection.CreateCommand())
@@ -155,8 +352,9 @@ namespace Assets.Scripts.Model
                             string terrain = reader["terrain"].ToString();
                             string weather = reader["weather"].ToString();
                             bool isUnlocked = bool.Parse(reader["unlocked"].ToString());
+                            bool isCompleted = bool.Parse(reader["cleared"].ToString());
 
-                            Mission mission = new Mission(id, name, description, difficulty, rewardMoney, rewardAmount, rewardResourceId, terrain, weather, isUnlocked);
+                            Mission mission = new Mission(id, name, description, difficulty, rewardMoney, rewardAmount, rewardResourceId, terrain, weather, isUnlocked, isCompleted);
                             this.MissionsData.Add(mission);
                         }
                         reader.Close();
@@ -167,7 +365,7 @@ namespace Assets.Scripts.Model
 
             // Soldiers
             this.soldiersData = new List<Character>();
-            using (var connection = new SqliteConnection(dbName))
+            using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
                 using (var command = connection.CreateCommand())
@@ -195,9 +393,11 @@ namespace Assets.Scripts.Model
                 }
                 connection.Close();
             }
+            HospitalManager.Instance.soldiers = soldiersData;
+            TrainingManager.Instance.soldiers = soldiersData;
 
             // tech
-            using (var connection = new SqliteConnection(dbName))
+            using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
                 using (var command = connection.CreateCommand())
@@ -224,14 +424,72 @@ namespace Assets.Scripts.Model
                 }
                 connection.Close();
             }
+
+            this.inventory = new Inventory();
+             // weapons
+            using (var connection = new SqliteConnection(dbPath))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT weapon_id, name, description, damage, cost, resource_amount, resource_type FROM Weapon;";
+                    using (IDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int id = int.Parse(reader["weapon_id"].ToString());
+                            string name = reader["name"].ToString();
+                            string description = reader["description"].ToString();
+                            int damage = int.Parse(reader["damage"].ToString());
+                            int cost = int.Parse(reader["cost"].ToString());
+                            int resourceAmount = int.Parse(reader["resource_amount"].ToString());
+                            int resourceType = int.Parse(reader["resource_type"].ToString());
+
+                            // Create a new weapon and add it to the inventory.
+                            Weapon weapon = new Weapon(id, name, description, damage, cost, resourceAmount, resourceType);
+                            inventory.AddWeapon(weapon);
+                        }
+                    }
+                }
+                connection.Close();
+            }
+
+            // equipments
+            using (var connection = new SqliteConnection(dbPath))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT equipment_id, name, hp, def, atk, cost, resource_amount, resource_type FROM Equipment;";
+                    using (IDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int id = int.Parse(reader["equipment_id"].ToString());
+                            string name = reader["name"].ToString();
+                            int hp = int.Parse(reader["hp"].ToString());
+                            int def = int.Parse(reader["def"].ToString());
+                            int atk = int.Parse(reader["atk"].ToString());
+                            int cost = int.Parse(reader["cost"].ToString());
+                            int resourceAmount = int.Parse(reader["resource_amount"].ToString());
+                            int resourceType = int.Parse(reader["resource_type"].ToString());
+
+                            // Creates a new equipment item and add it to the inventory
+                            Equipment equipment = new Equipment(id, name, hp, def, atk, cost, resourceAmount, resourceType);
+                            inventory.AddEquipment(equipment);
+                        }
+                    }
+                }
+                connection.Close();
+            }
         }
 
         public void SaveGameData()
         {
-            string dbName = "URI=file:" + Application.persistentDataPath + "/game.db";
+            string dbPath = "URI=file:" + Application.streamingAssetsPath + "/database.db";
 
             // resources
-            using (var connection = new SqliteConnection(dbName))
+            using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
                 using (var command = connection.CreateCommand())
@@ -247,7 +505,7 @@ namespace Assets.Scripts.Model
             }
 
             // bases
-            using (var connection = new SqliteConnection(dbName))
+            using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
                 List<int> buildingIds = new List<int>();
@@ -277,7 +535,10 @@ namespace Assets.Scripts.Model
                                 "cost = @cost, " +
                                 "resource_amount = @resource_amount, " +
                                 "resource_type = @resource_type, " +
-                                "unlocked = @unlocked " +
+                                "unlocked = @unlocked, " +
+                                "placed = @placed, " + 
+                                "x = @x, " +
+                                "y = @y " + 
                                 "WHERE building_id = @building_id;";
                             command.Parameters.Add(new SqliteParameter("@name", b.name));
                             command.Parameters.Add(new SqliteParameter("@description", b.description));
@@ -286,6 +547,9 @@ namespace Assets.Scripts.Model
                             command.Parameters.Add(new SqliteParameter("@resource_amount", b.resource_amount));
                             command.Parameters.Add(new SqliteParameter("@resource_type", b.resource_type));
                             command.Parameters.Add(new SqliteParameter("@unlocked", b.unlocked ? 1 : 0));
+                            command.Parameters.Add(new SqliteParameter("@unlocked", b.placed ? 1 : 0));
+                            command.Parameters.Add(new SqliteParameter("@cost", b.x));
+                            command.Parameters.Add(new SqliteParameter("@cost", b.y));
                             command.Parameters.Add(new SqliteParameter("@building_id", b.building_id));
                             command.ExecuteNonQuery();
                         }
@@ -295,7 +559,7 @@ namespace Assets.Scripts.Model
             }
 
             // missions
-            using (var connection = new SqliteConnection(dbName))
+            using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
                 foreach (var mission in this.MissionsData)
@@ -330,7 +594,7 @@ namespace Assets.Scripts.Model
             }
 
             // soldiers
-            using (var connection = new SqliteConnection(dbName))
+            using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
                 foreach (var character in this.soldiersData)
@@ -363,7 +627,7 @@ namespace Assets.Scripts.Model
             }
 
             // Tech
-            using (var connection = new SqliteConnection(dbName))
+            using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
                 using (var command = connection.CreateCommand())

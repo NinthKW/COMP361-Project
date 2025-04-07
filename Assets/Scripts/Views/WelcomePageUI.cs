@@ -12,11 +12,20 @@ public class WelcomePageUI : MonoBehaviour // Fardin
     public Button loadGameButton;
     public Button quitButton;
 
+    public Button temp;
+
     void Start()
     {
         newGameButton.onClick.AddListener(ClickedNewGame);
         loadGameButton.onClick.AddListener(ClickedLoadGame);
         quitButton.onClick.AddListener(ClickedQuit);
+        temp.onClick.AddListener(tempFunction);
+    }
+
+    void tempFunction()
+    {
+        GameManager.Instance.LoadGame();
+        GameManager.Instance.LoadGameState(GameState.TrainingPage);
     }
 
     void ClickedNewGame()

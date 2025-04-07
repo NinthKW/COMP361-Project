@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Assets.Scripts.Model;
+using System;
 
 namespace Assets.Scripts.Controller 
 {
@@ -24,6 +25,11 @@ namespace Assets.Scripts.Controller
             {
                 Destroy(gameObject);
             }
+
+            // if (AudioManager.Instance == null)
+            // {
+            //     AudioManager.Instance = gameObject.AddComponent<AudioManager>();
+            // }
             //// Initialize combat manager to sleep state when game starts
             //if (CombatManager.Instance.gameObject.activeSelf)
             //{
@@ -53,10 +59,13 @@ namespace Assets.Scripts.Controller
         public void LoadGameState(GameState newState)
         {
             currentState = newState;
+            AudioManager.Instance.PlaySound("Select");
+
 
             switch (newState)
             {
                 case GameState.WelcomePage:
+                    AudioManager.Instance.PlayMusic("Menu");
                     SceneManager.LoadScene("WelcomePage");
                     break;
                 case GameState.MainMenuPage:
@@ -78,10 +87,21 @@ namespace Assets.Scripts.Controller
                     SceneManager.LoadScene("InventoryPage");
                     break;
                 case GameState.CombatPage:
+                    AudioManager.Instance.PlayMusic("Battle2");
                     SceneManager.LoadScene("CombatPage");
                     break;
                 case GameState.MissionPreparationPage:
+                    AudioManager.Instance.PlayMusic("Battle1");
                     SceneManager.LoadScene("MissionPrepPageUI");
+                    break;
+                case GameState.HospitalPage:
+                    SceneManager.LoadScene("HospitalPage");
+                    break;
+                case GameState.CombatResultPage:
+                    SceneManager.LoadScene("CombatResultPage");
+                    break;
+                case GameState.TrainingPage:
+                    SceneManager.LoadScene("TrainingPage");
                     break;
             }
 
@@ -95,10 +115,8 @@ namespace Assets.Scripts.Controller
         }
         public void LoadGame()
         {
-            // Define the database connection string.
             string dbPath = "URI=file:" + Application.streamingAssetsPath + "/database.db";
     
-            // Create a new game instance using the constructor that loads data from the database.
             currentGame = new Game(dbPath);
             Debug.Log("Game loaded from database: " + dbPath);
 
@@ -108,10 +126,8 @@ namespace Assets.Scripts.Controller
         {
             if (currentGame != null)
             {
-            // Assuming you add a SaveGameData method in your Game class,
-            // call it to save all game data to the database.
-            currentGame.SaveGameData();
-            Debug.Log("Game saved to database.");
+                currentGame.SaveGameData();
+                Debug.Log("Game saved to database.");
             }
             else
             {
