@@ -165,22 +165,31 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
     void CreateEnemyCards()
     {
-        int midX = (Screen.width / 2) + 110;
-        int midY = Screen.height / 2;
-        
-        // Adjust these values until the spacing feels right.
-        float horizontalOffset = 70f;   // Increase if enemies are too close horizontally.
-        float verticalSpacing = 70f;    // Increase if enemies are too close vertically.
-        
-        enemyPositions = new List<Vector3>
-        {
-            new Vector3(midX - horizontalOffset, midY + verticalSpacing * 2, 0),
-            new Vector3(midX + horizontalOffset, midY + verticalSpacing, 0),
-            new Vector3(midX - horizontalOffset, midY, 0),
-            new Vector3(midX + horizontalOffset, midY - verticalSpacing, 0),
-            new Vector3(midX - horizontalOffset, midY - verticalSpacing * 2, 0),
-            new Vector3(midX + horizontalOffset * 2, midY, 0)
-        };
+    int midX = (Screen.width / 2) + 150;
+    int midY = Screen.height / 2;
+    
+    // Base values for spacing
+    float horizontalOffset = 90f;
+    float verticalSpacing = 120f;
+    
+    // Extra adjustments for moving the formation further right and increasing spacing
+    float extraRightShift = 80f;       // Additional shift to the right
+    float spacingMultiplier = 1.2f;      // Increase spacing by 20%
+
+    enemyPositions = new List<Vector3>
+    {
+        // Column 1 (left-most tip): shift right by extraRightShift
+        new Vector3(midX - 2 * horizontalOffset + extraRightShift, midY, 0),
+
+        // Column 2 (middle column: 2 enemies, spaced vertically with multiplier)
+        new Vector3(midX - horizontalOffset + extraRightShift, midY + (verticalSpacing * spacingMultiplier) / 2, 0),
+        new Vector3(midX - horizontalOffset + extraRightShift, midY - (verticalSpacing * spacingMultiplier) / 2, 0),
+
+        // Column 3 (right column: 3 enemies, evenly spaced vertically)
+        new Vector3(midX + extraRightShift, midY + verticalSpacing * spacingMultiplier, 0),
+        new Vector3(midX + extraRightShift, midY, 0),
+        new Vector3(midX + extraRightShift, midY - verticalSpacing * spacingMultiplier, 0)
+    };
 
         foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
         {

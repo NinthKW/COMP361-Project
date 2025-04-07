@@ -43,8 +43,30 @@ public class CharacterCard : MonoBehaviour
             Debug.LogWarning("No sprite found for role: " + roleName);
         }
     }
-    
-    UpdateVisuals();
+     else if (Character is Enemy enemy)
+    {
+        // Use the enemy's name to try to load a specific sprite.
+        string enemyName = enemy.Name;  // Ensure your Enemy class has a Name property.
+        Sprite enemySprite = UnityEngine.Resources.Load<Sprite>(enemyName);
+        if (enemySprite != null)
+        {
+            roleImage.sprite = enemySprite;
+        }
+        else
+        {
+            // Fallback: load a default enemy sprite.
+            enemySprite = UnityEngine.Resources.Load<Sprite>("enemydefault");
+            if (enemySprite != null)
+            {
+                roleImage.sprite = enemySprite;
+            }
+            else
+            {
+                Debug.LogWarning("No sprite found for enemy: " + enemyName);
+            }
+        }
+    }
+   
         UpdateVisuals();
     }
 
