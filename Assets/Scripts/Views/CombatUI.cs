@@ -966,7 +966,9 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         // TODO: add mission success/fail page
         DisableAllControls();
         ShowEndMessage(victory);
-        CombatManager.Instance.SaveCombatResult(victory);
+        if (victory == false){
+            CombatManager.Instance.SaveCombatResults(victory, "");
+        }
         StartCoroutine(ReturnToBaseAfterDelay(3f));
     }
 

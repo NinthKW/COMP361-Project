@@ -505,13 +505,21 @@ namespace Assets.Scripts.Controller
             {
                 ApplyMissionRewards(currentMission);  // 调用奖励分发函数
 
+                string soldierExpDetails = "";
                 _inBattleSoldiers.ForEach(c => {
-                    if (c is Soldier soldier) soldier.GainExp(50);
+                    if (c is Soldier soldier) 
+                    {
+                        soldier.GainExp(50);  // 士兵获得经验
+                        soldierExpDetails += $"- {soldier.Name}: Gained 50 EXP\n";
+                    }
                 });
+
+                SaveCombatResults(true, soldierExpDetails);
             }
-            
-            // Save combat result
-            SaveCombatResult(victory);
+            else
+            {
+                SaveCombatResults(false, "");
+            }
 
             OnCombatEnd?.Invoke(victory);
             CleanupCombat();
@@ -562,10 +570,45 @@ namespace Assets.Scripts.Controller
             Debug.Log($"Rewards applied successfully: Money +{mission.rewardMoney}, Resource ID {mission.rewardResourceId} +{mission.rewardAmount}");
         }
 
-        public void SaveCombatResult(bool victory)
+
+        public void SaveCombatResults(bool victory, string soldierExpDetails)
         {
             PlayerPrefs.SetInt("CombatResult", victory ? 1 : 0);
-            PlayerPrefs.SetInt("MissionID", currentMission.id);
+
+            if (victory)
+            {
+                string resourceName = GetResourceNameById(currentMission.rewardResourceId);
+                string rewardDetails = $"Rewards:\n" +
+                    $"- Money: {currentMission.rewardMoney}\n" +
+                    $"- Resource: {resourceName} +{currentMission.rewardAmount}\n";
+                
+                PlayerPrefs.SetString("RewardDetails", rewardDetails);
+                PlayerPrefs.SetString("SoldierExpDetails", soldierExpDetails);
+            }
+        }
+
+        public string GetResourceNameById(int resourceId)
+        {
+            using (var connection = new SqliteConnection(dbPath))
+            {
+                connection.Open();
+
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT name FROM Resource WHERE resource_id = @id";
+                    command.Parameters.AddWithValue("@id", resourceId);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return reader.GetString(0);
+                        }
+                    }
+                }
+            }
+
+            return "Unknown Resource";
         }
 
         private void CleanupCombat()

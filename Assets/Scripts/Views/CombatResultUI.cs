@@ -17,32 +17,35 @@ public class CombatResultUI : MonoBehaviour
 
     private void Start()
     {
-        int missionId = PlayerPrefs.GetInt("MissionID", 0);
+        // 读取战斗结果
         bool victory = PlayerPrefs.GetInt("CombatResult", 0) == 1;
 
+        // 显示战斗结果信息
         if (victory)
         {
             resultText.text = "Mission Success!";
-            rewardText.text = "You have earned rewards!";
+            resultText.color = Color.green;
 
+            // 显示奖励信息
+            string rewardDetails = PlayerPrefs.GetString("RewardDetails", "No Rewards Found.");
+            rewardText.text = rewardDetails;
+
+            // 显示士兵经验信息
             soldierExpText.text = "Soldiers' Experience Gained:\n";
-            foreach (var soldier in CombatManager.Instance.GetAvailableSoldiers())
-            {
-                if (soldier != null)
-                {
-                    soldierExpText.text += $"- {soldier.Name}: Gained 50 EXP\n";
-                }
-            }
+            string soldierExpDetails = PlayerPrefs.GetString("SoldierExpDetails", "No Soldiers Found.");
+            soldierExpText.text += soldierExpDetails;
         }
         else
         {
             resultText.text = "Mission Failed!";
+            resultText.color = Color.red;
             rewardText.text = "Take care of your soldiers!";
+            soldierExpText.text = "";
         }
-
 
         backToMissionButton.onClick.AddListener(backToMissionButtonClicked);
     }
+
 
     void backToMissionButtonClicked()
     {
