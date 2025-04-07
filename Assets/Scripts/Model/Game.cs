@@ -73,7 +73,7 @@ namespace Assets.Scripts.Model
                     }
                 }
             }
-            BaseManager.Instance.buildingList = this.basesData;
+            // BaseManager.Instance.buildingList = this.basesData;
 
 
             // Missions
