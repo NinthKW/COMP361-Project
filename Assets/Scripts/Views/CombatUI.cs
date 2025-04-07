@@ -285,6 +285,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             }
             
             // Execute ability logic
+            AudioManager.Instance.PlaySound(selectedAbility.Name);
             if (!selectedAbility.Activate(targets)) Debug.LogError("Ability activation failed.");
             else 
             {
@@ -370,7 +371,8 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         UpdateCombatLog($"{attacker.Name} attacks {target.Name}!");
         
         attacker.AttackChances--;
-        
+        AudioManager.Instance.PlaySound("Attack");
+
         yield return StartCoroutine(PlayAttackAnimation(attacker, target, attacker.GetAttackAmount(target)));
         PostAttackCleanup();
         
@@ -424,12 +426,19 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             return;
         }
 
-        // Create a new TextMeshProUGUI object
+        // Calculate effective damage considering defense
+        int reducedDamage = Mathf.Max(0, damage - target.Def);
+
+        if (reducedDamage <= 0) reducedDamage = 1; // Ensure minimum damage of 1
+
+        Debug.Log($"Damage: {damage}, Defense: {target.Def}, Reduced Damage: {reducedDamage}");
+
+        // Create Damage Text
         GameObject damageTextObj = new GameObject("DamageText");
         damageTextObj.transform.SetParent(canvas.transform, false);
 
         TextMeshProUGUI textMesh = damageTextObj.AddComponent<TextMeshProUGUI>();
-        textMesh.text = $"-{damage}";
+        textMesh.text = $"-{reducedDamage} HP";
         textMesh.fontSize = 36;
         textMesh.color = Color.red;
         textMesh.alignment = TextAlignmentOptions.Center;
@@ -535,7 +544,9 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     {
         // TODO: Increase attack changes, level, etc. to test abilities
         if (isAttackExecuting) return;
+        if (character.IsDead()) return;
 
+        AudioManager.Instance.PlaySound("Select");
         // If in skill casting mode
         if (selectedAbility != null)
         {
@@ -969,7 +980,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         if (victory == false){
             CombatManager.Instance.SaveCombatResults(victory, "");
         }
-        StartCoroutine(ReturnToBaseAfterDelay(3f));
+        StartCoroutine(ReturnToBaseAfterDelay(1.0f));
     }
 
     void ShowEndMessage(bool victory)

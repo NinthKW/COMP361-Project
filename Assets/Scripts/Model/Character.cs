@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Assets.Scripts.Controller;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
@@ -39,33 +39,37 @@ namespace Assets.Scripts.Model
 
         public virtual void TakeDamage(int damage)
         {
-            damage = Mathf.Max(0, damage);
+            int mitigatedDamage = Mathf.Max(0, damage - Def);  // 根据防御力减少伤害
+            mitigatedDamage = Mathf.Max(1, mitigatedDamage);   // 至少造成1点伤害
+
             if (Shield > 0)
             {
-                if (damage > Shield)
+                if (mitigatedDamage > Shield)
                 {
-                    damage -= Shield;
+                    mitigatedDamage -= Shield;
                     Shield = 0;
                 }
                 else
                 {
-                    Shield -= damage;
-                    damage = 0;
+                    Shield -= mitigatedDamage;
+                    mitigatedDamage = 0;
                 }
             }
-            Health = Mathf.Max(Health - damage, 0);
-            
+
+            Health = Mathf.Max(Health - mitigatedDamage, 0);
+
             if (Health <= 0)
             {
                 HandleDeath();
             }
         }
+    
 
         public virtual void Attack(Character target)
         {
             if (target == null || target.IsDead()) return;
             
-            int finalDamage = CalculateDamage();
+            int finalDamage = CalculateDamage(target);  // 修改此处为传入 target
             Debug.Log($"{Name} attacks {target.Name} with {finalDamage} damage!");
             target.TakeDamage(finalDamage);
         }
@@ -74,11 +78,17 @@ namespace Assets.Scripts.Model
         {
             if (target == null || target.IsDead()) return 0;
 
-            int finalDamage = CalculateDamage();
+            int finalDamage = CalculateDamage(target);  // 修改此处为传入 target
             return finalDamage;
         }
 
-        protected abstract int CalculateDamage();
+        protected virtual int CalculateDamage(Character target)
+        {
+            // 基础伤害 = 攻击者的攻击力 - 目标的防御力
+            int damage = Atk - target.Def;
+            damage = Mathf.Max(1, damage);  // 确保伤害至少为 1
+            return damage;
+        }
 
         public void SetGameObject(GameObject gameObject)
         {
@@ -134,10 +144,11 @@ namespace Assets.Scripts.Model
             MaxAttacksPerTurn = 1;
         }
 
-        protected override int CalculateDamage()
+        protected override int CalculateDamage(Character target)
         {
-            // 可以添加更复杂的伤害计算逻辑（例如暴击、等级修正）
-            return BaseDamage + Level * 2;
+            int damage = BaseDamage + Level * 2 - target.Def;
+            damage = Mathf.Max(1, damage);  // 确保至少造成 1 点伤害
+            return damage;
         }
 
         protected override void HandleDeath(Character killer = null)
@@ -168,11 +179,16 @@ namespace Assets.Scripts.Model
             Def = defense;
         }
 
-        protected override int CalculateDamage()
+        protected override int CalculateDamage(Character target)
         {
             int baseDamage = Atk;  // 基础攻击力
             if (_hasGun) baseDamage += 15;
-            return baseDamage + Level * 3;
+
+            // 根据攻击者与目标的防御力差异计算伤害
+            int damage = baseDamage + Level * 3 - target.Def;
+            damage = Mathf.Max(1, damage);  // 确保至少造成 1 点伤害
+
+            return damage;
         }
 
         public string GetRoleName()
@@ -190,6 +206,7 @@ namespace Assets.Scripts.Model
         {
             if (_experience >= Level * 100)
             {
+                _experience -= Level * 100;
                 Level++;
                 MaxHealth += 10;
                 Health = MaxHealth;
@@ -200,6 +217,7 @@ namespace Assets.Scripts.Model
                     AttackChances++;
                     MaxAttacksPerTurn++;
                 }
+                AudioManager.Instance.PlaySound("LevelUp");
                 UpdateAbilityValues();
                 Debug.Log($"{Name} has leveled up to {Level}!");
             }

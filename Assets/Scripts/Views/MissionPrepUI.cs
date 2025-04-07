@@ -158,7 +158,7 @@ public class MissionPreparationUI : MonoBehaviour
         {
             card.SetSelected(true);
         }
-        
+        AudioManager.Instance.PlaySound("Select");
         soldierInfoPanel.UpdateInfo((Soldier) card.Character);
         UpdateButtonStates();
     }
@@ -178,6 +178,7 @@ public class MissionPreparationUI : MonoBehaviour
         {
             card.SetSelected(true);
         }
+        AudioManager.Instance.PlaySound("Select");
         enemyInfoPanel.UpdateInfo((Enemy) card.Character);
         UpdateButtonStates();
     }
@@ -189,6 +190,7 @@ public class MissionPreparationUI : MonoBehaviour
         if (selectedCharacterCard.Character is Soldier)
         {
             selectedFormationSlot = slot;
+            AudioManager.Instance.PlaySound("Select");
             UpdateButtonStates();
         }
         else
@@ -225,6 +227,7 @@ public class MissionPreparationUI : MonoBehaviour
     {
         slot.AssignSoldier(soldier);
         selectedCharacterCard.SetAssigned(true);
+        AudioManager.Instance.PlaySound("Assign Slot");
     }
 
     public void ReturnSoldierToContainer(Soldier soldier)
