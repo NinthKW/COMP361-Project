@@ -30,6 +30,9 @@ EditorBuildSettings:
     path: Assets/Scenes/BasePage.unity
     guid: f2a6d101e5f52334c8efaae835f7fc61
   - enabled: 1
-    path: Assets/Scenes/InventoryUI.unity
+    path: Assets/Scenes/InventoryPage.unity
     guid: 92cd4f598d41c024a9fd47ce146942b7
+  - enabled: 1
+    path: Assets/Scenes/CombatResultPage.unity
+    guid: c0312611bc43dee4d9fcef7805cc323f
   m_configObjects: {}
