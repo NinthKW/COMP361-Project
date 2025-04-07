@@ -155,14 +155,8 @@ INSERT INTO Resource VALUES
 (1, 'Money', 1000),
 (2, 'Iron', 1000),
 (3, 'Wood', 800),
-(4, 'Gold', 600),
-(5, 'Stone', 900),
-(6, 'Crystal', 500),
-(7, 'Copper', 700),
-(8, 'Silver', 400),
-(9, 'Titanium', 350),
-(10, 'Uranium', 250),
-(11, 'Platinum', 150);
+(4, 'Titanium', 350);
+
 
 -- Insert into Soldier
 INSERT INTO Soldier VALUES

@@ -180,8 +180,10 @@ CREATE TABLE IF NOT EXISTS ENEMY_TYPES (
 -- Insert data (using INSERT OR IGNORE to prevent errors if data already exists)
 INSERT OR IGNORE INTO Resource (resource_id, name, current_amount) VALUES
 (0, 'Food', 1000),
-(1, 'Iron', 1000), (2, 'Wood', 800), (3, 'Gold', 600), (4, 'Stone', 900), (5, 'Crystal', 500),
-(6, 'Copper', 700), (7, 'Silver', 400), (8, 'Titanium', 350), (9, 'Uranium', 250), (10, 'Platinum', 150);
+(1, 'Money', 1000),
+(2, 'Iron', 1000),
+(3, 'Wood', 800),
+(4, 'Titanium', 350);
 
 INSERT OR IGNORE INTO Soldier (soldier_id, name, level, hp, max_hp, atk, def, role) VALUES
 (1, 'John', 10, 100, 100, 20, 15, 'Infantry'),

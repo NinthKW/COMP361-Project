@@ -111,6 +111,7 @@ namespace Assets.Scripts.Model
                 connection.Close();
             }
 
+            //Soldiers
             using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
@@ -142,6 +143,7 @@ namespace Assets.Scripts.Model
                 connection.Close();
             }
 
+            //Tech
             using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
