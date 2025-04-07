@@ -82,27 +82,121 @@ namespace Assets.Scripts.Model
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT mission_id, name, description, difficulty, reward_money, reward_amount, reward_resource, terrain, weather FROM Mission ORDER BY mission_id ASC;";
+                    command.CommandText = "SELECT mission_id, name, description, difficulty, reward_money, reward_amount, reward_resource, terrain, weather, unlocked, cleared FROM Mission ORDER BY mission_id ASC;";
                     using (IDataReader reader = command.ExecuteReader())
                     {
                         bool isFirstMission = true;
                         while (reader.Read())
                         {
-                            int id = int.Parse(reader["mission_id"].ToString());
-                            string name = reader["name"].ToString();
-                            string description = reader["description"].ToString();
-                            int difficulty = int.Parse(reader["difficulty"].ToString());
-                            int rewardMoney = int.Parse(reader["reward_money"].ToString());
-                            int rewardAmount = int.Parse(reader["reward_amount"].ToString());
-                            int rewardResourceId = int.Parse(reader["reward_resource"].ToString());
-                            string terrain = reader["terrain"].ToString();
-                            string weather = reader["weather"].ToString();
-                            bool isCompleted = false;
-                            bool unlocked = isFirstMission;
-                            Mission mission = new Mission(id, name, description, difficulty, rewardMoney, rewardAmount, rewardResourceId, terrain, weather, unlocked, isCompleted);
-                            
-                            
-                            
+                            int id = reader.GetInt32(0);
+                            string name = reader.GetString(1);
+                            string description = reader.GetString(2);
+                            int difficulty = reader.GetInt32(3);
+                            int rewardMoney = reader.GetInt32(4);
+                            int rewardAmount = reader.GetInt32(5);
+                            int rewardResourceId = reader.GetInt32(6);
+                            string terrain = reader.GetString(7);
+                            string weather = reader.GetString(8);
+                            bool unlocked = reader.GetBoolean(9);
+                            bool isclear = reader.GetBoolean(10);
+
+                            // 加载 Terrain 和 Weather 效果
+                            int terrainAtkEffect = 0;
+                            int terrainDefEffect = 0;
+                            int terrainHpEffect = 0;
+
+                            int weatherAtkEffect = 0;
+                            int weatherDefEffect = 0;
+                            int weatherHpEffect = 0;
+
+                            // 读取 Terrain 效果
+                            using (var terrainCommand = connection.CreateCommand())
+                            {
+                                terrainCommand.CommandText = $"SELECT atk_effect, def_effect, hp_effect FROM Terrain WHERE name = '{terrain}';";
+                                using (IDataReader terrainReader = terrainCommand.ExecuteReader())
+                                {
+                                    if (terrainReader.Read())
+                                    {
+                                        terrainAtkEffect = terrainReader.GetInt32(0);
+                                        terrainDefEffect = terrainReader.GetInt32(1);
+                                        terrainHpEffect = terrainReader.GetInt32(2);
+                                    }
+                                }
+                            }
+
+                            // 读取 Weather 效果
+                            using (var weatherCommand = connection.CreateCommand())
+                            {
+                                weatherCommand.CommandText = $"SELECT atk_effect, def_effect, hp_effect FROM Weather WHERE name = '{weather}';";
+                                using (IDataReader weatherReader = weatherCommand.ExecuteReader())
+                                {
+                                    if (weatherReader.Read())
+                                    {
+                                        weatherAtkEffect = weatherReader.GetInt32(0);
+                                        weatherDefEffect = weatherReader.GetInt32(1);
+                                        weatherHpEffect = weatherReader.GetInt32(2);
+                                    }
+                                }
+                            }
+
+                            // 创建 Mission 对象
+                            Mission mission = new Mission(
+                                id,
+                                name,
+                                description,
+                                difficulty,
+                                rewardMoney,
+                                rewardAmount,
+                                rewardResourceId,
+                                terrain,
+                                weather,
+                                unlocked,
+                                isclear
+                            );
+
+                            // 设置 Terrain 和 Weather 效果
+                            mission.SetTerrainEffects(terrainAtkEffect, terrainDefEffect, terrainHpEffect);
+                            mission.SetWeatherEffects(weatherAtkEffect, weatherDefEffect, weatherHpEffect);
+
+                            // 加载 Enemies
+                            using (var enemyCommand = connection.CreateCommand())
+                            {
+                                enemyCommand.CommandText = @"
+                                    SELECT 
+                                        MISSION_ENEMY.et_id,
+                                        MISSION_ENEMY.count,
+                                        ENEMY_TYPES.et_name,
+                                        ENEMY_TYPES.HP,
+                                        ENEMY_TYPES.base_ATK,
+                                        ENEMY_TYPES.base_DPS,
+                                        ENEMY_TYPES.exp_reward
+                                    FROM MISSION_ENEMY
+                                    INNER JOIN ENEMY_TYPES ON MISSION_ENEMY.et_id = ENEMY_TYPES.et_ID
+                                    WHERE MISSION_ENEMY.mission_id = @missionId;
+                                ";
+
+                                enemyCommand.Parameters.AddWithValue("@missionId", id);
+
+                                using (IDataReader enemyReader = enemyCommand.ExecuteReader())
+                                {
+                                    while (enemyReader.Read())
+                                    {
+                                        int count = enemyReader.GetInt32(1);
+                                        string enemyName = enemyReader.GetString(2);
+                                        int hp = enemyReader.GetInt32(3);
+                                        int atk = enemyReader.GetInt32(4);
+                                        int dps = enemyReader.GetInt32(5);
+                                        int expReward = enemyReader.GetInt32(6);
+
+                                        for (int i = 0; i < count; i++)
+                                        {
+                                            var enemy = new Enemy(enemyName, hp, atk, dps, hp, 1, expReward); 
+                                            mission.AssignedEnemies.Add(enemy);
+                                        }
+                                    }
+                                }
+                            }
+
                             this.MissionsData.Add(mission);
                             isFirstMission = false;
                         }
@@ -322,7 +416,6 @@ namespace Assets.Scripts.Model
                 }
                 connection.Close();
             }
-            BaseManager.Instance.buildingList = basesData;
 
             //Initialize maxSoldier
             foreach (Base building in this.basesData) {
@@ -336,8 +429,7 @@ namespace Assets.Scripts.Model
             }
 
 
-            // Missions
-            this.MissionsData = new List<Mission>();
+                        // Missions
             using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
@@ -346,28 +438,126 @@ namespace Assets.Scripts.Model
                     command.CommandText = "SELECT mission_id, name, description, difficulty, reward_money, reward_amount, reward_resource, terrain, weather, unlocked, cleared FROM Mission ORDER BY mission_id ASC;";
                     using (IDataReader reader = command.ExecuteReader())
                     {
+                        bool isFirstMission = true;
                         while (reader.Read())
                         {
-                            int id = int.Parse(reader["mission_id"].ToString());
-                            string name = reader["name"].ToString();
-                            string description = reader["description"].ToString();
-                            int difficulty = int.Parse(reader["difficulty"].ToString());
-                            int rewardMoney = int.Parse(reader["reward_money"].ToString());
-                            int rewardAmount = int.Parse(reader["reward_amount"].ToString());
-                            int rewardResourceId = int.Parse(reader["reward_resource"].ToString());
-                            string terrain = reader["terrain"].ToString();
-                            string weather = reader["weather"].ToString();
-                            bool isUnlocked = bool.Parse(reader["unlocked"].ToString());
-                            bool isCompleted = bool.Parse(reader["cleared"].ToString());
+                            int id = reader.GetInt32(0);
+                            string name = reader.GetString(1);
+                            string description = reader.GetString(2);
+                            int difficulty = reader.GetInt32(3);
+                            int rewardMoney = reader.GetInt32(4);
+                            int rewardAmount = reader.GetInt32(5);
+                            int rewardResourceId = reader.GetInt32(6);
+                            string terrain = reader.GetString(7);
+                            string weather = reader.GetString(8);
+                            bool unlocked = reader.GetBoolean(9);
+                            bool isclear = reader.GetBoolean(10);
 
-                            Mission mission = new Mission(id, name, description, difficulty, rewardMoney, rewardAmount, rewardResourceId, terrain, weather, isUnlocked, isCompleted);
+                            // 加载 Terrain 和 Weather 效果
+                            int terrainAtkEffect = 0;
+                            int terrainDefEffect = 0;
+                            int terrainHpEffect = 0;
+
+                            int weatherAtkEffect = 0;
+                            int weatherDefEffect = 0;
+                            int weatherHpEffect = 0;
+
+                            // 读取 Terrain 效果
+                            using (var terrainCommand = connection.CreateCommand())
+                            {
+                                terrainCommand.CommandText = $"SELECT atk_effect, def_effect, hp_effect FROM Terrain WHERE name = '{terrain}';";
+                                using (IDataReader terrainReader = terrainCommand.ExecuteReader())
+                                {
+                                    if (terrainReader.Read())
+                                    {
+                                        terrainAtkEffect = terrainReader.GetInt32(0);
+                                        terrainDefEffect = terrainReader.GetInt32(1);
+                                        terrainHpEffect = terrainReader.GetInt32(2);
+                                    }
+                                }
+                            }
+
+                            // 读取 Weather 效果
+                            using (var weatherCommand = connection.CreateCommand())
+                            {
+                                weatherCommand.CommandText = $"SELECT atk_effect, def_effect, hp_effect FROM Weather WHERE name = '{weather}';";
+                                using (IDataReader weatherReader = weatherCommand.ExecuteReader())
+                                {
+                                    if (weatherReader.Read())
+                                    {
+                                        weatherAtkEffect = weatherReader.GetInt32(0);
+                                        weatherDefEffect = weatherReader.GetInt32(1);
+                                        weatherHpEffect = weatherReader.GetInt32(2);
+                                    }
+                                }
+                            }
+
+                            // 创建 Mission 对象
+                            Mission mission = new Mission(
+                                id,
+                                name,
+                                description,
+                                difficulty,
+                                rewardMoney,
+                                rewardAmount,
+                                rewardResourceId,
+                                terrain,
+                                weather,
+                                unlocked,
+                                isclear
+                            );
+
+                            // 设置 Terrain 和 Weather 效果
+                            mission.SetTerrainEffects(terrainAtkEffect, terrainDefEffect, terrainHpEffect);
+                            mission.SetWeatherEffects(weatherAtkEffect, weatherDefEffect, weatherHpEffect);
+
+                            // 加载 Enemies
+                            using (var enemyCommand = connection.CreateCommand())
+                            {
+                                enemyCommand.CommandText = @"
+                                    SELECT 
+                                        MISSION_ENEMY.et_id,
+                                        MISSION_ENEMY.count,
+                                        ENEMY_TYPES.et_name,
+                                        ENEMY_TYPES.HP,
+                                        ENEMY_TYPES.base_ATK,
+                                        ENEMY_TYPES.base_DPS,
+                                        ENEMY_TYPES.exp_reward
+                                    FROM MISSION_ENEMY
+                                    INNER JOIN ENEMY_TYPES ON MISSION_ENEMY.et_id = ENEMY_TYPES.et_ID
+                                    WHERE MISSION_ENEMY.mission_id = @missionId;
+                                ";
+
+                                enemyCommand.Parameters.AddWithValue("@missionId", id);
+
+                                using (IDataReader enemyReader = enemyCommand.ExecuteReader())
+                                {
+                                    while (enemyReader.Read())
+                                    {
+                                        int count = enemyReader.GetInt32(1);
+                                        string enemyName = enemyReader.GetString(2);
+                                        int hp = enemyReader.GetInt32(3);
+                                        int atk = enemyReader.GetInt32(4);
+                                        int dps = enemyReader.GetInt32(5);
+                                        int expReward = enemyReader.GetInt32(6);
+
+                                        for (int i = 0; i < count; i++)
+                                        {
+                                            var enemy = new Enemy(enemyName, hp, atk, dps, hp, 1, expReward); 
+                                            mission.AssignedEnemies.Add(enemy);
+                                        }
+                                    }
+                                }
+                            }
+
                             this.MissionsData.Add(mission);
+                            isFirstMission = false;
                         }
-                        reader.Close();
                     }
                 }
                 connection.Close();
             }
+            //MissionManager.Instance.missions = this.MissionsData;
 
             // Soldiers
             this.soldiersData = new List<Character>();
