@@ -461,7 +461,8 @@ namespace Assets.Scripts.Controller
             if (!IsPlayerTurn) CheckAndReplaceDeadEnemies();
             IsPlayerTurn = !IsPlayerTurn;
             Debug.Log($"Turn switched to: {(IsPlayerTurn ? "Player" : "Enemy")}");
-            AudioManager.Instance.PlaySound("TurnSwitch");
+            if (!IsPlayerTurn) AudioManager.Instance.PlaySound("TurnSwitch");
+            else AudioManager.Instance.PlaySound("TurnSwitchToPlayer");
             yield return new WaitForSeconds(enemyTurnDelay);
 
             if (IsPlayerTurn)

@@ -750,18 +750,23 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         foreach (var ability in soldier.Abilities)
         {
             var abilityButton = Instantiate(abilityButtonPrefab, abilityPanel.transform);
-            var btnText = abilityButton.GetComponentInChildren<TextMeshProUGUI>();
+            var texts = abilityButton.GetComponentsInChildren<TextMeshProUGUI>();
+            var btnText = texts[0];
+            var cooldownText = texts.Length > 1 ? texts[1] : null;
             btnText.text = $"{ability.Name}";
+            if (ability.IsOnCooldown) cooldownText.text = $"{ability.CooldownCounter} rounds";
+            else cooldownText.text = "Ready";
             ColorUtility.TryParseHtmlString("#A0B6FF", out var color);
             color.a = 1f;
             btnText.color = color;
+            cooldownText.color = color;
             Button btn = abilityButton.GetComponent<Button>();
-            btn.interactable = true;
+            btn.interactable = !ability.IsOnCooldown;
             btn.onClick.RemoveAllListeners();
             btn.onClick.AddListener(() => OnAbilityButtonClicked(ability));
         }
         
-        Debug.Log($"Showing ability panel for {soldier.Name}");
+        // Debug.Log($"Showing ability panel for {soldier.Name}");
         abilityPanel.SetActive(true);
     }
 
@@ -806,6 +811,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             Destroy(child.gameObject);
         }
         abilityPanel.SetActive(false);
+        abilityInfoPanel.SetActive(false);
     }
 
     bool IsSelected(Character character) => 
@@ -844,6 +850,11 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         int waitingEnemies = CombatManager.Instance.GetWaitingEnemies().Count;
 
         enemyCountText.text = $"Enemies Remaining: {activeEnemies + waitingEnemies}";
+    }
+
+    private void UpdateAbilityCountdownDisplay()
+    {
+        
     }
     
     #endregion
