@@ -25,7 +25,8 @@ public class WelcomePageUI : MonoBehaviour // Fardin
     void tempFunction()
     {
         GameManager.Instance.LoadGame();
-        GameManager.Instance.LoadGameState(GameState.TrainingPage);
+        BaseManager.Instance.LoadBase();
+        GameManager.Instance.LoadGameState(GameState.LoadoutPage);
     }
 
     void ClickedNewGame()

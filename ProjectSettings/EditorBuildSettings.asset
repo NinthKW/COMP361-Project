@@ -41,4 +41,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/TrainingPage.unity
     guid: 139f9fedbf2d37b4780b0fa25dd9158a
+  - enabled: 1
+    path: Assets/Scenes/LoadoutPage.unity
+    guid: db1f969bc7b42194a8977a663b025625
   m_configObjects: {}

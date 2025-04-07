@@ -31,6 +31,12 @@ public class BuildingFunctionality : MonoBehaviour
         GameManager.Instance.LoadGameState(GameState.TrainingPage);
     }
 
+    public static void loadoutFunctionality()
+    {
+        Debug.Log("TRAINING FUNC CALLED");
+        GameManager.Instance.LoadGameState(GameState.LoadoutPage);
+    }
+
     public static void hqFunctionality()
     {
         Debug.Log("HQ FUNC CALLED");

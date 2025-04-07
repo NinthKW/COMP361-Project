@@ -104,6 +104,9 @@ namespace Assets.Scripts.Controller
                 case GameState.TrainingPage:
                     SceneManager.LoadScene("TrainingPage");
                     break;
+                case GameState.LoadoutPage:
+                    SceneManager.LoadScene("LoadoutPage");
+                    break;
             }
 
             ChangeState(newState);
