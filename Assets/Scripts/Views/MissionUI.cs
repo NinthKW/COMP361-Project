@@ -64,7 +64,7 @@ public class MissionSelectUI : MonoBehaviour
     {
         selectedMission = mission;
         missionNameText.text = mission.name;
-
+        AudioManager.Instance.PlaySound("Select");
         
         string details = $"Description: {mission.description}\n" +
                          $"Difficulty: {mission.difficulty}\n\n" +

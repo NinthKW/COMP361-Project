@@ -197,9 +197,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6f4f42f22327545a1852494f54cfb39d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dbName: 
+  m_Name:
+  m_EditorClassIdentifier:
+  dbName:
 --- !u!1 &271742664
 GameObject:
   m_ObjectHideFlags: 0
@@ -227,8 +227,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a8bdeb3e0ac3eac4ba7a24e848100926, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   levels: []
 --- !u!4 &271742666
 Transform:
@@ -282,8 +282,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   m_RenderShadows: 1
   m_RequiresDepthTextureOption: 2
   m_RequiresOpaqueTextureOption: 2
@@ -409,8 +409,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   m_ComponentVersion: 1
   m_LightType: 4
   m_BlendStyleIndex: 0
@@ -491,8 +491,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d3869062a99108749947f257f6fe16ab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   buildingList: []
 --- !u!4 &1023047853
 Transform:
@@ -536,19 +536,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7fc36b7d4c4391a45ae39d495fcf578d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   enemyTurnDelay: 1
   currentMission:
     id: 0
-    name: 
-    description: 
+    name:
+    description:
     difficulty: 0
     rewardMoney: 0
     rewardAmount: 0
     rewardResourceId: 0
-    terrain: 
-    weather: 
+    terrain:
+    weather:
     isCompleted: 0
     unlocked: 0
     terrainAtkEffect: 0
@@ -599,16 +599,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 61ba951bc3e0258428d7224422692dff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   currentState: 0
   currentGame:
     MissionsData: []
     basesData: []
     techData:
       techId: 0
-      techName: 
-      description: 
+      techName:
+      description:
       costMoney: 0
       costResourceId: 0
       costResourceAmount: 0
@@ -656,8 +656,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e9a2c43a2116e6047881f00c9b251c1d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   missions: []
 --- !u!4 &1498107045
 Transform:
@@ -669,6 +669,71 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1.2142044, y: 0.3710072, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2011980345
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2011980347}
+  - component: {fileID: 2011980346}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2011980346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2011980345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0ae3ac71737d4aa89c283492a4729f4, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  musicSource: {fileID: 0}
+  musicVolume: 0.7
+  sfxSource: {fileID: 0}
+  sfxVolume: 0.2
+  backgroundMusic:
+  - {fileID: 8300000, guid: c8f1abee00e0d4772a1ffed0ff978063, type: 3}
+  - {fileID: 8300000, guid: 1f952e3b647864d3c970ba1ead2b60cf, type: 3}
+  - {fileID: 8300000, guid: a7af0ca79182d40099a5ce30251b3a8b, type: 3}
+  soundEffects:
+  - {fileID: 8300000, guid: 2075fc492118d4f6e8ab125b4a033d45, type: 3}
+  - {fileID: 8300000, guid: bedab9fa2dcab4fa49ee0b8cc85c8a70, type: 3}
+  - {fileID: 8300000, guid: ad19e9a84a58340ee82b5afadcdee3b7, type: 3}
+  - {fileID: 8300000, guid: 9e7fa5695c9d24603bc45f06d28c93db, type: 3}
+  - {fileID: 8300000, guid: 0a2cad23726d3467897cdb8a72da8cb3, type: 3}
+  - {fileID: 8300000, guid: 3b52f3aa8c2d44088a58c5d0906dbebc, type: 3}
+  - {fileID: 8300000, guid: 29e9a397b36fc44cea98cf2154f7b1fc, type: 3}
+  - {fileID: 8300000, guid: 0640fa4f7069d49829a62aa264de98a8, type: 3}
+  - {fileID: 8300000, guid: 550f419e6524f47f9ab64fd86d131731, type: 3}
+  - {fileID: 8300000, guid: 5a41fb8dcb4ec416facd23208f212549, type: 3}
+  - {fileID: 8300000, guid: d2a8e976786f24b6d94948f36248c8e9, type: 3}
+  - {fileID: 8300000, guid: 10656b8c0a8f24b72a6c765baa4280fd, type: 3}
+--- !u!4 &2011980347
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2011980345}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 960.9487, y: 573.0888, z: -6.6804314}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -744,3 +809,4 @@ SceneRoots:
   - {fileID: 1023047853}
   - {fileID: 2142777017}
   - {fileID: 157686841}
+  - {fileID: 2011980347}

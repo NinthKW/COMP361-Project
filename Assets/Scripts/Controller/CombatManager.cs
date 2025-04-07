@@ -233,6 +233,7 @@ namespace Assets.Scripts.Controller
             IsCombatActive = true;
             IsPlayerTurn = true;
             Debug.Log($"Combat started: {_inBattleSoldiers.Count} vs {_inBattleEnemies.Count}");
+            AudioManager.Instance.PlaySound("Combat Start");
             CheckAndAssignAbilities(); // 检查并分配技能
             ResetAttackChances(); // 重置攻击次数
             ApplyTerrainAndWeatherEffects(); // 应用地形和天气效果
@@ -458,6 +459,7 @@ namespace Assets.Scripts.Controller
             if (!IsPlayerTurn) CheckAndReplaceDeadEnemies();
             IsPlayerTurn = !IsPlayerTurn;
             Debug.Log($"Turn switched to: {(IsPlayerTurn ? "Player" : "Enemy")}");
+            AudioManager.Instance.PlaySound("TurnSwitch");
             yield return new WaitForSeconds(enemyTurnDelay);
 
             if (IsPlayerTurn)

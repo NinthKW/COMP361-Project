@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Assets.Scripts.Controller;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
@@ -190,6 +190,7 @@ namespace Assets.Scripts.Model
         {
             if (_experience >= Level * 100)
             {
+                _experience -= Level * 100;
                 Level++;
                 MaxHealth += 10;
                 Health = MaxHealth;
@@ -200,6 +201,7 @@ namespace Assets.Scripts.Model
                     AttackChances++;
                     MaxAttacksPerTurn++;
                 }
+                AudioManager.Instance.PlaySound("LevelUp");
                 UpdateAbilityValues();
                 Debug.Log($"{Name} has leveled up to {Level}!");
             }
