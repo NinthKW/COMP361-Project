@@ -124,7 +124,9 @@ namespace Assets.Scripts.Model
                             int soldierId = int.Parse(reader["soldier_id"].ToString());
                             string name = reader["name"].ToString();
                             // Override soldier level to 1 for a new game.
-                            int level = 1;
+                            // int level = 1;
+                            // Let level = 10 for testing
+                            int level = 10;
                             int health = int.Parse(reader["hp"].ToString());
                             int maxHealth = int.Parse(reader["max_hp"].ToString());
                             int attack = int.Parse(reader["atk"].ToString());

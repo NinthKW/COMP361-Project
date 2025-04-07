@@ -46,11 +46,23 @@ namespace Assets.Scripts.Model
             }
             CooldownCounter = Cooldown;
             DurationCounter = Duration;
+            Debug.Log($"{Name} activated!");
             return true;
         }
 
         // Called to update any dynamic calculations for the ability using the target's current values.
         public abstract void UpdateAbilityValues(Character target); 
+        public virtual void UpdateCooldown(Character caster)
+        {
+            if (CooldownCounter > 0)
+            {
+                CooldownCounter--;
+                if (CooldownCounter == 0)
+                {
+                    Debug.Log($"{Name} is ready to use again!");
+                }
+            }
+        }
     }
 
     #region Attack abilities
@@ -63,6 +75,7 @@ namespace Assets.Scripts.Model
         public void Initialize(string name, int cost, int cooldown, string description, Character caster)
         {
             base.Initialize(name, cost, cooldown, 0, description, "Damage", caster);
+            UpdateAbilityValues(caster);
         }
 
         public override bool Activate(List<Character> targets)
@@ -76,12 +89,13 @@ namespace Assets.Scripts.Model
                     if (target.Health < 0) target.Health = 0;
                 }
             }
+            Debug.Log($"{targets.FirstOrDefault(t => t != null)?.Name} took {DamageAmount} damage!");
             return true;
         }
 
         public override void UpdateAbilityValues(Character caster)
         {
-            DamageAmount = caster.Atk * 2;
+            DamageAmount = caster.Atk * 3;
         }
     }
 
@@ -95,6 +109,7 @@ namespace Assets.Scripts.Model
         {
             base.Initialize(name, cost, cooldown, 0, description, "Lifesteal", caster);
             _caster = caster;
+            UpdateAbilityValues(caster);
         }
         
         public override bool Activate(List<Character> targets)
@@ -136,6 +151,7 @@ namespace Assets.Scripts.Model
         public void Initialize(string name, int cost, int cooldown, string description, Character caster)
         {
             base.Initialize(name, cost, cooldown, 0, description, "Heal", caster);
+            UpdateAbilityValues(caster);
         }
 
         public override bool Activate(List<Character> targets)
@@ -167,7 +183,8 @@ namespace Assets.Scripts.Model
         public void Initialize(string name, int cost, int cooldown, int duration, string description, Character caster)
         {
             base.Initialize(name, cost, cooldown, duration, description, "HealBuff", caster);
-            healBuff = new Buff("HealBuff", Duration, true, 
+            UpdateAbilityValues(caster);
+            healBuff = new Buff("HealBuff", 999, true, 
                                 effectPerTurn: (target) => 
                                 {
                                     target.Health = Mathf.Min(target.Health + (int) HealAmount, target.MaxHealth);
@@ -184,7 +201,10 @@ namespace Assets.Scripts.Model
                 if (target != null)
                 {
                     target.Buffs.Remove(this);
+                    healBuff.BuffedCharacter = target;
                     target.Buffs.Add(this, healBuff);
+                    healBuff.Duration = 999;
+                    healBuff.Apply(healBuff.EffectPerTurn, target);
                     Debug.Log($"{target.Name} will heal for {HealAmount} per turn for the rest of the combat and defense increased by {BuffDefAmount}!");
                 }
             }
@@ -207,6 +227,7 @@ namespace Assets.Scripts.Model
         public void Initialize(string name, int cost, int cooldown, int duration, string description, Character caster)
         {
             base.Initialize(name, cost, cooldown, duration, description, "Shield", caster);
+            UpdateAbilityValues(caster);
         }
 
         public override bool Activate(List<Character> targets)
@@ -238,6 +259,7 @@ namespace Assets.Scripts.Model
         public void Initialize(string name, int cost, int cooldown, int duration, string description, Character caster)
         {
             base.Initialize(name, cost, cooldown, duration, description, "Buff", caster);
+            UpdateAbilityValues(caster);
             atkBuff = new Buff
             ("BuffAtk", duration, false, 
                 effectOnStart: (target) => 
@@ -262,7 +284,10 @@ namespace Assets.Scripts.Model
                 if (target != null)
                 {
                     target.Buffs.Remove(this);
+                    atkBuff.BuffedCharacter = target;
+                    atkBuff.Duration = Duration;
                     target.Buffs.Add(this, atkBuff);
+                    atkBuff.Apply(atkBuff.EffectOnStart, target);
                     Debug.Log($"{target.Name}'s attack increased by {BuffAtkAmount} and speed increased by {BuffSpeedAmount}!");
                 }
             }
@@ -287,6 +312,7 @@ namespace Assets.Scripts.Model
         public void Initialize(string name, int cost, int cooldown, int duration, string description, Character caster)
         {
             base.Initialize(name, cost, cooldown, duration, description, "TauntAll", caster);
+            UpdateAbilityValues(caster);
             tauntBuff = new Buff("Taunt", TauntDuration, false, 
                                 (target) => target.Def += BuffDefAmount);
         }
@@ -299,6 +325,8 @@ namespace Assets.Scripts.Model
                 if (target != null)
                 {
                     target.Buffs.Remove(this);
+                    tauntBuff.BuffedCharacter = target;
+                    tauntBuff.Duration = TauntDuration;
                     target.Buffs.Add(this, tauntBuff);
                     Debug.Log($"{target.Name} is taunting for {TauntDuration} turns and defense increased by {BuffDefAmount}!");
                 }
@@ -308,7 +336,7 @@ namespace Assets.Scripts.Model
 
         public override void UpdateAbilityValues(Character caster)
         {
-            TauntDuration = Mathf.Max(2, caster.Level / 4); // Ensure at least 2 turns of taunt
+            TauntDuration = Mathf.Max(2, 2 + caster.Level / 4); // Ensure at least 2 turns of taunt
             BuffDefAmount = caster.Def;
         }
     }
@@ -321,14 +349,16 @@ namespace Assets.Scripts.Model
         public string Name { get; set; }
         public int Duration { get; set; }
         public bool Permanent { get; set; } = false;
+        public Character BuffedCharacter;
         public Func<Character, int> EffectPerTurn { get; set; } = null;
         public Func<Character, int> EffectOnStart { get; set; } = null;
         public Func<Character, int> EffectOnExpire { get; set; } = null;
         private bool Start;
         public Buff(string name, int duration, bool permanent = false, 
-                    Func<Character, int> effectPerTurn = null,
-                    Func<Character, int> effectOnStart = null,
-                    Func<Character, int> effectOnExpire = null)
+            Func<Character, int> effectPerTurn = null,
+            Func<Character, int> effectOnStart = null,
+            Func<Character, int> effectOnExpire = null,
+            Character buffedCharacter = null)
         {
             Name = name;
             Duration = duration;
@@ -337,6 +367,7 @@ namespace Assets.Scripts.Model
             EffectPerTurn = effectPerTurn;
             EffectOnStart = effectOnStart;
             EffectOnExpire = effectOnExpire;
+            BuffedCharacter = buffedCharacter;
             Start = true;
         }
 
@@ -344,10 +375,10 @@ namespace Assets.Scripts.Model
         {
             if (target == null || target.IsDead()) return;
             if (IsExpired()) return; // Buff is expired
-            if (Start && EffectOnStart != null)
+            if (EffectOnStart != null && target != null && !Start)
             {
                 EffectOnStart(target);
-                Start = false; // Only apply once at the start
+                Start = false;
             }
             if (EffectPerTurn != null)
             {

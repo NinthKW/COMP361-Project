@@ -333,79 +333,79 @@ namespace Assets.Scripts.Controller
         {
             foreach (var soldier in _inBattleSoldiers)
             {
-            if (soldier == null || soldier.IsDead()) continue;
+                if (soldier == null || soldier.IsDead()) continue;
 
-            string roleName = soldier.GetRoleName();
-            // Check for Medic role
-            if (roleName.Equals("Medic", StringComparison.OrdinalIgnoreCase))
-            {
-                if (soldier.Level > 2 && !soldier.Abilities.Any(a => a is HealAbility))
+                string roleName = soldier.GetRoleName();
+                // Check for Medic role
+                if (roleName.Equals("Medic", StringComparison.OrdinalIgnoreCase))
                 {
-                    var healAbility = gameObject.AddComponent<HealAbility>();
-                    healAbility.Initialize("Nano Heal", cost: 1, cooldown: 3, 
-                        description: "Base healing ability, scales with caster's attack.", caster: soldier);
-                    soldier.Abilities.Add(healAbility);
+                    if (soldier.Level > 2 && !soldier.Abilities.Any(a => a is HealAbility))
+                    {
+                        var healAbility = gameObject.AddComponent<HealAbility>();
+                        healAbility.Initialize("Nano Heal", cost: 1, cooldown: 3, 
+                            description: "Base healing ability, scales with caster's attack.", caster: soldier);
+                        soldier.Abilities.Add(healAbility);
+                    }
+                    if (soldier.Level > 5 && !soldier.Abilities.Any(a => a is HealBuffAbility))
+                    {
+                        var healBuffAbility = gameObject.AddComponent<HealBuffAbility>();
+                        healBuffAbility.Initialize("Nano Revival", cost: 1, cooldown: 3, duration: 1,
+                            description: "Heal over turn ability, scales with caster's stats.", caster: soldier);
+                        soldier.Abilities.Add(healBuffAbility);
+                    }
+                    if (soldier.Level > 7 && !soldier.Abilities.Any(a => a is ShieldAbility))
+                    {
+                        var shieldAbility = gameObject.AddComponent<ShieldAbility>();
+                        shieldAbility.Initialize("Aegis Surge", cost: 2, cooldown: 3, duration: 1,
+                            description: "Shield ability, scales with caster's attack.", caster: soldier);
+                        soldier.Abilities.Add(shieldAbility);
+                    }
                 }
-                if (soldier.Level > 5 && !soldier.Abilities.Any(a => a is HealBuffAbility))
+                // Check for Tank role
+                if (roleName.Equals("Tank", StringComparison.OrdinalIgnoreCase) && soldier.Level > 5)
                 {
-                    var healBuffAbility = gameObject.AddComponent<HealBuffAbility>();
-                    healBuffAbility.Initialize("Nano Revival", cost: 1, cooldown: 3, duration: 1,
-                        description: "Heal over turn ability, scales with caster's stats.", caster: soldier);
-                    soldier.Abilities.Add(healBuffAbility);
+                    if (!soldier.Abilities.Any(a => a is TauntAbility))
+                    {
+                        var tauntAbility = gameObject.AddComponent<TauntAbility>();
+                        tauntAbility.Initialize("Defiant Roar", cost: soldier.MaxAttacksPerTurn, cooldown: 1, duration: 2,
+                            description: "Taunt ability with defense buff scaling with caster's defense.\n Taunt rounds increase with caster's level.", caster: soldier);
+                        soldier.Abilities.Add(tauntAbility);
+                    }
                 }
-                if (soldier.Level > 7 && !soldier.Abilities.Any(a => a is ShieldAbility))
+                // Check for Engineer role
+                if (roleName.Equals("Engineer", StringComparison.OrdinalIgnoreCase) && soldier.Level > 7)
                 {
-                    var shieldAbility = gameObject.AddComponent<ShieldAbility>();
-                    shieldAbility.Initialize("Aegis Surge", cost: 2, cooldown: 3, duration: 1,
-                        description: "Shield ability, scales with caster's attack.", caster: soldier);
-                    soldier.Abilities.Add(shieldAbility);
+                    if (!soldier.Abilities.Any(a => a is BuffAtkAbility))
+                    {
+                        var buffAbility = gameObject.AddComponent<BuffAtkAbility>();
+                        buffAbility.Initialize("Adrenaline Rush", cost: soldier.MaxAttacksPerTurn, cooldown: 2, duration: soldier.Level,
+                            description: "Buff ability with attack and speed buffs scaling with caster's stats.", caster: soldier);
+                        soldier.Abilities.Add(buffAbility);
+                    }
                 }
-            }
-            // Check for Tank role
-            if (roleName.Equals("Tank", StringComparison.OrdinalIgnoreCase) && soldier.Level > 5)
-            {
-                if (!soldier.Abilities.Any(a => a is TauntAbility))
+                // Check for Infantry role
+                if (roleName.Equals("Infantry", StringComparison.OrdinalIgnoreCase))
                 {
-                    var tauntAbility = gameObject.AddComponent<TauntAbility>();
-                    tauntAbility.Initialize("Defiant Roar", cost: soldier.MaxAttacksPerTurn, cooldown: 1, duration: 2,
-                        description: "Taunt ability with defense buff scaling with caster's defense.\n Taunt rounds increase with caster's level.", caster: soldier);
-                    soldier.Abilities.Add(tauntAbility);
+                    if (soldier.Level > 4 && !soldier.Abilities.Any(a => a is InfantryLifestealAbility))
+                    {
+                        var lifestealAbility = gameObject.AddComponent<InfantryLifestealAbility>();
+                        lifestealAbility.Initialize("Tactical Strike", cost: 1, cooldown: 2,
+                            description: "Deal damage and lifesteal based on caster's percentage stats and scaling with caster's stats.", caster: soldier);
+                        soldier.Abilities.Add(lifestealAbility);
+                    }
                 }
-            }
-            // Check for Engineer role
-            if (roleName.Equals("Engineer", StringComparison.OrdinalIgnoreCase) && soldier.Level > 7)
-            {
-                if (!soldier.Abilities.Any(a => a is BuffAtkAbility))
+                
+                // Check for Sniper role
+                if (roleName.Equals("Sniper", StringComparison.OrdinalIgnoreCase))
                 {
-                    var buffAbility = gameObject.AddComponent<BuffAtkAbility>();
-                    buffAbility.Initialize("Adrenaline Rush", cost: soldier.MaxAttacksPerTurn, cooldown: 2, duration: soldier.Level,
-                        description: "Buff ability with attack and speed buffs scaling with caster's stats.", caster: soldier);
-                    soldier.Abilities.Add(buffAbility);
+                    if (soldier.Level > 3 && !soldier.Abilities.Any(a => a is SniperDamageAbility))
+                    {
+                        var sniperAbility = gameObject.AddComponent<SniperDamageAbility>();
+                        sniperAbility.Initialize("Precision Shot", cost: 2, cooldown: 1,
+                            description: "High-damage percing attack dealing percentage damage scaling with caster's attack.", caster: soldier);
+                        soldier.Abilities.Add(sniperAbility);
+                    }
                 }
-            }
-            // Check for Infantry role
-            if (roleName.Equals("Infantry", StringComparison.OrdinalIgnoreCase))
-            {
-                if (soldier.Level > 4 && !soldier.Abilities.Any(a => a is InfantryLifestealAbility))
-                {
-                    var lifestealAbility = gameObject.AddComponent<InfantryLifestealAbility>();
-                    lifestealAbility.Initialize("Tactical Strike", cost: 1, cooldown: 2,
-                        description: "Deal damage and lifesteal based on caster's percentage stats and scaling with caster's stats.", caster: soldier);
-                    soldier.Abilities.Add(lifestealAbility);
-                }
-            }
-            
-            // Check for Sniper role
-            if (roleName.Equals("Sniper", StringComparison.OrdinalIgnoreCase))
-            {
-                if (soldier.Level > 3 && !soldier.Abilities.Any(a => a is SniperDamageAbility))
-                {
-                    var sniperAbility = gameObject.AddComponent<SniperDamageAbility>();
-                    sniperAbility.Initialize("Precision Shot", cost: 2, cooldown: 2,
-                        description: "High-damage percing attack dealing percentage damage scaling with caster's attack.", caster: soldier);
-                    soldier.Abilities.Add(sniperAbility);
-                }
-            }
             }
         }
         #endregion
@@ -467,6 +467,7 @@ namespace Assets.Scripts.Controller
             if (IsPlayerTurn)
             {
                 BuffsCountDown(); // buffs倒计时
+                AbilityCountDown(); // 技能冷却
                 ResetAttackChances(); // 重置攻击次数
                 CheckAndAssignAbilities(); // 检查并分配技能
             }
@@ -656,6 +657,19 @@ namespace Assets.Scripts.Controller
                         soldier.Buffs.Remove(buffPair.Key);
                         Debug.Log($"{soldier.Name}'s {buffPair.Key} buff has expired.");
                     }
+                }
+            }
+        }
+        private void AbilityCountDown()
+        {
+            foreach (var soldier in _inBattleSoldiers)
+            {
+                if (soldier == null || soldier.IsDead()) continue;
+                List<Ability> temp = new(soldier.Abilities);
+                foreach (var ability in temp)
+                {
+                    ability.UpdateCooldown(soldier);
+                    Debug.Log($"{soldier.Name}'s {ability.Name} cooldown: {ability.Cooldown}");
                 }
             }
         }

@@ -6,6 +6,9 @@ using Assets.Scripts.Model;
 
 public class CharacterUI : MonoBehaviour
 {
+    /// <summary>
+    /// Represents a character's UI in the combat screen.
+    /// </summary>
     [Header("UI Elements")]
     public Image characterImage;
     public Slider healthBar;
@@ -82,7 +85,8 @@ public class CharacterUI : MonoBehaviour
         }
         foreach (var buffPair in _character.Buffs)
         {
-            GameObject buffTextObj = new GameObject("BuffText");
+            if (buffPair.Value.IsExpired()) continue;
+            GameObject buffTextObj = new("BuffText");
             buffTextObj.transform.SetParent(buffPanel.transform);
             buffTextObj.transform.localScale = Vector3.one;
             TextMeshProUGUI buffText = buffTextObj.AddComponent<TextMeshProUGUI>();

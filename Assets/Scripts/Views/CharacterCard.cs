@@ -9,6 +9,9 @@ using Assets.Scripts.Model;
 
 public class CharacterCard : MonoBehaviour
 {
+    /// <summary>
+    /// Represents a character card in the mission preparation UI.
+    /// </summary>
     [SerializeField] private Image background;
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private TextMeshProUGUI levelText;
