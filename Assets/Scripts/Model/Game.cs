@@ -11,22 +11,26 @@ namespace Assets.Scripts.Model
     [System.Serializable]
     public class Game
     {
+        public static Game Instance;
         public Resources resourcesData;
         public List<Mission> MissionsData;
         public List<Character> soldiersData;
         public List<Base> basesData;
         public Tech techData;
+        public Inventory inventory;
 
         public int maxSoldier;
 
         public Game()
         {
+            Instance = this;
             // Resources
             this.resourcesData = new Resources();
             this.MissionsData = new List<Mission>();
             this.soldiersData = new List<Character>();
             this.basesData = new List<Base>();
             this.techData = new Tech();
+            this.inventory = new Inventory();
 
             maxSoldier = 5;
             
@@ -59,7 +63,6 @@ namespace Assets.Scripts.Model
                 }
                 connection.Close();
             }
-            BaseManager.Instance.buildingList = basesData;
             
             foreach (Base building in this.basesData) {
                 if (building.name.ToLower().Equals("barracks"))
@@ -134,7 +137,6 @@ namespace Assets.Scripts.Model
                 }
                 connection.Close();
             }
-            HospitalManager.Instance.soldiers = soldiersData;
 
             using (var connection = new SqliteConnection(dbPath))
             {
@@ -161,11 +163,69 @@ namespace Assets.Scripts.Model
                 }
                 connection.Close();
             }
+
+            // weapons
+            using (var connection = new SqliteConnection(dbPath))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT weapon_id, name, description, damage, cost, resource_amount, resource_type FROM Weapon;";
+                    using (IDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int id = int.Parse(reader["weapon_id"].ToString());
+                            string name = reader["name"].ToString();
+                            string description = reader["description"].ToString();
+                            int damage = int.Parse(reader["damage"].ToString());
+                            int cost = int.Parse(reader["cost"].ToString());
+                            int resourceAmount = int.Parse(reader["resource_amount"].ToString());
+                            int resourceType = int.Parse(reader["resource_type"].ToString());
+
+                            // Create a new weapon and add it to the inventory.
+                            Weapon weapon = new Weapon(id, name, description, damage, cost, resourceAmount, resourceType);
+                            inventory.AddWeapon(weapon);
+                        }
+                    }
+                }
+                connection.Close();
+            }
+
+            // equipments
+            using (var connection = new SqliteConnection(dbPath))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT equipment_id, name, hp, def, atk, cost, resource_amount, resource_type FROM Equipment;";
+                    using (IDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int id = int.Parse(reader["equipment_id"].ToString());
+                            string name = reader["name"].ToString();
+                            int hp = int.Parse(reader["hp"].ToString());
+                            int def = int.Parse(reader["def"].ToString());
+                            int atk = int.Parse(reader["atk"].ToString());
+                            int cost = int.Parse(reader["cost"].ToString());
+                            int resourceAmount = int.Parse(reader["resource_amount"].ToString());
+                            int resourceType = int.Parse(reader["resource_type"].ToString());
+
+                            // Creates a new equipment item and add it to the inventory
+                            Equipment equipment = new Equipment(id, name, hp, def, atk, cost, resourceAmount, resourceType);
+                            inventory.AddEquipment(equipment);
+                        }
+                    }
+                }
+                connection.Close();
+            }
         }
 
 
-        public Game(string dbName)
+        public Game(string dbPath)
         {
+            Instance = this;
             //Set default maxSoldier
             maxSoldier = 5;
 
@@ -178,7 +238,7 @@ namespace Assets.Scripts.Model
             int medicine = 0;
 
             // resources
-            using (var connection = new SqliteConnection(dbName))
+            using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
                 using (var command = connection.CreateCommand())
@@ -227,7 +287,7 @@ namespace Assets.Scripts.Model
 
             // Bases
             this.basesData = new List<Base>();
-            using (var connection = new SqliteConnection(dbName))
+            using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
                 using (var command = connection.CreateCommand())
@@ -272,7 +332,7 @@ namespace Assets.Scripts.Model
 
             // Missions
             this.MissionsData = new List<Mission>();
-            using (var connection = new SqliteConnection(dbName))
+            using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
                 using (var command = connection.CreateCommand())
@@ -305,7 +365,7 @@ namespace Assets.Scripts.Model
 
             // Soldiers
             this.soldiersData = new List<Character>();
-            using (var connection = new SqliteConnection(dbName))
+            using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
                 using (var command = connection.CreateCommand())
@@ -337,7 +397,7 @@ namespace Assets.Scripts.Model
             TrainingManager.Instance.soldiers = soldiersData;
 
             // tech
-            using (var connection = new SqliteConnection(dbName))
+            using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
                 using (var command = connection.CreateCommand())
@@ -364,14 +424,72 @@ namespace Assets.Scripts.Model
                 }
                 connection.Close();
             }
+
+            this.inventory = new Inventory();
+             // weapons
+            using (var connection = new SqliteConnection(dbPath))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT weapon_id, name, description, damage, cost, resource_amount, resource_type FROM Weapon;";
+                    using (IDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int id = int.Parse(reader["weapon_id"].ToString());
+                            string name = reader["name"].ToString();
+                            string description = reader["description"].ToString();
+                            int damage = int.Parse(reader["damage"].ToString());
+                            int cost = int.Parse(reader["cost"].ToString());
+                            int resourceAmount = int.Parse(reader["resource_amount"].ToString());
+                            int resourceType = int.Parse(reader["resource_type"].ToString());
+
+                            // Create a new weapon and add it to the inventory.
+                            Weapon weapon = new Weapon(id, name, description, damage, cost, resourceAmount, resourceType);
+                            inventory.AddWeapon(weapon);
+                        }
+                    }
+                }
+                connection.Close();
+            }
+
+            // equipments
+            using (var connection = new SqliteConnection(dbPath))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT equipment_id, name, hp, def, atk, cost, resource_amount, resource_type FROM Equipment;";
+                    using (IDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int id = int.Parse(reader["equipment_id"].ToString());
+                            string name = reader["name"].ToString();
+                            int hp = int.Parse(reader["hp"].ToString());
+                            int def = int.Parse(reader["def"].ToString());
+                            int atk = int.Parse(reader["atk"].ToString());
+                            int cost = int.Parse(reader["cost"].ToString());
+                            int resourceAmount = int.Parse(reader["resource_amount"].ToString());
+                            int resourceType = int.Parse(reader["resource_type"].ToString());
+
+                            // Creates a new equipment item and add it to the inventory
+                            Equipment equipment = new Equipment(id, name, hp, def, atk, cost, resourceAmount, resourceType);
+                            inventory.AddEquipment(equipment);
+                        }
+                    }
+                }
+                connection.Close();
+            }
         }
 
         public void SaveGameData()
         {
-            string dbName = "URI=file:" + Application.persistentDataPath + "/game.db";
+            string dbPath = "URI=file:" + Application.streamingAssetsPath + "/database.db";
 
             // resources
-            using (var connection = new SqliteConnection(dbName))
+            using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
                 using (var command = connection.CreateCommand())
@@ -387,7 +505,7 @@ namespace Assets.Scripts.Model
             }
 
             // bases
-            using (var connection = new SqliteConnection(dbName))
+            using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
                 List<int> buildingIds = new List<int>();
@@ -441,7 +559,7 @@ namespace Assets.Scripts.Model
             }
 
             // missions
-            using (var connection = new SqliteConnection(dbName))
+            using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
                 foreach (var mission in this.MissionsData)
@@ -476,7 +594,7 @@ namespace Assets.Scripts.Model
             }
 
             // soldiers
-            using (var connection = new SqliteConnection(dbName))
+            using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
                 foreach (var character in this.soldiersData)
@@ -509,7 +627,7 @@ namespace Assets.Scripts.Model
             }
 
             // Tech
-            using (var connection = new SqliteConnection(dbName))
+            using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
                 using (var command = connection.CreateCommand())
