@@ -461,7 +461,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyTurnDelay: 1
-  dbPath: URI=file:G:/Unity/Projects/COMP361-Project/Assets/StreamingAssets/database.db
   currentMission:
     id: 0
     name: 
@@ -474,6 +473,12 @@ MonoBehaviour:
     weather: 
     isCompleted: 0
     unlocked: 0
+    terrainAtkEffect: 0
+    terrainDefEffect: 0
+    terrainHpEffect: 0
+    weatherAtkEffect: 0
+    weatherDefEffect: 0
+    weatherHpEffect: 0
 --- !u!4 &1044390040
 Transform:
   m_ObjectHideFlags: 0
@@ -519,6 +524,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentState: 0
+  currentGame:
+    MissionsData: []
+    basesData: []
+    techData:
+      techId: 0
+      techName: 
+      description: 
+      costMoney: 0
+      costResourceId: 0
+      costResourceAmount: 0
+      isUnlocked: 0
+    maxSoldier: 0
 --- !u!4 &1130254230
 Transform:
   m_ObjectHideFlags: 0
@@ -579,6 +596,63 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &2142777017
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2006875511728491967, guid: 410f2c28d07712c44baaa7e580c59f10, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2006875511728491967, guid: 410f2c28d07712c44baaa7e580c59f10, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2006875511728491967, guid: 410f2c28d07712c44baaa7e580c59f10, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2006875511728491967, guid: 410f2c28d07712c44baaa7e580c59f10, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2006875511728491967, guid: 410f2c28d07712c44baaa7e580c59f10, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2006875511728491967, guid: 410f2c28d07712c44baaa7e580c59f10, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2006875511728491967, guid: 410f2c28d07712c44baaa7e580c59f10, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2006875511728491967, guid: 410f2c28d07712c44baaa7e580c59f10, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2006875511728491967, guid: 410f2c28d07712c44baaa7e580c59f10, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2006875511728491967, guid: 410f2c28d07712c44baaa7e580c59f10, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3892466982682379992, guid: 410f2c28d07712c44baaa7e580c59f10, type: 3}
+      propertyPath: m_Name
+      value: HospitalManager
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 410f2c28d07712c44baaa7e580c59f10, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -590,3 +664,4 @@ SceneRoots:
   - {fileID: 271742666}
   - {fileID: 1498107045}
   - {fileID: 1023047853}
+  - {fileID: 2142777017}

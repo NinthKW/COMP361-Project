@@ -29,4 +29,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/BasePage.unity
     guid: f2a6d101e5f52334c8efaae835f7fc61
+  - enabled: 1
+    path: Assets/Scenes/HospitalPage.unity
+    guid: 14d0ef0516af0cb4d9583153ab0dfafc
   m_configObjects: {}

@@ -83,6 +83,9 @@ namespace Assets.Scripts.Controller
                 case GameState.MissionPreparationPage:
                     SceneManager.LoadScene("MissionPrepPageUI");
                     break;
+                case GameState.HospitalPage:
+                    SceneManager.LoadScene("HospitalPage");
+                    break;
             }
 
             ChangeState(newState);
