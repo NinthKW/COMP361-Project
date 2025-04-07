@@ -24,7 +24,7 @@ public class MainMenuPageUI : MonoBehaviour // Fardin, Ziyuan Wang
         missionButton.onClick.AddListener(ClickedMission);
         techButton.onClick.AddListener(ClickedTech);
         exitButton.onClick.AddListener(ClickedExit);
-        researchButton.onClick.AddListener(ClickedResearch);
+        // researchButton.onClick.AddListener(ClickedResearch);
         inventoryButton.onClick.AddListener(ClickedInventory);
     }
 
