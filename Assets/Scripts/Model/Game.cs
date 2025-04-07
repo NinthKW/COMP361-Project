@@ -343,7 +343,7 @@ namespace Assets.Scripts.Model
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT mission_id, name, description, difficulty, reward_money, reward_amount, reward_resource, terrain, weather, unlocked FROM Mission ORDER BY mission_id ASC;";
+                    command.CommandText = "SELECT mission_id, name, description, difficulty, reward_money, reward_amount, reward_resource, terrain, weather, unlocked, cleared FROM Mission ORDER BY mission_id ASC;";
                     using (IDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())

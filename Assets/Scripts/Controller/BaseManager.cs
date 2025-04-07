@@ -39,7 +39,7 @@ namespace Assets.Scripts.Controller
 
         }
 
-        void LoadBase()
+        public void LoadBase()
         {
             buildingList.Clear();
             buildingList = Game.Instance.basesData;

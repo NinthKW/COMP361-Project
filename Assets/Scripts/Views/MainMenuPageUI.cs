@@ -30,6 +30,7 @@ public class MainMenuPageUI : MonoBehaviour // Fardin, Ziyuan Wang
 
     void ClickedBase()
     {
+        BaseManager.Instance.LoadBase();
         GameManager.Instance.LoadGameState(GameState.BasePage);
     }
 
