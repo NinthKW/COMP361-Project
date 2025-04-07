@@ -73,6 +73,8 @@ namespace Assets.Scripts.Model
                     }
                 }
             }
+            BaseManager.Instance.buildingList = this.basesData;
+
 
             // Missions
             using (var connection = new SqliteConnection(dbPath))

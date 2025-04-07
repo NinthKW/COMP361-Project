@@ -82,7 +82,7 @@ public class TrainingUI : MonoBehaviour
             GameManager.Instance.currentGame.resourcesData.SetAmount(0, foodLeft - levelUpCost);
             foodLeftDisplay.GetComponent<TextMeshProUGUI>().text = "Food Remaining: " + GameManager.Instance.currentGame.resourcesData.GetAmount(0);
 
-            levelStatusDisplay.text = "STATUS: " + currentSelectedSoldier.Name + "has leveled up";
+            levelStatusDisplay.text = "STATUS: " + currentSelectedSoldier.Name + " has leveled up";
 
             updateMenu(currentSelectedSoldier);
         } 
