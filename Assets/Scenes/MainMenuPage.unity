@@ -306,7 +306,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -649.0099, y: -206.09998}
+  m_AnchoredPosition: {x: -660.04, y: -118.91}
   m_SizeDelta: {x: 277.1219, y: 102.7007}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &271524778
@@ -1566,7 +1566,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -649.05, y: -0.3124857}
+  m_AnchoredPosition: {x: -660.0401, y: -16.212513}
   m_SizeDelta: {x: 277.1219, y: 102.7007}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1192877509
@@ -1821,7 +1821,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -649.05, y: 102.390015}
+  m_AnchoredPosition: {x: -660.0401, y: 86.48999}
   m_SizeDelta: {x: 277.1219, y: 102.7044}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1676139384
@@ -1942,7 +1942,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -649.01996, y: 205.10002}
+  m_AnchoredPosition: {x: -660.0101, y: 189.2}
   m_SizeDelta: {x: 277.1108, y: 102.7105}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1698769226
@@ -2114,7 +2114,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -573.9251, y: -103.209984}
+  m_AnchoredPosition: {x: -584.92, y: -324.9}
   m_SizeDelta: {x: 427.2916, y: 103.0883}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1810067498
@@ -2235,7 +2235,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -649, y: -309}
+  m_AnchoredPosition: {x: -660, y: -221.81}
   m_SizeDelta: {x: 277.133, y: 103.0938}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2052426995

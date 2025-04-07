@@ -41,7 +41,7 @@ namespace Assets.Scripts
                 rect.anchorMin = new Vector2(0, 0);
                 rect.anchorMax = new Vector2(0, 0);
                 rect.pivot = new Vector2(0, 0);
-                rect.anchoredPosition = new Vector2(400, -40);
+                rect.anchoredPosition = new Vector2(500, 10);
                 rect.sizeDelta = new Vector2(800, 150);
             }
         }

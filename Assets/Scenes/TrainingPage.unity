@@ -390,8 +390,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 312, y: -110}
-  m_SizeDelta: {x: 358.938, y: 60.365}
+  m_AnchoredPosition: {x: 507.97443, y: -110}
+  m_SizeDelta: {x: 617.9927, y: 60.365}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &219498366
 MonoBehaviour:
@@ -413,7 +413,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Training Group
+  m_text: Training Ground
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dc36b3fdc14f47ebb36fd484a67e268a, type: 2}
   m_sharedMaterial: {fileID: 2140032, guid: dc36b3fdc14f47ebb36fd484a67e268a, type: 2}
@@ -2045,7 +2045,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 796462e5230a58a43ac5f5ff8b3933a4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 1a140606a064f55499be5000a13c634f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
