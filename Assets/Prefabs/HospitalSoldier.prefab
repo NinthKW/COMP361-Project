@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3912818803471042854}
   - component: {fileID: 1676932715641661505}
   - component: {fileID: 432163044788289539}
-  - component: {fileID: 8450518566065822654}
+  - component: {fileID: 1890017768102490289}
   m_Layer: 0
   m_Name: HospitalSoldier
   m_TagString: Untagged
@@ -180,7 +180,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &8450518566065822654
+--- !u!114 &1890017768102490289
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -189,6 +189,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 4108656752887849586}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c1b1b510968ea2347a4f154b7c98316b, type: 3}
+  m_Script: {fileID: 11500000, guid: 4fcef0ced4e9e4e4083e8ea47374ded2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
