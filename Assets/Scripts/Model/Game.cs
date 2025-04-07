@@ -399,8 +399,6 @@ namespace Assets.Scripts.Model
                 }
                 connection.Close();
             }
-            HospitalManager.Instance.soldiers = soldiersData;
-            TrainingManager.Instance.soldiers = soldiersData;
 
             // tech
             using (var connection = new SqliteConnection(dbPath))
