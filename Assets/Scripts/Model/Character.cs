@@ -9,6 +9,7 @@ using static UnityEngine.GraphicsBuffer;
 namespace Assets.Scripts.Model
 {
     // 基类 Character
+    [Serializable]
     public abstract class Character
     {
         public string Name { get; protected set; }
@@ -117,6 +118,7 @@ namespace Assets.Scripts.Model
         }
     }
 
+    [Serializable]
     public class Enemy : Character
     {
         public int BaseDamage { get; private set; }
@@ -146,6 +148,7 @@ namespace Assets.Scripts.Model
         }
     }
 
+    [Serializable]
     public class Soldier : Character
     {
         private int _experience;

@@ -31,6 +31,8 @@ namespace Assets.Scripts
         {
             HospitalUI.Instance.currentSelectedSoldier = soldier;
             Debug.Log("Current soldier selected: " + HospitalUI.Instance.currentSelectedSoldier.Name);
+
+            HospitalUI.Instance.updateMenu(soldier);
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Assets.Scripts.Model
                 { 3, ("Metal", 100, "Metal is used for building your base and ammo")},
                 { 4, ("Fuel", 50, "Fuel is used for missions")},
                 { 5, ("Ammo", 50, "Ammo is used for combat.")},
-                { 6, ("Medicine", 0, "Medicine is used to heal soldiers")}
+                { 6, ("Medicine", 50, "Medicine is used to heal soldiers")}
             };
         }
 
