@@ -236,12 +236,10 @@ namespace Assets.Scripts.Model
             maxSoldier = 5;
 
             int food = 0;
+            int money = 0;
+            int iron = 0;
             int wood = 0;
-            int stone = 0;
-            int metal = 0;
-            int fuel = 0;
-            int ammo = 0;
-            int medicine = 0;
+            int titanium = 0;
 
             // resources
             using (var connection = new SqliteConnection(dbPath))
@@ -262,22 +260,16 @@ namespace Assets.Scripts.Model
                                     food = currentAmount;
                                     break;
                                 case 1:
-                                    wood = currentAmount;
+                                    money = currentAmount;
                                     break;
                                 case 2:
-                                    stone = currentAmount;
+                                    iron = currentAmount;
                                     break;
                                 case 3:
-                                    metal = currentAmount;
+                                    wood = currentAmount;
                                     break;
                                 case 4:
-                                    fuel = currentAmount;
-                                    break;
-                                case 5:
-                                    ammo = currentAmount;
-                                    break;
-                                case 6:
-                                    medicine = currentAmount;
+                                    titanium = currentAmount;
                                     break;
                                 default:
                                     Debug.LogWarning("Unexpected resource id: " + resourceId);
@@ -289,7 +281,7 @@ namespace Assets.Scripts.Model
                 }
                 connection.Close();
             }
-            this.resourcesData = new Resources(food, wood, stone, metal, fuel, ammo, medicine);
+            this.resourcesData = new Resources(food, money, iron, wood, titanium);
 
             // Bases
             this.basesData = new List<Base>();
@@ -322,7 +314,6 @@ namespace Assets.Scripts.Model
                 }
                 connection.Close();
             }
-            BaseManager.Instance.buildingList = basesData;
 
             //Initialize maxSoldier
             foreach (Base building in this.basesData) {
@@ -498,7 +489,7 @@ namespace Assets.Scripts.Model
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
-                    for (int id = 0; id <= 6; id++)
+                    for (int id = 0; id <= 4; id++)
                     {
                         int amount = this.resourcesData.GetAmount(id);
                         command.CommandText = $"UPDATE Resource SET current_amount = {amount} WHERE resource_id = {id};";
