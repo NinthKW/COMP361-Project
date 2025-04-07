@@ -140,25 +140,27 @@ CREATE TABLE MISSION_ENEMY (
 );
 
 CREATE TABLE ENEMY_TYPES (
-    et_ID INT PRIMARY KEY,
-    et_name VARCHAR(255) NOT NULL,
-    HP INT NOT NULL,
-    base_ATK INT NOT NULL,
-    base_DPS INT NOT NULL
+    et_ID INTEGER PRIMARY KEY,
+    et_name TEXT NOT NULL,
+    HP INTEGER NOT NULL,
+    base_ATK INTEGER NOT NULL,
+    base_DPS INTEGER NOT NULL, -- Assuming DPS means Damage Per Second, keeping INT
+    exp_reward INTEGER NOT NULL 
 );
 
 -- Insert into Resource
 INSERT INTO Resource VALUES
-(1, 'Iron', 1000),
-(2, 'Wood', 800),
-(3, 'Gold', 600),
-(4, 'Stone', 900),
-(5, 'Crystal', 500),
-(6, 'Copper', 700),
-(7, 'Silver', 400),
-(8, 'Titanium', 350),
-(9, 'Uranium', 250),
-(10, 'Platinum', 150);
+(1, 'Money', 1000),
+(2, 'Iron', 1000),
+(3, 'Wood', 800),
+(4, 'Gold', 600),
+(5, 'Stone', 900),
+(6, 'Crystal', 500),
+(7, 'Copper', 700),
+(8, 'Silver', 400),
+(9, 'Titanium', 350),
+(10, 'Uranium', 250),
+(11, 'Platinum', 150);
 
 -- Insert into Soldier
 INSERT INTO Soldier VALUES
@@ -223,16 +225,16 @@ INSERT INTO Mission VALUES
 
 -- Insert into ENEMY_TYPES
 INSERT INTO ENEMY_TYPES VALUES
-(1, 'Recon Drone', 50, 8, 4),
-(2, 'Heavy Guard', 120, 15, 7),
-(3, 'Experimental Tank', 180, 18, 10),
-(4, 'Black Ops Sniper', 60, 20, 8),
-(5, 'Mech Soldier', 100, 14, 7),
-(6, 'Cyber Assassin', 90, 18, 9),
-(7, 'Bioengineered Beast', 150, 22, 12),
-(8, 'Psyker', 80, 12, 10),
-(9, 'Prototype AI', 200, 25, 15),
-(10, 'Black Horizon Commander', 300, 30, 20);
+(1, 'Recon Drone', 50, 8, 4, 10),
+(2, 'Heavy Guard', 120, 15, 7, 20),
+(3, 'Experimental Tank', 180, 18, 10, 20),
+(4, 'Black Ops Sniper', 60, 20, 8, 30),
+(5, 'Mech Soldier', 100, 14, 7, 50),
+(6, 'Cyber Assassin', 90, 18, 9, 50),
+(7, 'Bioengineered Beast', 150, 22, 12, 70),
+(8, 'Psyker', 80, 12, 10, 70),
+(9, 'Prototype AI', 200, 25, 15, 90),
+(10, 'Black Horizon Commander', 300, 30, 20, 100);
 
 -- Insert into MISSION_ENEMY (Each mission has multiple enemies)
 INSERT INTO MISSION_ENEMY VALUES

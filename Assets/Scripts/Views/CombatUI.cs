@@ -966,6 +966,9 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         // TODO: add mission success/fail page
         DisableAllControls();
         ShowEndMessage(victory);
+        if (victory == false){
+            CombatManager.Instance.SaveCombatResults(victory, "");
+        }
         StartCoroutine(ReturnToBaseAfterDelay(3f));
     }
 
@@ -979,7 +982,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     IEnumerator ReturnToBaseAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-        GameManager.Instance.LoadGameState(GameState.MissionPage);
+        GameManager.Instance.LoadGameState(GameState.CombatResultPage);
     }
     #endregion
 }

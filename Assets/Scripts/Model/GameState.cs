@@ -12,7 +12,6 @@ namespace Assets.Scripts.Model
         CombatPage,
         ResearchPage,
         MissionSelectPage,
-        MissionResultPage,
         GameOverPage,
         MissionPreparationPage,
         HospitalPage,

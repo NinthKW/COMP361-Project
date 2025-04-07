@@ -85,6 +85,8 @@ namespace Assets.Scripts.Controller
                     break;
                 case GameState.HospitalPage:
                     SceneManager.LoadScene("HospitalPage");
+                case GameState.CombatResultPage:
+                    SceneManager.LoadScene("CombatResultPage");
                     break;
             }
 

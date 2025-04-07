@@ -503,13 +503,112 @@ namespace Assets.Scripts.Controller
             // Reward experience
             if (victory)
             {
+                ApplyMissionRewards(currentMission);  // 调用奖励分发函数
+
+                string soldierExpDetails = "";
                 _inBattleSoldiers.ForEach(c => {
-                    if (c is Soldier soldier) soldier.GainExp(50);
+                    if (c is Soldier soldier) 
+                    {
+                        soldier.GainExp(50);  // 士兵获得经验
+                        soldierExpDetails += $"- {soldier.Name}: Gained 50 EXP\n";
+                    }
                 });
+
+                SaveCombatResults(true, soldierExpDetails);
+            }
+            else
+            {
+                SaveCombatResults(false, "");
             }
 
             OnCombatEnd?.Invoke(victory);
             CleanupCombat();
+        }
+
+        public void ApplyMissionRewards(Mission mission)
+        {
+            if (mission == null)
+            {
+                Debug.LogError("Mission is null. Cannot apply rewards.");
+                return;
+            }
+
+            Debug.Log($"Applying rewards for mission: {mission.name}");
+
+            using (var connection = new SqliteConnection(dbPath))
+            {
+                connection.Open();
+
+                // 更新 Money
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+                        UPDATE Resource 
+                        SET current_amount = current_amount + @rewardMoney 
+                        WHERE name = 'Money';
+                    ";
+                    command.Parameters.AddWithValue("@rewardMoney", mission.rewardMoney);
+                    command.ExecuteNonQuery();
+                }
+
+                // 更新资源奖励
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+                        UPDATE Resource 
+                        SET current_amount = current_amount + @rewardAmount 
+                        WHERE resource_id = @rewardResourceId;
+                    ";
+                    command.Parameters.AddWithValue("@rewardAmount", mission.rewardAmount);
+                    command.Parameters.AddWithValue("@rewardResourceId", mission.rewardResourceId);
+                    command.ExecuteNonQuery();
+                }
+
+                connection.Close();
+            }
+
+            Debug.Log($"Rewards applied successfully: Money +{mission.rewardMoney}, Resource ID {mission.rewardResourceId} +{mission.rewardAmount}");
+        }
+
+
+        public void SaveCombatResults(bool victory, string soldierExpDetails)
+        {
+            PlayerPrefs.SetInt("CombatResult", victory ? 1 : 0);
+
+            if (victory)
+            {
+                string resourceName = GetResourceNameById(currentMission.rewardResourceId);
+                string rewardDetails = $"Rewards:\n" +
+                    $"- Money: {currentMission.rewardMoney}\n" +
+                    $"- Resource: {resourceName} +{currentMission.rewardAmount}\n";
+                
+                PlayerPrefs.SetString("RewardDetails", rewardDetails);
+                PlayerPrefs.SetString("SoldierExpDetails", soldierExpDetails);
+            }
+        }
+
+        public string GetResourceNameById(int resourceId)
+        {
+            using (var connection = new SqliteConnection(dbPath))
+            {
+                connection.Open();
+
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT name FROM Resource WHERE resource_id = @id";
+                    command.Parameters.AddWithValue("@id", resourceId);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return reader.GetString(0);
+                        }
+                    }
+                }
+            }
+
+            return "Unknown Resource";
         }
 
         private void CleanupCombat()
