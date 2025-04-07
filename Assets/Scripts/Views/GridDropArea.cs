@@ -2,113 +2,116 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using TMPro;
 
-public class GridDropArea : MonoBehaviour, IDropHandler
+namespace Assets.Scripts
 {
-    public float occupancyThreshold = 0.1f;
-    public float edgeMargin = 100f;
 
-    // Reference to a TextMeshProUGUI component that displays drop messages.
-    // If not assigned, one will be created automatically.
-    public TextMeshProUGUI buildingInfoDisplay;
 
-    void Awake()
+    public class GridDropArea : MonoBehaviour, IDropHandler
     {
-        // If no display is assigned, create one programmatically.
-        if (buildingInfoDisplay == null)
+        public float occupancyThreshold = 0.1f;
+        public float edgeMargin = 100f;
+        public TextMeshProUGUI buildingInfoDisplay;
+
+        private Canvas parentCanvas;
+        private Camera canvasCamera;
+
+        void Awake()
         {
-            Canvas canvas = FindObjectOfType<Canvas>();
-            if (canvas == null)
+            parentCanvas = GetComponentInParent<Canvas>();
+            if (parentCanvas == null)
             {
                 Debug.LogError("No Canvas found in the scene to attach the buildingInfoDisplay!");
                 return;
             }
 
-            GameObject textObj = new GameObject("BuildingInfoDisplay", typeof(TextMeshProUGUI));
-            textObj.transform.SetParent(canvas.transform, false);
-            buildingInfoDisplay = textObj.GetComponent<TextMeshProUGUI>();
+            canvasCamera = parentCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : parentCanvas.worldCamera;
 
-            // Set up the text properties.
-            buildingInfoDisplay.fontSize = 25; // Big text
-            buildingInfoDisplay.alignment = TextAlignmentOptions.Center;
-            buildingInfoDisplay.text = ""; // Start with empty text
-            buildingInfoDisplay.color = Color.white;
-
-            // Configure the RectTransform to anchor at the bottom left.
-            RectTransform rect = buildingInfoDisplay.GetComponent<RectTransform>();
-            rect.anchorMin = new Vector2(0, 0);
-            rect.anchorMax = new Vector2(0, 0);
-            rect.pivot = new Vector2(0, 0);
-            // Position it 50 pixels from the left and 50 pixels from the bottom.
-            rect.anchoredPosition = new Vector2(190, -40);
-            rect.sizeDelta = new Vector2(800, 150);
-        }
-    }
-
-    public void OnDrop(PointerEventData eventData)
-    {
-        DraggableBuilding draggable = eventData.pointerDrag.GetComponent<DraggableBuilding>();
-        if (draggable == null)
-            return;
-
-        RectTransform gridRect = GetComponent<RectTransform>();
-        RectTransform droppedRect = draggable.GetComponent<RectTransform>();
-
-        Vector2 localPos;
-        if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                gridRect,
-                eventData.position,
-                eventData.pressEventCamera,
-                out localPos))
-        {
-            draggable.ResetToInitialPosition();
-            return;
-        }
-
-        float halfGridWidth = gridRect.rect.width * 0.5f;
-        float halfGridHeight = gridRect.rect.height * 0.5f;
-        float halfObjWidth = droppedRect.rect.width * 0.5f;
-        float halfObjHeight = droppedRect.rect.height * 0.5f;
-
-        float clampedX = Mathf.Clamp(localPos.x, -halfGridWidth + halfObjWidth - edgeMargin, halfGridWidth - halfObjWidth + edgeMargin);
-        float clampedY = Mathf.Clamp(localPos.y, -halfGridHeight + halfObjHeight - edgeMargin, halfGridHeight - halfObjHeight + edgeMargin);
-        Vector2 finalPos = new Vector2(clampedX, clampedY);
-
-        bool overlap = false;
-        foreach (Transform child in transform)
-        {
-            if (child == draggable.transform)
-                continue;
-
-            RectTransform childRect = child.GetComponent<RectTransform>();
-            float buttonWidth = droppedRect.rect.width;
-            float buttonHeight = droppedRect.rect.height;
-            float thresholdWidth = occupancyThreshold * buttonWidth;
-            float thresholdHeight = occupancyThreshold * buttonHeight;
-            float xDiff = Mathf.Abs(childRect.anchoredPosition.x - finalPos.x);
-            float yDiff = Mathf.Abs(childRect.anchoredPosition.y - finalPos.y);
-
-            if (xDiff < thresholdWidth && yDiff < thresholdHeight)
+            if (buildingInfoDisplay == null)
             {
-                overlap = true;
-                break;
+                GameObject textObj = new GameObject("BuildingInfoDisplay", typeof(TextMeshProUGUI));
+                textObj.transform.SetParent(parentCanvas.transform, false);
+                buildingInfoDisplay = textObj.GetComponent<TextMeshProUGUI>();
+
+                buildingInfoDisplay.fontSize = 25;
+                buildingInfoDisplay.alignment = TextAlignmentOptions.Center;
+                buildingInfoDisplay.text = "";
+                buildingInfoDisplay.color = Color.white;
+
+                RectTransform rect = buildingInfoDisplay.GetComponent<RectTransform>();
+                rect.anchorMin = new Vector2(0, 0);
+                rect.anchorMax = new Vector2(0, 0);
+                rect.pivot = new Vector2(0, 0);
+                rect.anchoredPosition = new Vector2(400, -40);
+                rect.sizeDelta = new Vector2(800, 150);
             }
         }
 
-        if (overlap)
+        public void OnDrop(PointerEventData eventData)
         {
-            draggable.ResetToInitialPosition();
-        }
-        else
-        {
-            draggable.transform.SetParent(transform);
-            droppedRect.anchoredPosition = finalPos;
-            if (buildingInfoDisplay != null)
+            DraggableBuilding draggable = eventData.pointerDrag?.GetComponent<DraggableBuilding>();
+            if (draggable == null) return;
+
+            RectTransform gridRect = GetComponent<RectTransform>();
+            RectTransform droppedRect = draggable.GetComponent<RectTransform>();
+
+            if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                    gridRect,
+                    eventData.position,
+                    canvasCamera,
+                    out Vector2 localPos))
             {
-                buildingInfoDisplay.text = "Building placed: " + draggable.buildingName;
+                draggable.ResetToInitialPosition();
+                return;
+            }
+
+            float halfGridWidth = gridRect.rect.width * 0.5f;
+            float halfGridHeight = gridRect.rect.height * 0.5f;
+            float halfObjSize = 75f; // 150 / 2
+
+            float clampedX = Mathf.Clamp(localPos.x, -halfGridWidth + halfObjSize - edgeMargin, halfGridWidth - halfObjSize + edgeMargin);
+            float clampedY = Mathf.Clamp(localPos.y, -halfGridHeight + halfObjSize - edgeMargin, halfGridHeight - halfObjSize + edgeMargin);
+            Vector2 finalPos = new Vector2(clampedX, clampedY);
+
+            bool overlap = false;
+            foreach (Transform child in transform)
+            {
+                if (child == draggable.transform) continue;
+
+                RectTransform childRect = child.GetComponent<RectTransform>();
+                if (childRect == null) continue;
+
+                float thresholdW = occupancyThreshold * 150f;
+                float thresholdH = occupancyThreshold * 150f;
+                float xDiff = Mathf.Abs(childRect.anchoredPosition.x - finalPos.x);
+                float yDiff = Mathf.Abs(childRect.anchoredPosition.y - finalPos.y);
+
+                if (xDiff < thresholdW && yDiff < thresholdH)
+                {
+                    overlap = true;
+                    break;
+                }
+            }
+
+            if (overlap)
+            {
+                draggable.ResetToInitialPosition();
             }
             else
             {
-                Debug.LogError("buildingInfoDisplay is not assigned in the Inspector!");
+                draggable.transform.SetParent(transform, false);
+                draggable.transform.localScale = Vector3.one;
+
+                droppedRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+                droppedRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 150);
+
+                // ✅ Correct the position to where you saw it visually during drag
+                Vector2 correctedFinalPos = finalPos - draggable.pointerOffset;
+                droppedRect.anchoredPosition = correctedFinalPos;
+
+                if (buildingInfoDisplay != null)
+                {
+                    buildingInfoDisplay.text = "Building placed: " + draggable.name;
+                }
             }
         }
     }

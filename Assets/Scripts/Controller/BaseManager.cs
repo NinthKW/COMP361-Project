@@ -12,7 +12,7 @@ namespace Assets.Scripts.Controller
     public class BaseManager : MonoBehaviour
     {
         public static BaseManager Instance;
-        public List<Base> buildingList = new List<Base>();
+        public List<Base> buildingList;
 
         private string dbPath;
         void Awake()
@@ -33,7 +33,7 @@ namespace Assets.Scripts.Controller
         // Start is called before the first frame update
         void Start()
         {
-            LoadBase();
+
         }
 
         // Update is called once per frame
@@ -69,6 +69,9 @@ namespace Assets.Scripts.Controller
                             int resourceAmount = reader.GetInt32(5);
                             int resourceType = reader.GetInt32(6);
                             bool unlocked = reader.GetBoolean(7);
+                            bool placed = reader.GetBoolean(8);
+                            int x = reader.GetInt32(9);
+                            int y = reader.GetInt32(10);
 
 
                             Base building = new Base(
@@ -79,7 +82,10 @@ namespace Assets.Scripts.Controller
                                 cost,
                                 resourceAmount,
                                 resourceType,
-                                unlocked
+                                unlocked,
+                                placed,
+                                x,
+                                y
                             ); 
 
                             buildingList.Add(building);

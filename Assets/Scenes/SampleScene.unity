@@ -539,7 +539,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyTurnDelay: 1
-  dbName: URI=file:database.db
+  dbPath: URI=file:G:/Unity/Projects/COMP361-Project/Assets/StreamingAssets/database.db
   currentMission:
     id: 0
     name: 

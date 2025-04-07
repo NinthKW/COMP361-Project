@@ -10,6 +10,8 @@ namespace Assets.Scripts.Controller
     {
         public static GameManager Instance;
         public GameState currentState;
+        public Game currentGame;
+        private Dictionary<int, int> tempResourceAmounts = new Dictionary<int, int>();
 
         void Awake()
         {
@@ -36,7 +38,7 @@ namespace Assets.Scripts.Controller
         }
 
         void Start()
-        {
+        {   
             if (SceneManager.GetActiveScene().name != "WelcomePage")
             {
                 LoadGameState(GameState.WelcomePage);
@@ -86,19 +88,70 @@ namespace Assets.Scripts.Controller
             ChangeState(newState);
         }
 
+        public void NewGame()
+        {
+            currentGame = new Game();
+            Debug.Log("New game started with default settings.");
+        }
         public void LoadGame()
         {
+            // Define the database connection string.
+            string dbPath = "URI=file:" + Application.streamingAssetsPath + "/database.db";
+    
+            // Create a new game instance using the constructor that loads data from the database.
+            currentGame = new Game(dbPath);
+            Debug.Log("Game loaded from database: " + dbPath);
 
         }
 
         public void SaveGame()
         {
-
+            if (currentGame != null)
+            {
+            // Assuming you add a SaveGameData method in your Game class,
+            // call it to save all game data to the database.
+            currentGame.SaveGameData();
+            Debug.Log("Game saved to database.");
+            }
+            else
+            {
+                Debug.LogWarning("No game instance available to save.");
+            }   
         }
 
         public void QuitGame()
         {
             Application.Quit();
+        }
+
+        public void ChangeTempResource(int resourceId, int changeAmount)
+        {
+            tempResourceAmounts[resourceId] = currentGame.resourcesData.GetAmount(resourceId);
+            tempResourceAmounts[resourceId] += changeAmount;
+            Debug.Log("Temporary value for resource " + resourceId + " is now " + tempResourceAmounts[resourceId]);
+        }
+
+        public void CancelResourceChanges()
+        {
+            tempResourceAmounts.Clear();
+        }
+        public void ConfirmResourceChanges()
+        {
+            currentGame.resourcesData.UpdateAllResources(tempResourceAmounts);
+            tempResourceAmounts.Clear();
+            Debug.Log("Resource changes confirmed");
+        }
+        
+        public int GetResourceDisplayValue(int resourceId)
+        {
+            if (tempResourceAmounts.ContainsKey(resourceId))
+            {
+                return tempResourceAmounts[resourceId];
+            }
+            else
+            {
+                return currentGame.resourcesData.GetAmount(resourceId);
+            }
         }
     }
 }

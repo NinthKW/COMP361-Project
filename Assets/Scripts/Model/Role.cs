@@ -14,7 +14,12 @@ namespace Assets.Scripts.Model
             Engineer,
             Medic,
             Sniper,
-            Scout
+            Scout,
+            Assault,        
+            HeavyGunner,    
+            Recon,          
+            SpecialForces,
+            Infantry,
         }
 
         public RoleType Type { get; }
@@ -60,6 +65,41 @@ namespace Assets.Scripts.Model
                     MaxHealth = 90;
                     BaseAtk = 8;
                     BaseDef = 9;
+                    BaseAttackChance = 2;
+                    break;
+                case "assault":
+                    Type = RoleType.Assault;
+                    MaxHealth = 85;
+                    BaseAtk = 14;
+                    BaseDef = 7;
+                    BaseAttackChance = 2;
+                    break;
+                case "heavygunner":
+                    Type = RoleType.HeavyGunner;
+                    MaxHealth = 110;
+                    BaseAtk = 20;
+                    BaseDef = 6;
+                    BaseAttackChance = 1;
+                    break;
+                case "recon":
+                    Type = RoleType.Recon;
+                    MaxHealth = 80;
+                    BaseAtk = 16;
+                    BaseDef = 5;
+                    BaseAttackChance = 3;
+                    break;
+                case "specialforces":
+                    Type = RoleType.SpecialForces;
+                    MaxHealth = 95;
+                    BaseAtk = 18;
+                    BaseDef = 7;
+                    BaseAttackChance = 2;
+                    break;
+                case "infantry":
+                    Type = RoleType.Infantry;
+                    MaxHealth = 95;
+                    BaseAtk = 18;
+                    BaseDef = 7;
                     BaseAttackChance = 2;
                     break;
                 default:
