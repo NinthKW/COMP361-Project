@@ -25,7 +25,7 @@ public class WelcomePageUI : MonoBehaviour // Fardin
     void tempFunction()
     {
         GameManager.Instance.LoadGame();
-        GameManager.Instance.LoadGameState(GameState.HospitalPage);
+        GameManager.Instance.LoadGameState(GameState.TrainingPage);
     }
 
     void ClickedNewGame()

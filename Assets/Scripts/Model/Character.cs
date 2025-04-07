@@ -19,7 +19,7 @@ namespace Assets.Scripts.Model
         public int Def { get; set; }
         public int Shield { get; set; } = 0;
         public int Experience { get; set; } = 0;
-        public int Level { get; protected set; }
+        public int Level { get; set; }
         public int AttackChances { get; set; }
         public int MaxAttacksPerTurn { get; set; }
         public GameObject GameObject { get; private set; }

@@ -178,6 +178,7 @@ CREATE TABLE IF NOT EXISTS ENEMY_TYPES (
 
 -- Insert data (using INSERT OR IGNORE to prevent errors if data already exists)
 INSERT OR IGNORE INTO Resource (resource_id, name, current_amount) VALUES
+(0, 'Food', 1000),
 (1, 'Iron', 1000), (2, 'Wood', 800), (3, 'Gold', 600), (4, 'Stone', 900), (5, 'Crystal', 500),
 (6, 'Copper', 700), (7, 'Silver', 400), (8, 'Titanium', 350), (9, 'Uranium', 250), (10, 'Platinum', 150);
 
@@ -258,7 +259,7 @@ INSERT OR IGNORE INTO Infrastructure (building_id, name, description, level, cos
 (2, 'Barracks', 'Housing and training facility for soldiers', 2, 800, 40, 2, 1, 0, 0, 0),
 (3, 'Armory', 'Storage for weapons and ammunition', 2, 600, 30, 3, 1, 0, 0, 0),
 (4, 'Research Lab', 'Facility for developing new technologies', 4, 1200, 60, 4, 1, 0, 0, 0),
-(5, 'Power Station', 'Generates energy for the base', 3, 900, 45, 5, 1, 0, 0, 0),
+(5, 'Training Room', 'Level your soldiers', 3, 900, 45, 5, 1, 0, 0, 0),
 (6, 'Hospital', 'Provides healthcare and recovery for soldiers', 2, 700, 35, 6, 1, 0, 0, 0),
 (7, 'Radar Station', 'Monitors enemy movements and signals', 3, 1000, 50, 7, 1, 0, 0, 0),
 (8, 'Shield Generator', 'Defensive structure providing energy shields', 5, 1500, 75, 8, 1, 0, 0, 0);
