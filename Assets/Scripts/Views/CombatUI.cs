@@ -285,6 +285,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             }
             
             // Execute ability logic
+            AudioManager.Instance.PlaySound(selectedAbility.Name);
             if (!selectedAbility.Activate(targets)) Debug.LogError("Ability activation failed.");
             else 
             {
@@ -370,6 +371,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         UpdateCombatLog($"{attacker.Name} attacks {target.Name}!");
         
         attacker.AttackChances--;
+        AudioManager.Instance.PlaySound("Attack");
         
         yield return StartCoroutine(PlayAttackAnimation(attacker, target, attacker.GetAttackAmount(target)));
         PostAttackCleanup();
@@ -535,7 +537,9 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     {
         // TODO: Increase attack changes, level, etc. to test abilities
         if (isAttackExecuting) return;
+        if (character.IsDead()) return;
 
+        AudioManager.Instance.PlaySound("Select");
         // If in skill casting mode
         if (selectedAbility != null)
         {
@@ -969,7 +973,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         if (victory == false){
             CombatManager.Instance.SaveCombatResults(victory, "");
         }
-        StartCoroutine(ReturnToBaseAfterDelay(3f));
+        StartCoroutine(ReturnToBaseAfterDelay(1.0f));
     }
 
     void ShowEndMessage(bool victory)

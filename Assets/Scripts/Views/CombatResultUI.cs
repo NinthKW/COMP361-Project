@@ -43,14 +43,15 @@ public class CombatResultUI : MonoBehaviour
             soldierExpText.text = "";
         }
 
-        backToMissionButton.onClick.AddListener(backToMissionButtonClicked);
+        backToMissionButton.onClick.AddListener(BackToMissionButtonClicked);
     }
 
 
-    void backToMissionButtonClicked()
+    void BackToMissionButtonClicked()
     {
         // Load the mission scene
         GameManager.Instance.ChangeState(GameState.MissionPage);
         GameManager.Instance.LoadGameState(GameState.MissionPage);
+        AudioManager.Instance.PlayMusic("Menu");
     }
 }
