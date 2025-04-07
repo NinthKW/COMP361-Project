@@ -26,10 +26,10 @@ namespace Assets.Scripts.Controller
                 Destroy(gameObject);
             }
 
-            if (AudioManager.Instance == null)
-            {
-                AudioManager.Instance = gameObject.AddComponent<AudioManager>();
-            }
+            // if (AudioManager.Instance == null)
+            // {
+            //     AudioManager.Instance = gameObject.AddComponent<AudioManager>();
+            // }
             //// Initialize combat manager to sleep state when game starts
             //if (CombatManager.Instance.gameObject.activeSelf)
             //{

@@ -197,9 +197,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6f4f42f22327545a1852494f54cfb39d, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
-  dbName:
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dbName: 
 --- !u!1 &271742664
 GameObject:
   m_ObjectHideFlags: 0
@@ -227,8 +227,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a8bdeb3e0ac3eac4ba7a24e848100926, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   levels: []
 --- !u!4 &271742666
 Transform:
@@ -282,8 +282,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_RenderShadows: 1
   m_RequiresDepthTextureOption: 2
   m_RequiresOpaqueTextureOption: 2
@@ -409,8 +409,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_ComponentVersion: 1
   m_LightType: 4
   m_BlendStyleIndex: 0
@@ -491,8 +491,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d3869062a99108749947f257f6fe16ab, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   buildingList: []
 --- !u!4 &1023047853
 Transform:
@@ -536,19 +536,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7fc36b7d4c4391a45ae39d495fcf578d, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   enemyTurnDelay: 1
+  _availableSoldiers: []
+  _availableEnemies: []
+  _waitingEnemies: []
+  _inBattleSoldiers: []
   currentMission:
     id: 0
-    name:
-    description:
+    name: 
+    description: 
     difficulty: 0
     rewardMoney: 0
     rewardAmount: 0
     rewardResourceId: 0
-    terrain:
-    weather:
+    terrain: 
+    weather: 
     isCompleted: 0
     unlocked: 0
     terrainAtkEffect: 0
@@ -557,6 +561,7 @@ MonoBehaviour:
     weatherAtkEffect: 0
     weatherDefEffect: 0
     weatherHpEffect: 0
+    AssignedEnemies: []
 --- !u!4 &1044390040
 Transform:
   m_ObjectHideFlags: 0
@@ -599,16 +604,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 61ba951bc3e0258428d7224422692dff, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   currentState: 0
   currentGame:
     MissionsData: []
     basesData: []
     techData:
       techId: 0
-      techName:
-      description:
+      techName: 
+      description: 
       costMoney: 0
       costResourceId: 0
       costResourceAmount: 0
@@ -656,8 +661,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e9a2c43a2116e6047881f00c9b251c1d, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   missions: []
 --- !u!4 &1498107045
 Transform:
@@ -701,12 +706,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a0ae3ac71737d4aa89c283492a4729f4, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   musicSource: {fileID: 0}
-  musicVolume: 0.7
+  musicVolume: 0.5
   sfxSource: {fileID: 0}
-  sfxVolume: 0.2
+  sfxVolume: 0.9
   backgroundMusic:
   - {fileID: 8300000, guid: c8f1abee00e0d4772a1ffed0ff978063, type: 3}
   - {fileID: 8300000, guid: 1f952e3b647864d3c970ba1ead2b60cf, type: 3}
@@ -807,6 +812,6 @@ SceneRoots:
   - {fileID: 271742666}
   - {fileID: 1498107045}
   - {fileID: 1023047853}
+  - {fileID: 2011980347}
   - {fileID: 2142777017}
   - {fileID: 157686841}
-  - {fileID: 2011980347}
