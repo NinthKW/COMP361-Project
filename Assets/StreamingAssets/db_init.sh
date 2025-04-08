@@ -243,7 +243,7 @@ INSERT INTO MISSION_ENEMY VALUES
 (7, 6, 3), (7, 8, 1),
 (8, 3, 2), (8, 9, 1),
 (9, 9, 1), (9, 10, 1),
-(0, 1, 5), (10, 1, 4), (10, 3, 3);
+(10, 2, 5), (10, 1, 4), (10, 3, 3);
 
 -- Insert into MISSION_ASSIGNMENT (Ensuring each mission has soldiers assigned)
 INSERT INTO MISSION_ASSIGNMENT VALUES

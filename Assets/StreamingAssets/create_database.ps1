@@ -186,12 +186,16 @@ INSERT OR IGNORE INTO Resource (resource_id, name, current_amount) VALUES
 (4, 'Titanium', 350);
 
 INSERT OR IGNORE INTO Soldier (soldier_id, name, level, hp, max_hp, atk, def, role) VALUES
-(1, 'John', 10, 100, 100, 20, 15, 'Infantry'),
-(2, 'Alice', 5, 80, 80, 15, 10, 'Sniper'),
+(1, 'John', 5, 100, 100, 20, 15, 'Infantry'),
+(2, 'Alice', 3, 80, 80, 15, 10, 'Sniper'),
 (3, 'Bob', 7, 120, 120, 25, 20, 'Tank'),
-(4, 'Charlie', 10, 110, 110, 22, 17, 'Engineer'),
-(5, 'David', 20, 95, 95, 19, 14, 'Medic'),
-(6, 'Henry', 7, 130, 130, 27, 22, 'Infantry');
+(4, 'Eve', 4, 90, 90, 18, 12, 'Scout'),
+(5, 'Charlie', 6, 110, 110, 22, 17, 'Engineer'),
+(6, 'David', 5, 95, 95, 19, 14, 'Medic'),
+(7, 'Sophia', 4, 85, 85, 16, 11, 'Assault'),
+(8, 'James', 6, 115, 115, 23, 18, 'HeavyGunner'),
+(9, 'Olivia', 3, 75, 75, 14, 9, 'Recon'),
+(10, 'Henry', 7, 300, 300, 75, 50, 'SpecialForces');
 
 INSERT OR IGNORE INTO Weapon (weapon_id, name, description, damage, cost, resource_amount, resource_type, unlocked) VALUES
 (1, 'Rifle', 'Standard issue rifle', 30, 100, 10, 1, 1), (2, 'Sniper', 'Long-range precision rifle', 50, 150, 15, 2, 1),
@@ -209,30 +213,52 @@ INSERT OR IGNORE INTO Weather (name, atk_effect, def_effect, hp_effect) VALUES
 ('Snowy', -10, 5, -10), ('Windy', 5, -5, 0), ('Heatwave', 10, -10, -5), ('Asteroid Shower', -15, 20, -20);
 
 INSERT OR IGNORE INTO Mission (mission_id, name, description, difficulty, reward_money, reward_amount, reward_resource, terrain, weather, unlocked, cleared) VALUES
-(1, 'Recon', 'Scout enemy territory', 2, 100, 10, 1, 'Plains', 'Sunny', 1, 0),
-(2, 'Sabotage', 'Destroy enemy supplies', 4, 200, 15, 2, 'Forest', 'Rainy', 1, 0),
-(3, 'Rescue', 'Save hostages from enemy capture', 3, 150, 12, 3, 'Mountains', 'Stormy', 1, 0),
-(4, 'Assault', 'Attack and capture an enemy outpost', 5, 300, 20, 4, 'Desert', 'Foggy', 1, 0),
-(5, 'Defense', 'Hold the frontline against enemy attacks', 4, 180, 14, 5, 'Swamp', 'Snowy', 1, 0),
-(6, 'Supply Raid', 'Seize enemy supply convoys', 3, 120, 10, 6, 'Plains', 'Sunny', 1, 0),
-(7, 'Infiltration', 'Gather intel from enemy base', 4, 250, 18, 7, 'Forest', 'Rainy', 1, 0),
-(8, 'Base Defense', 'Defend our main operations base', 5, 350, 25, 8, 'Mountains', 'Stormy', 1, 0),
-(9, 'Elimination', 'Hunt down a high-value target', 6, 400, 30, 9, 'Desert', 'Foggy', 1, 0),
-(10, 'Final Assault', 'Massive attack on enemy headquarters', 7, 500, 40, 10, 'Swamp', 'Snowy', 1, 0);
+(1, 'Shadow Recon', 'Infiltrate a Black Horizon outpost and gather intelligence.', 3, 120, 15, 1, 'Forest', 'Rainy', 1, 0),
+(2, 'Data Extraction', 'Steal crucial data from a secret research lab.', 4, 180, 20, 2, 'Alien Ruins', 'Foggy', 1, 0),
+(3, 'Supply Interdiction', 'Destroy Black Horizon''s resource supply lines.', 4, 150, 18, 3, 'Plains', 'Sunny', 1, 0),
+(4, 'Elite Guard Assault', 'Attack and eliminate a Black Horizon elite squad.', 5, 250, 22, 4, 'Mountains', 'Snowy', 1, 0),
+(5, 'Weapon Cache Raid', 'Seize advanced weapon samples and destroy the storage facility.', 6, 300, 25, 5, 'Desert', 'Heatwave', 1, 0),
+(6, 'Facility Destruction', 'Sabotage a research facility to halt enemy progress.', 7, 400, 28, 6, 'Swamp', 'Stormy', 1, 0),
+(7, 'Stealth Infiltration', 'Sneak into and investigate the Black Horizon command center.', 6, 350, 26, 7, 'Caves', 'Windy', 1, 0),
+(8, 'The Gauntlet', 'Endure the enemy''s desperate counterattack and defend the facility.', 8, 500, 30, 8, 'Alien Ruins', 'Asteroid Shower', 1, 0),
+(9, 'Final Showdown', 'Assault the Black Horizon main lab and end their operations.', 9, 600, 35, 9, 'Mountains', 'Stormy', 1, 0),
+(10, 'Clean Sweep', 'Search and eliminate all remaining Black Horizon forces.', 10, 800, 50, 10, 'Plains', 'Sunny', 1, 0);
 
 INSERT OR IGNORE INTO ENEMY_TYPES (et_ID, et_name, HP, base_ATK, base_DPS, exp_reward) VALUES
-(1, 'Grunt', 100, 10, 5, 20), (2, 'Sniper', 80, 20, 10, 20), (3, 'Tank', 200, 30, 15, 30), (4, 'Elite', 150, 25, 12, 50),
-(5, 'Commander', 250, 40, 20, 60), (6, 'Scout', 90, 15, 7, 30), (7, 'Heavy Gunner', 180, 35, 18, 60), (8, 'Warrior', 160, 28, 14, 80),
-(9, 'Assassin', 110, 22, 11, 90), (10, 'Boss', 500, 50, 25, 100);
+(1, 'Recon Drone', 50, 8, 4, 10),
+(2, 'Heavy Guard', 120, 15, 7, 20),
+(3, 'Experimental Tank', 180, 18, 10, 20),
+(4, 'Black Ops Sniper', 60, 20, 8, 30),
+(5, 'Mech Soldier', 100, 14, 7, 50),
+(6, 'Cyber Assassin', 90, 18, 9, 50),
+(7, 'Bioengineered Beast', 150, 22, 12, 70),
+(8, 'Psyker', 80, 12, 10, 70),
+(9, 'Prototype AI', 200, 25, 15, 90),
+(10, 'Black Horizon Commander', 300, 30, 20, 100);
 
 INSERT OR IGNORE INTO MISSION_ENEMY (mission_id, et_id, count) VALUES
-(1, 1, 10), (1, 2, 5), (2, 2, 15), (2, 3, 7), (3, 3, 20), (3, 4, 8), (4, 4, 25), (4, 5, 12),
-(5, 5, 30), (5, 6, 10), (6, 6, 12), (6, 7, 5), (7, 7, 15), (7, 8, 7), (8, 8, 18), (8, 9, 9),
-(9, 9, 20), (9, 10, 15), (10, 10, 30), (10, 1, 20);
+(1, 1, 5), (1, 2, 2),
+(2, 2, 3), (2, 3, 1),
+(3, 1, 4), (3, 2, 2),
+(4, 2, 3), (4, 4, 2),
+(5, 3, 2), (5, 4, 1),
+(6, 7, 2), (6, 8, 1),
+(7, 6, 3), (7, 8, 1),
+(8, 3, 2), (8, 9, 1),
+(9, 9, 1), (9, 10, 1),
+(10, 2, 5), (10, 1, 4), (10, 3, 3);
 
 INSERT OR IGNORE INTO MISSION_ASSIGNMENT (mission_id, soldier_id) VALUES
-(1, 1), (1, 2), (2, 3), (2, 4), (3, 5), (3, 6), (4, 7), (4, 8), (5, 9), (5, 10),
-(6, 1), (6, 3), (7, 2), (7, 4), (8, 5), (8, 7), (9, 6), (9, 8), (10, 9), (10, 10);
+(1, 1), (1, 2), 
+(2, 3), (2, 4),
+(3, 5), (3, 6),
+(4, 7), (4, 8),
+(5, 9), (5, 10),
+(6, 1), (6, 3),
+(7, 2), (7, 4),
+(8, 5), (8, 7),
+(9, 6), (9, 8),
+(10, 9), (10, 10);
 
 INSERT OR IGNORE INTO TECHNOLOGY (tech_id, tech_name, description, cost_money, cost_resources_id, cost_resources_amount, cost_points, prerequisite_id, unlocks_role_id, unlocks_weapon_id, unlocks_equipment_id, unlocked) VALUES
 (1, 'Advanced Tactics', 'Enhance soldier strategies', 100.00, 1, 10, 50, NULL, 1, 1, 1, 1),
