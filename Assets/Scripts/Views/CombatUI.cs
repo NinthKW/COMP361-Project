@@ -8,7 +8,22 @@ using Assets.Scripts.Controller;
 using System.Collections.Generic;
 
 public class CombatUI : MonoBehaviour, IPointerClickHandler
-{
+{   
+    public static CombatUI Instance;
+
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
     #region UI Components
     [Header("Unit Container Settings")]
     [SerializeField] private Transform combatUnitContainer;
@@ -135,11 +150,11 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     }
     void CreateSoldierCards()
     {
-        int midX = (Screen.width / 2) - 200;
+        int midX = (Screen.width / 2) - 220;
         int midY = Screen.height / 2;
         
         // Adjust these values until the spacing feels right.
-        float horizontalOffset = 50f;   // Increase this if soldiers are too close horizontally.
+        float horizontalOffset = 70f;   // Increase this if soldiers are too close horizontally.
         float verticalSpacing = 70f;    // Increase this if soldiers are too close vertically.
         
         allyPositions = new List<Vector3>
@@ -165,22 +180,31 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
     void CreateEnemyCards()
     {
-        int midX = (Screen.width / 2) + 110;
-        int midY = Screen.height / 2;
-        
-        // Adjust these values until the spacing feels right.
-        float horizontalOffset = 70f;   // Increase if enemies are too close horizontally.
-        float verticalSpacing = 70f;    // Increase if enemies are too close vertically.
-        
-        enemyPositions = new List<Vector3>
-        {
-            new Vector3(midX - horizontalOffset, midY + verticalSpacing * 2, 0),
-            new Vector3(midX + horizontalOffset, midY + verticalSpacing, 0),
-            new Vector3(midX - horizontalOffset, midY, 0),
-            new Vector3(midX + horizontalOffset, midY - verticalSpacing, 0),
-            new Vector3(midX - horizontalOffset, midY - verticalSpacing * 2, 0),
-            new Vector3(midX + horizontalOffset * 2, midY, 0)
-        };
+    int midX = (Screen.width / 2) + 190;
+    int midY = Screen.height / 2;
+    
+    // Base values for spacing
+    float horizontalOffset = 95f;
+    float verticalSpacing = 120f;
+    
+    // Extra adjustments for moving the formation further right and increasing spacing
+    float extraRightShift = 80f;       // Additional shift to the right
+    float spacingMultiplier = 1.2f;      // Increase spacing by 20%
+
+    enemyPositions = new List<Vector3>
+    {
+        // Column 1 (left-most tip): shift right by extraRightShift
+        new Vector3(midX - 2 * horizontalOffset + extraRightShift, midY, 0),
+
+        // Column 2 (middle column: 2 enemies, spaced vertically with multiplier)
+        new Vector3(midX - horizontalOffset + extraRightShift, midY + (verticalSpacing * spacingMultiplier) / 2, 0),
+        new Vector3(midX - horizontalOffset + extraRightShift, midY - (verticalSpacing * spacingMultiplier) / 2, 0),
+
+        // Column 3 (right column: 3 enemies, evenly spaced vertically)
+        new Vector3(midX + extraRightShift, midY + verticalSpacing * spacingMultiplier, 0),
+        new Vector3(midX + extraRightShift, midY, 0),
+        new Vector3(midX + extraRightShift, midY - verticalSpacing * spacingMultiplier, 0)
+    };
 
         foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
         {
@@ -427,19 +451,14 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             return;
         }
 
-        // Calculate effective damage considering defense
-        int reducedDamage = Mathf.Max(0, damage - target.Def);
-
-        if (reducedDamage <= 0) reducedDamage = 1; // Ensure minimum damage of 1
-
-        Debug.Log($"Damage: {damage}, Defense: {target.Def}, Reduced Damage: {reducedDamage}");
+        Debug.Log($"Damage: {damage}, Defense: {target.Def}, Reduced Damage: {damage}");
 
         // Create Damage Text
         GameObject damageTextObj = new GameObject("DamageText");
         damageTextObj.transform.SetParent(canvas.transform, false);
 
         TextMeshProUGUI textMesh = damageTextObj.AddComponent<TextMeshProUGUI>();
-        textMesh.text = $"-{reducedDamage} HP";
+        textMesh.text = $"-{damage} HP";
         textMesh.fontSize = 36;
         textMesh.color = Color.red;
         textMesh.alignment = TextAlignmentOptions.Center;
@@ -448,6 +467,36 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         // Set position to above the target (converted from world to screen coordinates)
         Vector3 screenPosition = (target.GameObject.transform.position + new Vector3(0, 2f, 0));
         damageTextObj.transform.position = screenPosition;
+
+        // Start fade-out coroutine
+        StartCoroutine(FadeAndDestroyText(textMesh));
+    }
+
+    public void ShowHealText(Character target, int healAmount)
+    {
+        Canvas canvas = FindObjectOfType<Canvas>();
+
+        if (canvas == null)
+        {
+            Debug.LogError("No Canvas found in the scene!");
+            return;
+        }
+
+        Debug.Log($"ShowHealText is called, amount: {healAmount}");
+        // Create Heal Text
+        GameObject healTextObj = new GameObject("HealText");
+        healTextObj.transform.SetParent(canvas.transform, false);
+
+        TextMeshProUGUI textMesh = healTextObj.AddComponent<TextMeshProUGUI>();
+        textMesh.text = $"+{healAmount} HP";
+        textMesh.fontSize = 36;
+        textMesh.color = Color.green;
+        textMesh.alignment = TextAlignmentOptions.Center;
+        textMesh.raycastTarget = false;
+
+        // Set position to above the target (converted from world to screen coordinates)
+        Vector3 screenPosition = (target.GameObject.transform.position + new Vector3(0, 2f, 0));
+        healTextObj.transform.position = screenPosition;
 
         // Start fade-out coroutine
         StartCoroutine(FadeAndDestroyText(textMesh));
@@ -880,7 +929,8 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     }
 
     void HandleRetreatConfirmed(RetreatConfirmation window)
-    {
+    {   
+        CombatManager.Instance.RemoveTerrainAndWeatherEffects(CombatManager.Instance.currentMission);
         Destroy(window.gameObject);
         OnCombatEnd(false);
     }

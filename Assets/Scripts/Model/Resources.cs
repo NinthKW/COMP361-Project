@@ -15,27 +15,23 @@ namespace Assets.Scripts.Model
         {
             resourceType = new Dictionary <int, (string, int, string)>
             {
-                { 0, ("Food", 100, "Food is essential for Soldiers")},
-                { 1, ("Wood", 100, "Wood is used for building your base")},
-                { 2, ("Stone", 100, "Stone is used for building your base")},
-                { 3, ("Metal", 100, "Metal is used for building your base and ammo")},
-                { 4, ("Fuel", 50, "Fuel is used for missions")},
-                { 5, ("Ammo", 50, "Ammo is used for combat.")},
-                { 6, ("Medicine", 50, "Medicine is used to heal soldiers")}
+                { 0, ("Food", 1000, "Food is essential for Soldiers")},
+                { 1, ("Money", 1000, "Money is used to purchase and unlock goods")},
+                { 2, ("Iron", 1000, "Iron is used for building your base")},
+                { 3, ("Wood", 800, "Wood is used for building your base")},
+                { 4, ("Titanium", 350, "Titanium is used for building your base")},
             };
         }
 
-        public Resources(int food, int wood, int stone, int metal, int fuel, int ammo, int medecine)
+        public Resources(int food, int money, int iron, int wood, int titanium)
         {
             resourceType = new Dictionary <int, (string, int, string)>
             {
                 { 0, ("Food", food, "Food is essential for Soldiers")},
-                { 1, ("Wood", wood, "Wood is used for building your base")},
-                { 2, ("Stone", stone, "Stone is used for building your base")},
-                { 3, ("Metal", metal, "Metal is used for building your base and ammo")},
-                { 4, ("Fuel", fuel, "Fuel is used for missions")},
-                { 5, ("Ammo", ammo, "Ammo is used for combat.")},
-                { 6, ("Medicine", medecine, "Medicine is used to heal soldiers")}
+                { 1, ("Money", money, "Money is used to purchase and unlock goods")},
+                { 2, ("Iron", iron, "Iron is used for building your base")},
+                { 3, ("Wood", wood, "Wood is used for building your base")},
+                { 4, ("Titanium", titanium, "Titanium is used for building your base")},
             };
         }
 
