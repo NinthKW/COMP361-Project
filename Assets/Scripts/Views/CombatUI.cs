@@ -919,10 +919,12 @@ void CreateEnemyCards()
     {
         if (enemyCountText == null) return;
 
-        int activeEnemies = CombatManager.Instance.CountAliveEnemies();
+        int activeEnemies = CombatManager.Instance.GetInBattleEnemies().Count;
         int waitingEnemies = CombatManager.Instance.GetWaitingEnemies().Count;
 
-        enemyCountText.text = $"Enemies Remaining: {activeEnemies + waitingEnemies}";
+        enemyCountText.text = $"Enemies Remaining: {activeEnemies + waitingEnemies}\n" +
+                              $"Active: {activeEnemies}\n" +
+                              $"Waiting: {waitingEnemies}";
     }
 
     private void UpdateAbilityCountdownDisplay()
