@@ -35,8 +35,12 @@ public class MainMenuPageUI : MonoBehaviour // Fardin, Ziyuan Wang
     }
 
     void ClickedStaff()
-    {
+    {   
+        StaffManager.Instance.Load();
+
         GameManager.Instance.LoadGameState(GameState.StaffPage);
+
+ 
     }
 
     void ClickedMission()

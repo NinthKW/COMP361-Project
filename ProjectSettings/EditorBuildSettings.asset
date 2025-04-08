@@ -41,4 +41,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/TrainingPage.unity
     guid: 139f9fedbf2d37b4780b0fa25dd9158a
+  - enabled: 1
+    path: Assets/Scenes/StaffPage.unity
+    guid: e636a9185319c8141a1dbfcea2fa8857
   m_configObjects: {}
