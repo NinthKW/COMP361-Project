@@ -7,8 +7,8 @@ namespace Assets.Scripts.Model
     [System.Serializable]
     public class Inventory
     {
-        private List<Weapon> weapons; // List of weapon items
-        private List<Equipment> equipments; // List of equipment items
+        public List<Weapon> weapons; // List of weapon items
+        public List<Equipment> equipments; // List of equipment items
 
         // Constructor: Initialize the lists
         public Inventory()

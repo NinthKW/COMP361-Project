@@ -594,7 +594,6 @@ namespace Assets.Scripts.Controller
 
                 connection.Close();
             }
-            Game.Instance.SaveSoldierData();
 
             Debug.Log($"Rewards applied successfully: Money +{mission.rewardMoney}, Resource ID {mission.rewardResourceId} +{mission.rewardAmount}");
         }

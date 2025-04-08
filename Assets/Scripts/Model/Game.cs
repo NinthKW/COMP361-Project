@@ -97,8 +97,8 @@ namespace Assets.Scripts.Model
                             int rewardResourceId = reader.GetInt32(6);
                             string terrain = reader.GetString(7);
                             string weather = reader.GetString(8);
-                            bool unlocked = reader.GetBoolean(9);
-                            bool isclear = reader.GetBoolean(10);
+                            bool unlocked = isFirstMission;
+                            bool isclear = false;
 
                             // 加载 Terrain 和 Weather 效果
                             int terrainAtkEffect = 0;
@@ -421,7 +421,9 @@ namespace Assets.Scripts.Model
             }
 
 
-                        // Missions
+            // Missions
+            this.MissionsData = new List<Mission>();
+
             using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
@@ -430,7 +432,6 @@ namespace Assets.Scripts.Model
                     command.CommandText = "SELECT mission_id, name, description, difficulty, reward_money, reward_amount, reward_resource, terrain, weather, unlocked, cleared FROM Mission ORDER BY mission_id ASC;";
                     using (IDataReader reader = command.ExecuteReader())
                     {
-                        bool isFirstMission = true;
                         while (reader.Read())
                         {
                             int id = reader.GetInt32(0);
@@ -543,7 +544,6 @@ namespace Assets.Scripts.Model
                             }
 
                             this.MissionsData.Add(mission);
-                            isFirstMission = false;
                         }
                     }
                 }
@@ -761,7 +761,8 @@ namespace Assets.Scripts.Model
                             reward_resource = @rewardResourceId, 
                             terrain = @terrain, 
                             weather = @weather, 
-                            unlocked = @isUnlocked
+                            unlocked = @isUnlocked,
+                            cleared = @isCleared
                             WHERE mission_id = @id;";
                         command.Parameters.Add(new SqliteParameter("@name", mission.name));
                         command.Parameters.Add(new SqliteParameter("@description", mission.description));
@@ -771,13 +772,76 @@ namespace Assets.Scripts.Model
                         command.Parameters.Add(new SqliteParameter("@rewardResourceId", mission.rewardResourceId));
                         command.Parameters.Add(new SqliteParameter("@terrain", mission.terrain));
                         command.Parameters.Add(new SqliteParameter("@weather", mission.weather));
-                        command.Parameters.Add(new SqliteParameter("@isUnlocked", mission.isCompleted ? 1 : 0));
+                        command.Parameters.Add(new SqliteParameter("@isUnlocked", mission.unlocked ? 1 : 0));
+                        command.Parameters.Add(new SqliteParameter("@isCleared", mission.isCompleted ? 1 : 0));
                         command.Parameters.Add(new SqliteParameter("@id", mission.id));
                         command.ExecuteNonQuery();
                     }
                 }
+
+                Dictionary<string, int> enemyTypeLookup = new Dictionary<string, int>();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT et_ID, et_name FROM ENEMY_TYPES;";
+                    using (IDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int etId = reader.GetInt32(0);
+                            string etName = reader.GetString(1);
+                            enemyTypeLookup[etName] = etId;
+                        }
+                        reader.Close();
+                    }
+                }
+
+                foreach (var mission2 in this.MissionsData)
+                {
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = "DELETE FROM MISSION_ENEMY WHERE mission_id = @missionId;";
+                        command.Parameters.Add(new SqliteParameter("@missionId", mission2.id));
+                        command.ExecuteNonQuery();
+                    }
+
+                    Dictionary<string, int> enemyCounts = new Dictionary<string, int>();
+                    foreach (var enemy in mission2.AssignedEnemies)
+                    {
+                        if (enemyCounts.ContainsKey(enemy.Name))
+                        {
+                            enemyCounts[enemy.Name]++;
+                        }
+                        else
+                        {
+                            enemyCounts[enemy.Name] = 1;
+                        }
+                    }
+
+                    foreach (var pair in enemyCounts)
+                    {
+                        string enemyTypeName = pair.Key;
+                        int count = pair.Value;
+                        int enemyTypeId;
+                        if (enemyTypeLookup.TryGetValue(enemyTypeName, out enemyTypeId))
+                        {
+                            using (var command = connection.CreateCommand())
+                            {
+                                command.CommandText = "INSERT INTO MISSION_ENEMY (mission_id, et_id, count) VALUES (@missionId, @etId, @count);";
+                                command.Parameters.Add(new SqliteParameter("@missionId", mission2.id));
+                                command.Parameters.Add(new SqliteParameter("@etId", enemyTypeId));
+                                command.Parameters.Add(new SqliteParameter("@count", count));
+                                command.ExecuteNonQuery();
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogWarning("Enemy type not found in lookup: " + enemyTypeName);
+                        }
+                    }
+                }
+                
                 connection.Close();
-            }
+            }        
 
             // soldiers
             using (var connection = new SqliteConnection(dbPath))
@@ -838,6 +902,66 @@ namespace Assets.Scripts.Model
                 }
                 connection.Close();
             }
+
+            // Weapons
+            using (var connection = new SqliteConnection(dbPath))
+            {
+                connection.Open();
+                foreach (var weapon in inventory.weapons)
+                {
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = @"UPDATE Weapon SET 
+                            name = @name, 
+                            description = @description, 
+                            damage = @damage, 
+                            cost = @cost, 
+                            resource_amount = @resourceAmount, 
+                            resource_type = @resourceType
+                            WHERE weapon_id = @weaponId;";
+                        command.Parameters.Add(new SqliteParameter("@name", weapon.name));
+                        command.Parameters.Add(new SqliteParameter("@description", weapon.description));
+                        command.Parameters.Add(new SqliteParameter("@damage", weapon.damage));
+                        command.Parameters.Add(new SqliteParameter("@cost", weapon.cost));
+                        command.Parameters.Add(new SqliteParameter("@resourceAmount", weapon.resource_amount));
+                        command.Parameters.Add(new SqliteParameter("@resourceType", weapon.resource_type));
+                        command.Parameters.Add(new SqliteParameter("@weaponId", weapon.weapon_id));
+                        command.ExecuteNonQuery();
+                    }
+                }
+                connection.Close();
+            }
+
+            // Equipment
+            using (var connection = new SqliteConnection(dbPath))
+            {
+                connection.Open();
+                foreach (var equipment in inventory.equipments)
+                {
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = @"UPDATE Equipment SET 
+                            name = @name, 
+                            hp = @hp, 
+                            def = @def, 
+                            atk = @atk, 
+                            cost = @cost, 
+                            resource_amount = @resourceAmount, 
+                            resource_type = @resourceType
+                            WHERE equipment_id = @equipmentId;";
+                        command.Parameters.Add(new SqliteParameter("@name", equipment.name));
+                        command.Parameters.Add(new SqliteParameter("@hp", equipment.hp));
+                        command.Parameters.Add(new SqliteParameter("@def", equipment.def));
+                        command.Parameters.Add(new SqliteParameter("@atk", equipment.atk));
+                        command.Parameters.Add(new SqliteParameter("@cost", equipment.cost));
+                        command.Parameters.Add(new SqliteParameter("@resourceAmount", equipment.resource_amount));
+                        command.Parameters.Add(new SqliteParameter("@resourceType", equipment.resource_type));
+                        command.Parameters.Add(new SqliteParameter("@equipmentId", equipment.equipment_id));
+                        command.ExecuteNonQuery();
+                    }
+                }
+                connection.Close();
+            }
         }
 
         public List<Soldier> GetSoldiers()
@@ -851,44 +975,6 @@ namespace Assets.Scripts.Model
                 }
             }
             return soldiers;
-        }
-
-        public void SaveSoldierData() 
-        {            
-            string dbPath = "URI=file:" + Application.streamingAssetsPath + "/database.db";
-
-            using (var connection = new SqliteConnection(dbPath))
-            {
-                connection.Open();
-                foreach (var character in this.soldiersData)
-                {
-                    using (var command = connection.CreateCommand())
-                    {
-                        if (character is Soldier soldier)
-                        {
-                            command.CommandText = @"UPDATE Soldier SET 
-                                name = @name, 
-                                level = @level, 
-                                hp = @health, 
-                                max_hp = @maxHealth, 
-                                atk = @attack, 
-                                def = @defense,
-                                role = @roleName
-                                WHERE soldier_id = @id;";
-                            command.Parameters.Add(new SqliteParameter("@name", soldier.Name));
-                            command.Parameters.Add(new SqliteParameter("@level", soldier.Level));
-                            command.Parameters.Add(new SqliteParameter("@health", soldier.Health));
-                            command.Parameters.Add(new SqliteParameter("@maxHealth", soldier.MaxHealth));
-                            command.Parameters.Add(new SqliteParameter("@attack", soldier.Atk));
-                            command.Parameters.Add(new SqliteParameter("@defense", soldier.Def));
-                            command.Parameters.Add(new SqliteParameter("@roleName", soldier.GetRoleName()));
-                            command.Parameters.Add(new SqliteParameter("@id", soldier.id));
-                            command.ExecuteNonQuery();
-                        }
-                    }
-                }
-                connection.Close();
-            }
         }
     }
 }
