@@ -1,0 +1,70 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using Assets.Scripts.Model;
+using Assets.Scripts.Controller;
+using TMPro;
+using ModelResources = Assets.Scripts.Model.Resources;
+
+public class ResourceDisplayUI : MonoBehaviour
+{
+    // The container where resource items will be displayed 
+    public Transform resourcesContainer;
+
+    // The prefab used to display each resource item 
+    public GameObject resourceListItemPrefab;
+
+    
+    public TextMeshProUGUI resourceHeaderTextObject;
+
+    public string resourcesHeaderText = "Resources";
+
+    void Start()
+    {
+        // If a header object is already in place, update its text
+        if (resourceHeaderTextObject != null)
+        {
+            resourceHeaderTextObject.text = resourcesHeaderText;
+        }
+        PopulateResources();
+    }
+
+    void PopulateResources()
+    {
+        // Clear any existing children from the resources container
+        foreach (Transform child in resourcesContainer)
+        {
+            Destroy(child.gameObject);
+        }
+        
+
+        // Retrieve the data from ResourceManager
+        ModelResources resData = ResourceManager.Instance.GetResources();
+
+        // Iterate through resource IDs 0 to 4
+        for (int id = 0; id < 5; id++)
+        {
+            string resName = resData.GetName(id);
+            int resAmount = resData.GetAmount(id);
+
+            // Instantiate a new resource list item prefab under the resources container
+            GameObject newItem = Instantiate(resourceListItemPrefab, resourcesContainer);
+
+            // To get a TextMeshProUGUI component
+            TextMeshProUGUI tmp = newItem.GetComponent<TextMeshProUGUI>();
+            if (tmp != null)
+            {
+                tmp.text = $"{resName}: {resAmount}";
+            }
+            else
+            {
+                Text txt = newItem.GetComponent<Text>();
+                if (txt != null)
+                {
+                    txt.text = $"{resName}: {resAmount}";
+                }
+            }
+        }
+    }
+}
