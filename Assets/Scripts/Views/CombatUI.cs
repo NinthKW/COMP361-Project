@@ -143,87 +143,111 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     #endregion
 
     #region UI Creation
-    void CreateCharacterDisplays()
+    // Call this method to create all character displays.
+void CreateCharacterDisplays()
+{
+    CreateSoldierCards();
+    CreateEnemyCards();
+}
+
+/// <summary>
+/// Computes a screen position from normalized [0,1] coordinates (relative to Screen width/height).
+/// For example, (0.5,0.5) returns the exact screen center.
+/// </summary>
+Vector3 GetScreenPosition(float normalizedX, float normalizedY)
+{
+    return new Vector3(Screen.width * normalizedX, Screen.height * normalizedY, 0);
+}
+
+void CreateSoldierCards()
+{
+    // Place soldier formation on the left side (e.g., 40% from the left)
+    float baseX = 0.33f;
+    float baseY = 0.5f; // Center vertically
+    Vector3 center = GetScreenPosition(baseX, baseY);
+
+    // Offsets defined as a fraction of the overall screen dimensions.
+    // Adjust these values until the spacing looks good on your devices.
+    float horizontalOffsetPercent = 0.065f;  // 5% of Screen.width
+    float verticalSpacingPercent = 0.11f;   // 5% of Screen.height
+
+    // Compute positions relative to our formation center.
+    allyPositions = new List<Vector3>
     {
-        CreateSoldierCards();
-        CreateEnemyCards();
+        center + new Vector3(-Screen.width * horizontalOffsetPercent, Screen.height * verticalSpacingPercent * 2, 0),
+        center + new Vector3(Screen.width * horizontalOffsetPercent, Screen.height * verticalSpacingPercent, 0),
+        center + new Vector3(-Screen.width * horizontalOffsetPercent, 0, 0),
+        center + new Vector3(Screen.width * horizontalOffsetPercent, -Screen.height * verticalSpacingPercent, 0),
+        center + new Vector3(-Screen.width * horizontalOffsetPercent, -Screen.height * verticalSpacingPercent * 2, 0)
+    };
+
+    foreach (var soldier in CombatManager.Instance.GetInBattleSoldiers())
+    {
+        if (soldier is not Soldier validSoldier)
+            continue;
+
+        // Use the index in the list to assign a position.
+        int index = CombatManager.Instance.GetInBattleSoldiers().IndexOf(soldier);
+        var card = CreateCharacterCard(validSoldier, true, allyPositions[index]);
+        soldierCards.Add(card);
+        validSoldier.SetGameObject(card);
     }
-    void CreateSoldierCards()
-    {
-        int midX = (Screen.width / 2) - 220;
-        int midY = Screen.height / 2;
-        
-        // Adjust these values until the spacing feels right.
-        float horizontalOffset = 70f;   // Increase this if soldiers are too close horizontally.
-        float verticalSpacing = 70f;    // Increase this if soldiers are too close vertically.
-        
-        allyPositions = new List<Vector3>
-        {
-            new Vector3(midX - horizontalOffset, midY + verticalSpacing * 2, 0),
-            new Vector3(midX + horizontalOffset, midY + verticalSpacing, 0),
-            new Vector3(midX - horizontalOffset, midY, 0),
-            new Vector3(midX + horizontalOffset, midY - verticalSpacing, 0),
-            new Vector3(midX - horizontalOffset, midY - verticalSpacing * 2, 0)
-        };
+}
 
-        foreach (var soldier in CombatManager.Instance.GetInBattleSoldiers())
-        {
-            if (soldier is not Soldier validSoldier) continue;
-            
-            var index = CombatManager.Instance.GetInBattleSoldiers().IndexOf(soldier);
-            var card = CreateCharacterCard(validSoldier, true, allyPositions[index]);
-            soldierCards.Add(card);
-            validSoldier.SetGameObject(card);
-        }
-    }
+void CreateEnemyCards()
+{
+    // Place enemy formation on the right side (e.g., 60% from the left)
+    float baseX = 0.71f;
+    float baseY = 0.5f;
+    Vector3 center = GetScreenPosition(baseX, baseY);
 
-
-    void CreateEnemyCards()
-    {
-    int midX = (Screen.width / 2) + 190;
-    int midY = Screen.height / 2;
-    
-    // Base values for spacing
-    float horizontalOffset = 95f;
-    float verticalSpacing = 120f;
-    
-    // Extra adjustments for moving the formation further right and increasing spacing
-    float extraRightShift = 80f;       // Additional shift to the right
-    float spacingMultiplier = 1.2f;      // Increase spacing by 20%
+    // Define spacing as a percentage of screen size.
+    float horizontalOffsetPercent = 0.08f;  // 7% of Screen.width
+    float verticalSpacingPercent = 0.18f;      // 10% of Screen.height
+    float extraRightShiftPercent = 0.05f;     // Extra shift of 5% to the right
+    float spacingMultiplier = 1.2f;           // Multiplier to adjust vertical spacing as needed
 
     enemyPositions = new List<Vector3>
     {
         // Column 1 (left-most tip): shift right by extraRightShift
-        new Vector3(midX - 2 * horizontalOffset + extraRightShift, midY, 0),
+        center + new Vector3(-2 * Screen.width * horizontalOffsetPercent + Screen.width * extraRightShiftPercent, 0, 0),
 
-        // Column 2 (middle column: 2 enemies, spaced vertically with multiplier)
-        new Vector3(midX - horizontalOffset + extraRightShift, midY + (verticalSpacing * spacingMultiplier) / 2, 0),
-        new Vector3(midX - horizontalOffset + extraRightShift, midY - (verticalSpacing * spacingMultiplier) / 2, 0),
+        // Column 2 (middle column: 2 enemies, spaced vertically)
+        center + new Vector3(-Screen.width * horizontalOffsetPercent + Screen.width * extraRightShiftPercent,
+                             Screen.height * verticalSpacingPercent * spacingMultiplier / 2, 0),
+        center + new Vector3(-Screen.width * horizontalOffsetPercent + Screen.width * extraRightShiftPercent,
+                            -Screen.height * verticalSpacingPercent * spacingMultiplier / 2, 0),
 
         // Column 3 (right column: 3 enemies, evenly spaced vertically)
-        new Vector3(midX + extraRightShift, midY + verticalSpacing * spacingMultiplier, 0),
-        new Vector3(midX + extraRightShift, midY, 0),
-        new Vector3(midX + extraRightShift, midY - verticalSpacing * spacingMultiplier, 0)
+        center + new Vector3(Screen.width * extraRightShiftPercent,
+                             Screen.height * verticalSpacingPercent * spacingMultiplier, 0),
+        center + new Vector3(Screen.width * extraRightShiftPercent, 0, 0),
+        center + new Vector3(Screen.width * extraRightShiftPercent,
+                            -Screen.height * verticalSpacingPercent * spacingMultiplier, 0)
     };
 
-        foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
-        {
-            var index = CombatManager.Instance.GetAvailableEnemies().IndexOf(enemy);
-            Debug.Log($"Enemy Index: {index}");
-            var card = CreateCharacterCard(enemy, false, enemyPositions[index]);
-            enemyCards.Add(card);
-            enemy.SetGameObject(card);
-        }
-        foreach (var enemy in CombatManager.Instance.GetWaitingEnemies())
-        {
-            var card = CreateCharacterCard(enemy, false, new Vector3(Screen.width + 200, -200, 0));
-            waitingEnemyCards.Add(card);
-            enemy.SetGameObject(card);
-        }
-
-        // Update enemy count display after positioning cards.
-        UpdateEnemyCountDisplay();
+    foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
+    {
+        int index = CombatManager.Instance.GetAvailableEnemies().IndexOf(enemy);
+        Debug.Log($"Enemy Index: {index}");
+        var card = CreateCharacterCard(enemy, false, enemyPositions[index]);
+        enemyCards.Add(card);
+        enemy.SetGameObject(card);
     }
+    foreach (var enemy in CombatManager.Instance.GetWaitingEnemies())
+    {
+        // Position waiting enemies off-screen.
+        // Here we use 105% of Screen.width and -20% of Screen.height, but adjust as needed.
+        Vector3 offScreenPos = new Vector3(Screen.width * 1.05f, -Screen.height * 0.2f, 0);
+        var card = CreateCharacterCard(enemy, false, offScreenPos);
+        waitingEnemyCards.Add(card);
+        enemy.SetGameObject(card);
+    }
+
+    // Update enemy count display after positioning cards.
+    UpdateEnemyCountDisplay();
+}
+
 
     GameObject CreateCharacterCard(Character character, bool isAlly, Vector2 position)
     {
