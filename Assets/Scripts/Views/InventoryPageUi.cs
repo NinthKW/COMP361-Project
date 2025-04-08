@@ -8,29 +8,30 @@ using TMPro;
 
 public class InventoryPageUI : MonoBehaviour
 {
-    // Back button to return to the Main Menu.
+    // Back button to return to the Main Menu
     public Button backButton;
     
-    // These are the Content objects from your two Scroll Views.
-    public Transform weaponsScrollContent;
-    public Transform equipmentsScrollContent;
+    // These are the containers for the two panels (for weapons and equipments)
+    public Transform weaponsContainer;
+    public Transform equipmentsContainer;
     
-    // Prefab references for list items and headers.
-    public GameObject listItemPrefab;
-    public GameObject headerPrefab;
+    // Prefab references for headers and list items
+    public GameObject headerPrefab;    // A prefab that displays header text
+    public GameObject listItemPrefab;  // A prefab that displays a list item (inventory item)
     
-    // Header texts for each scroll view.
+    // Header texts for each section
     public string weaponsHeaderText = "Weapons";
     public string equipmentsHeaderText = "Equipments";
 
     void Start()
     {
-        // Register the back button click event.
+        // Set up the back button click event
         backButton.onClick.AddListener(OnBackButtonClicked);
-        // Populate the UI with inventory items.
+        // Populate both panels with inventory items
         PopulateInventory();
     }
 
+    // Back button functionality 
     void OnBackButtonClicked()
     {
         GameManager.Instance.ChangeState(GameState.MainMenuPage);
@@ -39,35 +40,35 @@ public class InventoryPageUI : MonoBehaviour
 
     void PopulateInventory()
     {
-        // Clear existing items.
-        foreach (Transform child in weaponsScrollContent)
+        // Clear existing items from both containers
+        foreach (Transform child in weaponsContainer)
         {
             Destroy(child.gameObject);
         }
-        foreach (Transform child in equipmentsScrollContent)
+        foreach (Transform child in equipmentsContainer)
         {
             Destroy(child.gameObject);
         }
 
-        // Instantiate headers.
+        // Instantiate headers for each container
         if (headerPrefab != null)
         {
-            GameObject weaponsHeader = Instantiate(headerPrefab, weaponsScrollContent);
+            GameObject weaponsHeader = Instantiate(headerPrefab, weaponsContainer);
             SetHeaderText(weaponsHeader, weaponsHeaderText);
 
-            GameObject equipmentsHeader = Instantiate(headerPrefab, equipmentsScrollContent);
+            GameObject equipmentsHeader = Instantiate(headerPrefab, equipmentsContainer);
             SetHeaderText(equipmentsHeader, equipmentsHeaderText);
         }
 
-        // Populate the weapons list.
+        // Populate Weapons
         List<Weapon> weapons = InventoryManager.Instance.GetWeapons();
         foreach (Weapon weapon in weapons)
         {
-            GameObject newItem = Instantiate(listItemPrefab, weaponsScrollContent);
+            GameObject newItem = Instantiate(listItemPrefab, weaponsContainer);
             TextMeshProUGUI tmp = newItem.GetComponent<TextMeshProUGUI>();
             if (tmp != null)
             {
-                // Removed "Weapon:" prefix.
+                // Display the weapon's properties
                 tmp.text = $"{weapon.name} | Damage: {weapon.damage} | Cost: {weapon.cost}";
             }
             else
@@ -80,15 +81,15 @@ public class InventoryPageUI : MonoBehaviour
             }
         }
 
-        // Populate the equipment list.
+        // Populate Equipments
         List<Equipment> equipments = InventoryManager.Instance.GetEquipments();
         foreach (Equipment equipment in equipments)
         {
-            GameObject newItem = Instantiate(listItemPrefab, equipmentsScrollContent);
+            GameObject newItem = Instantiate(listItemPrefab, equipmentsContainer);
             TextMeshProUGUI tmp = newItem.GetComponent<TextMeshProUGUI>();
             if (tmp != null)
             {
-                // Removed "Equipment:" prefix.
+                // Display the equipment's properties
                 tmp.text = $"{equipment.name} | HP: {equipment.hp} | DEF: {equipment.def} | ATK: {equipment.atk} | Cost: {equipment.cost}";
             }
             else
@@ -100,8 +101,12 @@ public class InventoryPageUI : MonoBehaviour
                 }
             }
         }
+
+        LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)weaponsContainer);
+        LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)equipmentsContainer);
     }
 
+    // Utility method to set header text
     void SetHeaderText(GameObject headerObject, string headerText)
     {
         TextMeshProUGUI tmp = headerObject.GetComponent<TextMeshProUGUI>();
