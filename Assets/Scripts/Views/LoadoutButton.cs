@@ -15,7 +15,7 @@ namespace Assets.Scripts
 
         private void Awake()
         {
-            this.GetComponent<Button>().onClick.AddListener(selectButton);
+
         }
 
         // Start is called before the first frame update
@@ -28,11 +28,6 @@ namespace Assets.Scripts
         void Update()
         {
 
-        }
-
-        void selectButton()
-        {
-            Debug.Log("Selected");
         }
     }
 }
