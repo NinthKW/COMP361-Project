@@ -1423,6 +1423,9 @@ MonoBehaviour:
     cost: 0
     resource_amount: 0
     resource_type: 0
+  soldiers: []
+  weapons: []
+  equipments: []
   buttonPrefab: {fileID: 4108656752887849586, guid: 1af547eb5eaf27744a7693e0fcac29da, type: 3}
 --- !u!1 &967332711
 GameObject:
@@ -2978,7 +2981,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 7, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1719850749

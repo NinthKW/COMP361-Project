@@ -24,6 +24,10 @@ public class LoadoutUI : MonoBehaviour
     public Weapon selectWeapon;
     public Equipment selectEquipment;
 
+    public List<GameObject> soldiers = new List<GameObject>();
+    public List<GameObject> weapons = new List<GameObject>();
+    public List<GameObject> equipments = new List<GameObject>();
+
     public GameObject buttonPrefab;
 
     // Start is called before the first frame update
@@ -36,7 +40,7 @@ public class LoadoutUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     void populateFields()
@@ -51,7 +55,8 @@ public class LoadoutUI : MonoBehaviour
             buttonGameObject.GetComponent<TextMeshProUGUI>().text = soldier.Name;
             buttonGameObject.GetComponent<LoadoutButton>().soldier = soldier;
 
-            button.onClick.AddListener(() => { onSoldierButtonClicked(buttonGameObject);  });
+            button.onClick.AddListener(() => { onSoldierButtonClicked(buttonGameObject); });
+            soldiers.Add(buttonGameObject);
         }
 
         //Weapon
@@ -63,6 +68,8 @@ public class LoadoutUI : MonoBehaviour
 
             buttonGameObject.GetComponent<TextMeshProUGUI>().text = weapon.name;
             buttonGameObject.GetComponent<LoadoutButton>().weapon = weapon;
+
+            weapons.Add(buttonGameObject);
         }
 
         //Equipment
@@ -74,28 +81,22 @@ public class LoadoutUI : MonoBehaviour
 
             buttonGameObject.GetComponent<TextMeshProUGUI>().text = equipment.name;
             buttonGameObject.GetComponent<LoadoutButton>().equipment = equipment;
-        }
 
+            equipments.Add(buttonGameObject);
+        }
     }
 
     void onSoldierButtonClicked(GameObject button)
     {
-        try
+        //Reset buttons
+        bool hasPrevious = moveSelectedBackToGrid(soldierSelectedField, soldierField);
+        if (hasPrevious)
         {
-            Transform previousSoldier = soldierSelectedField.GetComponent<Transform>().GetChild(0);
-            previousSoldier.SetParent(soldierField);
-
-            RectTransform previousTransform = previousSoldier.transform.GetComponent<RectTransform>();
-            previousTransform.anchorMax = new Vector2(0f, 1f);
-            previousTransform.anchorMin = new Vector2(0f, 1f);
-            previousTransform.sizeDelta = new Vector2(150f, 150f);
-            previousTransform.localScale = Vector3.one;
-        }
-        catch (System.Exception e)
-        {
-            Debug.Log("no children");
+            moveSelectedBackToGrid(weaponSelectedField, weaponField);
+            moveSelectedBackToGrid(equipmentSelectedField, equipmentField);
         }
 
+        //Move selected soldier button
         button.GetComponent<Transform>().SetParent(soldierSelectedField, false);
         selectSoldier = button.GetComponent<LoadoutButton>().soldier;
 
@@ -104,14 +105,94 @@ public class LoadoutUI : MonoBehaviour
         rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
         rectTransform.sizeDelta = new Vector2(75f, 75f);
         rectTransform.localScale = Vector3.one;
-
         rectTransform.anchoredPosition3D = Vector3.zero;
 
         if (selectSoldier == null) {
             Debug.LogError("Character obj not in LoadoutButton attribute");
         }
+
+        //Move weapon
+        SoldierEquipment soldierEquipments = findSoldierWithEquipment(button.GetComponent<LoadoutButton>().soldier);
+        if (soldierEquipments != null)
+        {
+            foreach (GameObject obj in weapons)
+            {
+                if (!(soldierEquipments.weapon.name == "dummy"))
+                {
+                    if (soldierEquipments.weapon.name == obj.GetComponent<LoadoutButton>().weapon.name)
+                    {
+                        obj.GetComponent<Transform>().SetParent(weaponSelectedField, false);
+                        selectSoldier = button.GetComponent<LoadoutButton>().soldier;
+
+                        RectTransform weaponRectTransform = obj.transform.GetComponent<RectTransform>();
+                        weaponRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                        weaponRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+                        weaponRectTransform.sizeDelta = new Vector2(75f, 75f);
+                        weaponRectTransform.localScale = Vector3.one;
+                        weaponRectTransform.anchoredPosition3D = Vector3.zero;
+                    }
+                }
+            }
+
+            //Move equipment
+            foreach (GameObject obj in equipments)
+            {
+                if (!(soldierEquipments.equipment.name == "dummy"))
+                {
+                    if (soldierEquipments.equipment.name == obj.GetComponent<LoadoutButton>().equipment.name)
+                    {
+                        obj.GetComponent<Transform>().SetParent(equipmentSelectedField, false);
+                        selectSoldier = button.GetComponent<LoadoutButton>().soldier;
+
+                        RectTransform equipmentRectTransform = obj.transform.GetComponent<RectTransform>();
+                        equipmentRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                        equipmentRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+                        equipmentRectTransform.sizeDelta = new Vector2(75f, 75f);
+                        equipmentRectTransform.localScale = Vector3.one;
+                        equipmentRectTransform.anchoredPosition3D = Vector3.zero;
+                    }
+                }
+            }
+        }
     }
 
+
+    public bool moveSelectedBackToGrid(Transform selectedField, Transform previousGrid) {
+        bool hasPrevious = false;
+        try
+        {
+            Transform previous = selectedField.GetComponent<Transform>().GetChild(0);
+            previous.SetParent(previousGrid);
+
+            RectTransform previousTransform = previous.transform.GetComponent<RectTransform>();
+            previousTransform.anchorMax = new Vector2(0f, 1f);
+            previousTransform.anchorMin = new Vector2(0f, 1f);
+            previousTransform.sizeDelta = new Vector2(150f, 150f);
+            previousTransform.localScale = Vector3.one;
+
+            hasPrevious = true;
+        }
+        catch (System.Exception e)
+        {
+            Debug.Log("no children");
+        }
+
+        return hasPrevious;
+    }
+
+
+    public SoldierEquipment findSoldierWithEquipment(Character soldier)
+    {
+        foreach(SoldierEquipment bonus in LoadoutManager.Instance.soldierEquipment)
+        {
+            if (bonus.soldier.Name == soldier.Name)
+            {
+                return bonus;
+            }
+        }
+
+        return null;
+    }
 
     void OnBackButtonClicked()
     {
