@@ -299,6 +299,7 @@ namespace Assets.Scripts.Controller
 
             foreach (var deadEnemy in deadEnemies)
             {
+                Debug.Log("Replacing dead enemy: " + deadEnemy.Name);
                 if (_waitingEnemies.Count > 0)
                 {
                     var newEnemy = _waitingEnemies[0];
@@ -660,7 +661,7 @@ namespace Assets.Scripts.Controller
 
         #region Helper Methods
         private int CountAliveSoldiers() => _inBattleSoldiers.Count(s => s != null && !s.IsDead());
-        public int CountAliveEnemies() => _availableEnemies.Count(e => e != null && !e.IsDead());
+        public int CountAliveEnemies() => _availableEnemies.Count(e => e != null && !e.IsDead()) + _waitingEnemies.Count(e => e != null && !e.IsDead());
         private void BuffsCountDown()
         {
             foreach (var soldier in _inBattleSoldiers)
