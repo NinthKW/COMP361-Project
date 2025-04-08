@@ -110,6 +110,7 @@ public class LoadoutUI : MonoBehaviour
         rectTransform.localScale = Vector3.one;
         rectTransform.anchoredPosition3D = Vector3.zero;
 
+        //Load potential weapon and equipment buttons
         SoldierEquipment soldierEquipments = findSoldierWithEquipment(button.GetComponent<LoadoutButton>().soldier);
         if (soldierEquipments != null)
         {
@@ -120,9 +121,11 @@ public class LoadoutUI : MonoBehaviour
                 {
                     if (soldierEquipments.weapon.name == obj.GetComponent<LoadoutButton>().weapon.name)
                     {
+                        //attach to select field
                         obj.GetComponent<Transform>().SetParent(weaponSelectedField, false);
                         selectSoldier = button.GetComponent<LoadoutButton>().soldier;
 
+                        //adjust size
                         RectTransform weaponRectTransform = obj.transform.GetComponent<RectTransform>();
                         weaponRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
                         weaponRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
@@ -130,7 +133,8 @@ public class LoadoutUI : MonoBehaviour
                         weaponRectTransform.localScale = Vector3.one;
                         weaponRectTransform.anchoredPosition3D = Vector3.zero;
 
-                        weaponSelectedField = obj.GetComponent<Transform>();
+                        selectWeapon = obj.GetComponent<LoadoutButton>().weapon;
+                        Debug.Log("Weapon placed");
                     }
                 }
             }
@@ -142,9 +146,11 @@ public class LoadoutUI : MonoBehaviour
                 {
                     if (soldierEquipments.equipment.name == obj.GetComponent<LoadoutButton>().equipment.name)
                     {
+                        //Attach to selected field
                         obj.GetComponent<Transform>().SetParent(equipmentSelectedField, false);
                         selectSoldier = button.GetComponent<LoadoutButton>().soldier;
 
+                        //Adjust size
                         RectTransform equipmentRectTransform = obj.transform.GetComponent<RectTransform>();
                         equipmentRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
                         equipmentRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
@@ -152,7 +158,8 @@ public class LoadoutUI : MonoBehaviour
                         equipmentRectTransform.localScale = Vector3.one;
                         equipmentRectTransform.anchoredPosition3D = Vector3.zero;
 
-                        equipmentSelectedField = obj.GetComponent<Transform>();
+                        selectEquipment = obj.GetComponent<LoadoutButton>().equipment;
+                        Debug.Log("Equipment placed");
                     }
                 }
             }
@@ -164,27 +171,27 @@ public class LoadoutUI : MonoBehaviour
     {
         if (soldierSelectedField.childCount > 0)
         {
-            bool hasPrevious = false;
-            Weapon previousWeapon;
+            //bool hasPrevious = false;
+            //Weapon previousWeapon;
 
-            //Move old button back if exists
-            try
-            {
-                Transform previous = weaponSelectedField.GetChild(0);
-                previous.SetParent(weaponField);
+            ////Move old button back if exists
+            //try
+            //    {
+            //        Transform previous = weaponSelectedField.GetChild(0);
+            //        previous.SetParent(weaponField);
 
-                RectTransform previousTransform = previous.transform.GetComponent<RectTransform>();
-                previousTransform.anchorMax = new Vector2(0f, 1f);
-                previousTransform.anchorMin = new Vector2(0f, 1f);
-                previousTransform.sizeDelta = new Vector2(150f, 150f);
-                previousTransform.localScale = Vector3.one;
+            //        RectTransform previousTransform = previous.transform.GetComponent<RectTransform>();
+            //        previousTransform.anchorMax = new Vector2(0f, 1f);
+            //        previousTransform.anchorMin = new Vector2(0f, 1f);
+            //        previousTransform.sizeDelta = new Vector2(150f, 150f);
+            //        previousTransform.localScale = Vector3.one;
 
-                hasPrevious = true;
-            }
-            catch (System.Exception e)
-            {
-                Debug.Log("no children");
-            }
+            //        hasPrevious = true;
+            //    }
+            //    catch (System.Exception e)
+            //    {
+            //        Debug.Log("no children");
+            //    }
 
             ////Remove dmg buff from old
             //if (hasPrevious)
@@ -218,10 +225,10 @@ public class LoadoutUI : MonoBehaviour
             //        se.weapon = weaponSelectedField.GetComponent<LoadoutButton>().weapon;
             //    }
             //}
-            
+
             //if (!found)
             //{
-               
+
             //}
         } 
         else
@@ -248,6 +255,8 @@ public class LoadoutUI : MonoBehaviour
         try
         {
             Transform previous = selectedField.GetChild(0);
+            Debug.Log("Child found" + previous.name);
+
             previous.SetParent(previousGrid);
 
             RectTransform previousTransform = previous.transform.GetComponent<RectTransform>();
@@ -260,7 +269,7 @@ public class LoadoutUI : MonoBehaviour
         }
         catch (System.Exception e)
         {
-            Debug.Log("no children");
+            Debug.LogWarning("Move back failed: no children for " + selectedField.name);
         }
 
         return hasPrevious;
