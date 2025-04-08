@@ -115,9 +115,10 @@ public class LoadoutUI : MonoBehaviour
         if (soldierEquipments != null)
         {
             //Move weapon with soldier
+            bool wepFound = false;
             foreach (GameObject obj in weapons)
             {
-                if (!(soldierEquipments.weapon.name == "dummy"))
+                if (soldierEquipments.weapon != null)
                 {
                     if (soldierEquipments.weapon.name == obj.GetComponent<LoadoutButton>().weapon.name)
                     {
@@ -134,15 +135,22 @@ public class LoadoutUI : MonoBehaviour
                         weaponRectTransform.anchoredPosition3D = Vector3.zero;
 
                         selectWeapon = obj.GetComponent<LoadoutButton>().weapon;
+                        wepFound = true;
                         Debug.Log("Weapon placed");
                     }
                 }
             }
 
+            if (!wepFound) { 
+                selectWeapon = null;
+            }
+
+
             //Move equipment with soldier
+            bool equipFound = false;
             foreach (GameObject obj in equipments)
             {
-                if (!(soldierEquipments.equipment.name == "dummy"))
+                if (soldierEquipments.equipment != null)
                 {
                     if (soldierEquipments.equipment.name == obj.GetComponent<LoadoutButton>().equipment.name)
                     {
@@ -163,6 +171,16 @@ public class LoadoutUI : MonoBehaviour
                     }
                 }
             }
+
+            if (!equipFound)
+            {
+                selectEquipment = null;
+            }
+        }
+        else
+        {
+            selectWeapon = null;
+            selectEquipment = null;
         }
     }
 
@@ -171,65 +189,70 @@ public class LoadoutUI : MonoBehaviour
     {
         if (soldierSelectedField.childCount > 0)
         {
-            //bool hasPrevious = false;
-            //Weapon previousWeapon;
+            bool hasPrevious = false;
+            Weapon previousWeapon;
 
-            ////Move old button back if exists
-            //try
-            //    {
-            //        Transform previous = weaponSelectedField.GetChild(0);
-            //        previous.SetParent(weaponField);
+            //Move old button back if exists
+            try
+            {
+                Transform previous = weaponSelectedField.GetChild(0);
+                previous.SetParent(weaponField);
 
-            //        RectTransform previousTransform = previous.transform.GetComponent<RectTransform>();
-            //        previousTransform.anchorMax = new Vector2(0f, 1f);
-            //        previousTransform.anchorMin = new Vector2(0f, 1f);
-            //        previousTransform.sizeDelta = new Vector2(150f, 150f);
-            //        previousTransform.localScale = Vector3.one;
+                Debug.Log("Previous weapon found");
 
-            //        hasPrevious = true;
-            //    }
-            //    catch (System.Exception e)
-            //    {
-            //        Debug.Log("no children");
-            //    }
+                RectTransform previousTransform = previous.transform.GetComponent<RectTransform>();
+                previousTransform.anchorMax = new Vector2(0f, 1f);
+                previousTransform.anchorMin = new Vector2(0f, 1f);
+                previousTransform.sizeDelta = new Vector2(150f, 150f);
+                previousTransform.localScale = Vector3.one;
+
+                hasPrevious = true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("no weapon was select previously");
+            }
 
             ////Remove dmg buff from old
-            //if (hasPrevious)
-            //{
-            //    previousWeapon = weaponSelectedField.GetComponent<LoadoutButton>().weapon;
-            //    soldierSelectedField.GetComponent<LoadoutButton>().soldier.bonusStat.atk -= previousWeapon.damage;
-            //}
+            if (hasPrevious)
+            {
+                selectSoldier.bonusStat.atk -= selectWeapon.damage;
+            }
 
-            ////Move new button in
-            //button.GetComponent<Transform>().SetParent(weaponSelectedField, false);
+            //Move new button in and change current select
+            button.GetComponent<Transform>().SetParent(weaponSelectedField, false);
+            selectWeapon = button.GetComponent<LoadoutButton>().weapon;
 
-            //RectTransform weaponRectTransform = button.transform.GetComponent<RectTransform>();
-            //weaponRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-            //weaponRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-            //weaponRectTransform.sizeDelta = new Vector2(75f, 75f);
-            //weaponRectTransform.localScale = Vector3.one;
-            //weaponRectTransform.anchoredPosition3D = Vector3.zero;
+            //Adjust size
+            RectTransform weaponRectTransform = button.transform.GetComponent<RectTransform>();
+            weaponRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+            weaponRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+            weaponRectTransform.sizeDelta = new Vector2(75f, 75f);
+            weaponRectTransform.localScale = Vector3.one;
+            weaponRectTransform.anchoredPosition3D = Vector3.zero;
 
-            //weaponSelectedField = button.GetComponent<Transform>();
 
-            ////Update dmg buffs on soldier
-            //Character currentSoldier = soldierSelectedField.GetComponent<LoadoutButton>().soldier;
-            //currentSoldier.bonusStat.atk += button.GetComponent<LoadoutButton>().weapon.damage;
+            //Update dmg buffs on soldier
+            selectSoldier.bonusStat.atk += button.GetComponent<LoadoutButton>().weapon.damage;
 
-            ////Update SoldierEquipment Obj
-            //bool found = false;
-            //foreach (SoldierEquipment se in LoadoutManager.Instance.soldierEquipment)
-            //{
-            //    if (currentSoldier.Name == se.soldier.Name)
-            //    {
-            //        se.weapon = weaponSelectedField.GetComponent<LoadoutButton>().weapon;
-            //    }
-            //}
+            //Update SoldierEquipment Obj
+            bool found = false;
+            foreach (SoldierEquipment se in LoadoutManager.Instance.soldierEquipment)
+            {
+                if (selectSoldier.Name == se.soldier.Name)
+                {
+                    se.weapon = selectWeapon;
+                }
+            }
 
-            //if (!found)
-            //{
+            //Add to soldierEquipment list if didn't have before
+            if (!found)
+            {
+                SoldierEquipment newSoldierEquipment = new SoldierEquipment(selectSoldier, selectWeapon, selectEquipment);
+                LoadoutManager.Instance.soldierEquipment.Add(newSoldierEquipment);
 
-            //}
+                Debug.Log("Created new SE with " + selectSoldier.Name + selectWeapon.name + selectEquipment.name);
+            }
         } 
         else
         {
@@ -285,6 +308,8 @@ public class LoadoutUI : MonoBehaviour
                 return bonus;
             }
         }
+
+        Debug.Log(soldier.Name + "does not have equipment");
 
         return null;
     }
