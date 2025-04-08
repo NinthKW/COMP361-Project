@@ -14,15 +14,15 @@ public class ResourceDisplayUI : MonoBehaviour
 
     // The prefab used to display each resource item 
     public GameObject resourceListItemPrefab;
-
     
     public TextMeshProUGUI resourceHeaderTextObject;
 
+    // The header text to display
     public string resourcesHeaderText = "Resources";
 
     void Start()
     {
-        // If a header object is already in place, update its text
+        // Update the header if you have one placed already
         if (resourceHeaderTextObject != null)
         {
             resourceHeaderTextObject.text = resourcesHeaderText;
@@ -38,20 +38,19 @@ public class ResourceDisplayUI : MonoBehaviour
             Destroy(child.gameObject);
         }
         
-
-        // Retrieve the data from ResourceManager
+        // Retrieve the resource data using your ResourceManager
         ModelResources resData = ResourceManager.Instance.GetResources();
-
-        // Iterate through resource IDs 0 to 4
+        
+        // Iterate through resource IDs 0 to 4 (for Food, Money, Iron, Wood, Titanium)
         for (int id = 0; id < 5; id++)
         {
             string resName = resData.GetName(id);
             int resAmount = resData.GetAmount(id);
 
-            // Instantiate a new resource list item prefab under the resources container
+            // Instantiate a new resource list item under the resources container
             GameObject newItem = Instantiate(resourceListItemPrefab, resourcesContainer);
 
-            // To get a TextMeshProUGUI component
+            
             TextMeshProUGUI tmp = newItem.GetComponent<TextMeshProUGUI>();
             if (tmp != null)
             {
