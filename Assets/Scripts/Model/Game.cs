@@ -16,6 +16,7 @@ namespace Assets.Scripts.Model
         public List<Mission> MissionsData;
         public List<Character> soldiersData;
         public List<Base> basesData;
+        public List<SoldierEquipment> soldierEquipmentData; //empty on new game
         public Tech techData;
         public Inventory inventory;
 
@@ -31,6 +32,7 @@ namespace Assets.Scripts.Model
             this.basesData = new List<Base>();
             this.techData = new Tech();
             this.inventory = new Inventory();
+            this.soldierEquipmentData = new List<SoldierEquipment>();
 
             maxSoldier = 5;
             
@@ -73,7 +75,6 @@ namespace Assets.Scripts.Model
                     }
                 }
             }
-            // BaseManager.Instance.buildingList = this.basesData;
 
 
             // Missions
@@ -229,7 +230,7 @@ namespace Assets.Scripts.Model
                             string roleName = reader["role"].ToString();
                             
                             Role role = new Role(roleName);
-                            Soldier soldier = new Soldier(name, role, level, health, attack, defense, maxHealth, soldierId);
+                            Soldier soldier = new Soldier(name, role, level, health, attack, defense, maxHealth, soldierId, new EquipmentBonus(0,0));
                             this.soldiersData.Add(soldier);
                         }
                     }
@@ -553,6 +554,8 @@ namespace Assets.Scripts.Model
 
             // Soldiers
             this.soldiersData = new List<Character>();
+            // Needed for SoldierEquipment
+            Dictionary<int, Character> soldierMap = new Dictionary<int, Character>();
             using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
@@ -573,8 +576,9 @@ namespace Assets.Scripts.Model
                             string roleName = reader["role"].ToString();
 
                             Role role = new Role(roleName);
-                            Soldier soldier = new(name, role, level, health, attack, defense, maxHealth, soldierId);
+                            Soldier soldier = new(name, role, level, health, attack, defense, maxHealth, soldierId, new EquipmentBonus(0, 0));
                             this.soldiersData.Add(soldier);
+                            soldierMap.Add(soldierId, soldier);
                         }
                         reader.Close();
                     }
@@ -612,7 +616,8 @@ namespace Assets.Scripts.Model
             }
 
             this.inventory = new Inventory();
-             // weapons
+            // weapons
+            Dictionary<int, Weapon> weaponMap = new Dictionary<int, Weapon>();
             using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
@@ -634,6 +639,7 @@ namespace Assets.Scripts.Model
                             // Create a new weapon and add it to the inventory.
                             Weapon weapon = new Weapon(id, name, description, damage, cost, resourceAmount, resourceType);
                             inventory.AddWeapon(weapon);
+                            weaponMap.Add(id, weapon);
                         }
                     }
                 }
@@ -641,6 +647,7 @@ namespace Assets.Scripts.Model
             }
 
             // equipments
+            Dictionary<int, Equipment> equipmentMap = new Dictionary<int, Equipment>();
             using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
@@ -663,6 +670,54 @@ namespace Assets.Scripts.Model
                             // Creates a new equipment item and add it to the inventory
                             Equipment equipment = new Equipment(id, name, hp, def, atk, cost, resourceAmount, resourceType);
                             inventory.AddEquipment(equipment);
+                            equipmentMap.Add(id, equipment);
+                        }
+                    }
+                }
+                connection.Close();
+            }
+
+            //soldier equipments
+            this.soldierEquipmentData = new List<SoldierEquipment>();
+            using (var connection = new SqliteConnection(dbPath))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT soldier_ID, weapon_ID, equipment_ID FROM SOLDIER_EQUIPMENT;";
+                    using (IDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int soldier = int.Parse(reader["soldier_ID"].ToString());
+                            int weapon = int.Parse(reader["weapon_ID"].ToString());
+                            int equipment = int.Parse(reader["equipment_ID"].ToString());
+                            
+                            Character soldierObj;
+                            Weapon weaponObj;
+                            Equipment equipmentObj;
+
+                            // Check if objs are added properly
+                            if (!soldierMap.TryGetValue(soldier, out soldierObj))
+                            {
+                                Debug.LogError("Soldier not found for soldier equipment");
+                            }
+                            if (!weaponMap.TryGetValue(weapon, out weaponObj) && weapon != -1) //negative id means unequipped
+                            {
+                                Debug.LogError("Weapon not found for soldier equipment");
+                            }
+                            if (!equipmentMap.TryGetValue(weapon, out equipmentObj) && equipment != -1) //negative id means unequipped
+                            {
+                                Debug.LogError("Equipment not found for soldier equipment");
+                            }
+
+                            // Adds it to tracker
+                            soldierObj.bonusStat.atk += weaponObj.damage;
+                            soldierObj.bonusStat.atk += equipmentObj.atk;
+                            soldierObj.bonusStat.def += equipmentObj.def;
+
+                            SoldierEquipment newSoldierEquipment = new SoldierEquipment(soldierObj, weaponObj, equipmentObj);
+                            this.soldierEquipmentData.Add(newSoldierEquipment);
                         }
                     }
                 }
@@ -689,6 +744,7 @@ namespace Assets.Scripts.Model
                 }
                 connection.Close();
             }
+
 
             // bases
             using (var connection = new SqliteConnection(dbPath))
@@ -876,6 +932,28 @@ namespace Assets.Scripts.Model
                             command.Parameters.Add(new SqliteParameter("@id", soldier.id));
                             command.ExecuteNonQuery();
                         }
+                    }
+                }
+                connection.Close();
+            }
+
+            // for soldier equipment
+            using (var connection = new SqliteConnection(dbPath))
+            {
+                connection.Open();
+                foreach (var soldierEquipment in this.soldierEquipmentData)
+                {
+                    using (var command = connection.CreateCommand())
+                    {
+                            command.CommandText = @"UPDATE Soldier_Equipment SET 
+                                soldier_ID = @soldier_ID, 
+                                weapon_ID = @weapon_ID, 
+                                equipment_ID = @equipment_ID, 
+                                WHERE soldier_ID = @soldier_ID;";
+                            command.Parameters.Add(new SqliteParameter("@soldier_ID", soldierEquipment.soldier));
+                            command.Parameters.Add(new SqliteParameter("@weapon_ID", soldierEquipment.weapon));
+                            command.Parameters.Add(new SqliteParameter("@equipment_ID", soldierEquipment.equipment));
+                            command.ExecuteNonQuery();
                     }
                 }
                 connection.Close();

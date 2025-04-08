@@ -24,9 +24,10 @@ namespace Assets.Scripts.Model
         public int MaxAttacksPerTurn { get; set; }
         public GameObject GameObject { get; private set; }
         public string ObjectTag { get; protected set; }
+        public EquipmentBonus bonusStat { get; private set; }
         public Dictionary<Ability, Buff> Buffs { get; private set; } = new Dictionary<Ability, Buff>();
 
-        protected Character(string name, int health, int level, int attack, int defense, int maxHealth)
+        protected Character(string name, int health, int level, int attack, int defense, int maxHealth, EquipmentBonus bonusStat)
         {
             Name = name;
             Health = health;
@@ -35,6 +36,7 @@ namespace Assets.Scripts.Model
             Level = level;
             Atk = attack;
             Def = defense;
+            this.bonusStat = bonusStat;
         }
 
         public virtual void TakeDamage(int damage)
@@ -134,8 +136,8 @@ namespace Assets.Scripts.Model
         public int BaseDamage { get; private set; }
         public int ExperienceReward { get; private set; }
 
-        public Enemy(string name, int health, int damage, int defense, int maxHealth, int level, int expReward) 
-            : base(name, health, level, damage, defense, maxHealth)
+        public Enemy(string name, int health, int damage, int defense, int maxHealth, int level, int expReward, EquipmentBonus bonusStat) 
+            : base(name, health, level, damage, defense, maxHealth, bonusStat)
         {
             BaseDamage = damage;
             ExperienceReward = expReward;
@@ -169,8 +171,8 @@ namespace Assets.Scripts.Model
         public List<Ability> Abilities { get; private set; } = new List<Ability>();
 
 
-        public Soldier(string name, Role role, int level, int health, int attack, int defense, int maxHealth, int soldierID) 
-        : base(name, health, level, attack, defense, maxHealth)
+        public Soldier(string name, Role role, int level, int health, int attack, int defense, int maxHealth, int soldierID, EquipmentBonus bonusStat) 
+        : base(name, health, level, attack, defense, maxHealth, bonusStat)
         {
             _role = role;
             AttackChances = 0;

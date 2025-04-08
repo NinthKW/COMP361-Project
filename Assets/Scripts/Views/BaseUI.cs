@@ -120,17 +120,23 @@ namespace Assets.Scripts
                 if (building.name.ToLower() == "hospital")
                 {
                     btn.onClick.AddListener(BuildingFunctionality.hospitalFunctionality);
-                } else if (building.name.ToLower() == "hq")
+                }
+                else if (building.name.ToLower() == "hq")
                 {
                     btn.onClick.AddListener(BuildingFunctionality.hqFunctionality);
-                } else if (building.name.ToLower() == "training room")
+                }
+                else if (building.name.ToLower() == "training room")
                 {
                     btn.onClick.AddListener(BuildingFunctionality.trainingFunctionality);
                 }
+                else if (building.name.ToLower() == "loadout room")
+                {
+                    btn.onClick.AddListener(BuildingFunctionality.loadoutFunctionality);
+                }
 
 
-                //Add to buttonsList
-                buttonList.Add(buttonObj);
+                    //Add to buttonsList
+                    buttonList.Add(buttonObj);
             }
 
             GridLayoutGroup grid = missionButtonContainer.GetComponent<GridLayoutGroup>();

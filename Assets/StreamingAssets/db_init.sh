@@ -149,6 +149,16 @@ CREATE TABLE ENEMY_TYPES (
     exp_reward INTEGER NOT NULL 
 );
 
+CREATE TABLE SOLDIER_EQUIPMENT (
+    soldier_ID INTEGER,
+    weapon_ID INTEGER,
+    equipment_ID INTEGER,
+    PRIMARY KEY (soldier_ID, weapon_ID),
+    FOREIGN KEY (soldier_ID) REFERENCES Soldier(soldier_id),
+    FOREIGN KEY (weapon_ID) REFERENCES Weapon(weapon_id),
+    FOREIGN KEY (equipment_ID) REFERENCES Equipment(equipment_id)
+);
+
 -- Insert into Resource
 INSERT INTO Resource VALUES
 (0, 'Food', 1000),
@@ -293,9 +303,13 @@ INSERT INTO Infrastructure VALUES
 (5, 'Pharmacy', 'Generates healing for the base', 5, 1500, 75, 4, 1, 0, 0, 0),
 (6, 'Lumber Yard', 'Generates wood for the base', 3, 1000, 50, 4, 1, 0, 0, 0),
 (7, 'Mine', 'Generates iron for the base', 3, 1000, 50, 4, 1, 0, 0, 0),
-(8, 'Forgery', 'Generates titanium for the base', 3, 1000, 50, 4, 1, 0, 0, 0);
+(8, 'Forgery', 'Generates titanium for the base', 3, 1000, 50, 4, 1, 0, 0, 0),
+(9, 'Loadout Room', 'Equip weapons and armor onto your soldiers', 3, 1000, 50, 4, 1, 0, 0, 0);
 
-
+INSERT OR IGNORE INTO Soldier_Equipment (soldier_ID, weapon_ID, equipment_ID) VALUES
+(1, 1, 1),
+(2, 2, 2),
+(3, 3, 3);
 
 EOF
 echo "Finished inserting data"
