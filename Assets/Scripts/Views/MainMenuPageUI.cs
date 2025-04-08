@@ -40,7 +40,8 @@ public class MainMenuPageUI : MonoBehaviour // Fardin, Ziyuan Wang
     }
 
     void ClickedMission()
-    {
+    {   
+        MissionManager.Instance.LoadMissionsFromGame();
         GameManager.Instance.LoadGameState(GameState.MissionPage);
     }
 

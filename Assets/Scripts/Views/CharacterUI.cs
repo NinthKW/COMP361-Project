@@ -55,6 +55,34 @@ public class CharacterUI : MonoBehaviour
             Debug.LogWarning("No sprite found for role: " + roleName);
         }
     }
+        else if (_character is Enemy enemy)
+    {
+        // Use the enemy's name to try and load a specific sprite.
+        string enemyName = enemy.Name; // Ensure your Enemy class has a Name property.
+        // Adjust the path if your enemy images are in a subfolder, e.g., "EnemyImages/"
+        Sprite enemySprite = UnityEngine.Resources.Load<Sprite>(enemyName);
+        
+        if (enemySprite != null)
+        {
+            characterImage.sprite = enemySprite;
+        }
+        else
+        {
+            // Fallback: load a default enemy sprite.
+            enemySprite = UnityEngine.Resources.Load<Sprite>("enemydefault");
+            if (enemySprite != null)
+            {
+                characterImage.sprite = enemySprite;
+            }
+            else
+            {
+                Debug.LogWarning("No enemy sprite found for enemy: " + enemyName);
+            }
+        }
+    }
+
+UpdateVisuals(isAlly);
+
 
         UpdateVisuals(isAlly);
     }
