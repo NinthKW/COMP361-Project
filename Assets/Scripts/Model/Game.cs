@@ -807,14 +807,18 @@ namespace Assets.Scripts.Model
                     Dictionary<string, int> enemyCounts = new Dictionary<string, int>();
                     foreach (var enemy in mission2.AssignedEnemies)
                     {
-                        if (enemyCounts.ContainsKey(enemy.Name))
+                        if (!enemy.IsDead())
                         {
-                            enemyCounts[enemy.Name]++;
+                            if (enemyCounts.ContainsKey(enemy.Name))
+                            {
+                                enemyCounts[enemy.Name]++;
+                            }
+                            else
+                            {
+                                enemyCounts[enemy.Name] = 1;
+                            }
                         }
-                        else
-                        {
-                            enemyCounts[enemy.Name] = 1;
-                        }
+                        
                     }
 
                     foreach (var pair in enemyCounts)
