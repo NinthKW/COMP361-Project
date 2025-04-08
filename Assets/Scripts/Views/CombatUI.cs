@@ -8,7 +8,22 @@ using Assets.Scripts.Controller;
 using System.Collections.Generic;
 
 public class CombatUI : MonoBehaviour, IPointerClickHandler
-{
+{   
+    public static CombatUI Instance;
+
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
     #region UI Components
     [Header("Unit Container Settings")]
     [SerializeField] private Transform combatUnitContainer;
@@ -436,19 +451,14 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             return;
         }
 
-        // Calculate effective damage considering defense
-        int reducedDamage = Mathf.Max(0, damage - target.Def);
-
-        if (reducedDamage <= 0) reducedDamage = 1; // Ensure minimum damage of 1
-
-        Debug.Log($"Damage: {damage}, Defense: {target.Def}, Reduced Damage: {reducedDamage}");
+        Debug.Log($"Damage: {damage}, Defense: {target.Def}, Reduced Damage: {damage}");
 
         // Create Damage Text
         GameObject damageTextObj = new GameObject("DamageText");
         damageTextObj.transform.SetParent(canvas.transform, false);
 
         TextMeshProUGUI textMesh = damageTextObj.AddComponent<TextMeshProUGUI>();
-        textMesh.text = $"-{reducedDamage} HP";
+        textMesh.text = $"-{damage} HP";
         textMesh.fontSize = 36;
         textMesh.color = Color.red;
         textMesh.alignment = TextAlignmentOptions.Center;
@@ -457,6 +467,36 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         // Set position to above the target (converted from world to screen coordinates)
         Vector3 screenPosition = (target.GameObject.transform.position + new Vector3(0, 2f, 0));
         damageTextObj.transform.position = screenPosition;
+
+        // Start fade-out coroutine
+        StartCoroutine(FadeAndDestroyText(textMesh));
+    }
+
+    public void ShowHealText(Character target, int healAmount)
+    {
+        Canvas canvas = FindObjectOfType<Canvas>();
+
+        if (canvas == null)
+        {
+            Debug.LogError("No Canvas found in the scene!");
+            return;
+        }
+
+        Debug.Log($"ShowHealText is called, amount: {healAmount}");
+        // Create Heal Text
+        GameObject healTextObj = new GameObject("HealText");
+        healTextObj.transform.SetParent(canvas.transform, false);
+
+        TextMeshProUGUI textMesh = healTextObj.AddComponent<TextMeshProUGUI>();
+        textMesh.text = $"+{healAmount} HP";
+        textMesh.fontSize = 36;
+        textMesh.color = Color.green;
+        textMesh.alignment = TextAlignmentOptions.Center;
+        textMesh.raycastTarget = false;
+
+        // Set position to above the target (converted from world to screen coordinates)
+        Vector3 screenPosition = (target.GameObject.transform.position + new Vector3(0, 2f, 0));
+        healTextObj.transform.position = screenPosition;
 
         // Start fade-out coroutine
         StartCoroutine(FadeAndDestroyText(textMesh));
@@ -889,7 +929,8 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     }
 
     void HandleRetreatConfirmed(RetreatConfirmation window)
-    {
+    {   
+        CombatManager.Instance.RemoveTerrainAndWeatherEffects(CombatManager.Instance.currentMission);
         Destroy(window.gameObject);
         OnCombatEnd(false);
     }

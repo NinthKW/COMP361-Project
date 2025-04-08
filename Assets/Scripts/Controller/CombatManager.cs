@@ -419,7 +419,7 @@ namespace Assets.Scripts.Controller
         private int weatherDefEffect;
         private int weatherHpEffect;
 
-        private void ApplyTerrainAndWeatherEffects()
+        public void ApplyTerrainAndWeatherEffects()
         {
             if (currentMission == null) {
                 Debug.LogError("CombatManager: currentMission is null. Cannot apply terrain and weather effects.");
@@ -449,7 +449,24 @@ namespace Assets.Scripts.Controller
                 soldier.ModifyDefense(terrainDefEffect + weatherDefEffect);
                 soldier.ModifyHP(terrainHpEffect + weatherHpEffect);
             }
+        }
 
+        public void RemoveTerrainAndWeatherEffects(Mission mission)
+        {
+            if (mission == null) return;
+
+            int modAtk = mission.terrainAtkEffect + mission.weatherAtkEffect;
+            int modDef = mission.terrainDefEffect + mission.weatherDefEffect;
+            int modHp  = mission.terrainHpEffect  + mission.weatherHpEffect;
+
+            foreach (Soldier soldier in _inBattleSoldiers)
+            {
+                // 反向撤销加成
+                if (soldier == null || soldier.IsDead()) continue;
+                soldier.ModifyAttack(-modAtk);
+                soldier.ModifyDefense(-modDef);
+                //soldier.ModifyHP(-modHp);
+            }
         }
         
 
@@ -529,7 +546,8 @@ namespace Assets.Scripts.Controller
             {
                 SaveCombatResults(false, "");
             }
-
+            // Remove terrain and weather effects
+            RemoveTerrainAndWeatherEffects(currentMission);
             OnCombatEnd?.Invoke(victory);
             CleanupCombat();
         }
