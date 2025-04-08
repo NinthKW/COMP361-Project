@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 67347166}
   - component: {fileID: 67347165}
   - component: {fileID: 67347164}
+  - component: {fileID: 67347167}
   m_Layer: 5
   m_Name: EquipmentField
   m_TagString: Untagged
@@ -230,6 +231,18 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &67347167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 67347162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9ad3be10c49f44459302e60832085a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &90889217
 GameObject:
   m_ObjectHideFlags: 0
@@ -1011,6 +1024,7 @@ GameObject:
   - component: {fileID: 701614451}
   - component: {fileID: 701614450}
   - component: {fileID: 701614449}
+  - component: {fileID: 701614452}
   m_Layer: 5
   m_Name: SoldierField
   m_TagString: Untagged
@@ -1107,6 +1121,18 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &701614452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 701614447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9ad3be10c49f44459302e60832085a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &792853152
 GameObject:
   m_ObjectHideFlags: 0
@@ -2612,6 +2638,7 @@ GameObject:
   - component: {fileID: 2141017545}
   - component: {fileID: 2141017544}
   - component: {fileID: 2141017543}
+  - component: {fileID: 2141017546}
   m_Layer: 5
   m_Name: WeaponField
   m_TagString: Untagged
@@ -2708,6 +2735,18 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2141017546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2141017541}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9ad3be10c49f44459302e60832085a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

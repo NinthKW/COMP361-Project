@@ -10,6 +10,7 @@ public class LoadoutManager : MonoBehaviour
     public List<Character> soldiers;
     public List<Weapon> weapons;
     public List<Equipment> equipments;
+    public List<SoldierEquipment> soldierEquipment;
 
     void Awake()
     {

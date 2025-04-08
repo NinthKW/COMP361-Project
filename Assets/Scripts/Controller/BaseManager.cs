@@ -49,6 +49,7 @@ namespace Assets.Scripts.Controller
             LoadoutManager.Instance.soldiers = Game.Instance.soldiersData;
             LoadoutManager.Instance.weapons = Game.Instance.inventory.GetWeapons();
             LoadoutManager.Instance.equipments = Game.Instance.inventory.GetEquipments();
+            LoadoutManager.Instance.soldierEquipment = Game.Instance.soldierEquipmentData;
     }
 }
 
