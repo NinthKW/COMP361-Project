@@ -335,6 +335,7 @@ namespace Assets.Scripts.Model
             int iron = 0;
             int wood = 0;
             int titanium = 0;
+            int medecine = 0;
 
             // resources
             using (var connection = new SqliteConnection(dbPath))
@@ -366,6 +367,9 @@ namespace Assets.Scripts.Model
                                 case 4:
                                     titanium = currentAmount;
                                     break;
+                                case 5:
+                                    medecine = currentAmount;
+                                    break;
                                 default:
                                     Debug.LogWarning("Unexpected resource id: " + resourceId);
                                     break;
@@ -376,7 +380,7 @@ namespace Assets.Scripts.Model
                 }
                 connection.Close();
             }
-            this.resourcesData = new Resources(food, money, iron, wood, titanium);
+            this.resourcesData = new Resources(food, money, iron, wood, titanium, medecine);
 
             // Bases
             this.basesData = new List<Base>();
@@ -735,7 +739,7 @@ namespace Assets.Scripts.Model
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
-                    for (int id = 0; id <= 4; id++)
+                    for (int id = 0; id <= 5; id++)
                     {
                         int amount = this.resourcesData.GetAmount(id);
                         command.CommandText = $"UPDATE Resource SET current_amount = {amount} WHERE resource_id = {id};";

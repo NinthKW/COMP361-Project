@@ -20,10 +20,11 @@ namespace Assets.Scripts.Model
                 { 2, ("Iron", 1000, "Iron is used for building your base")},
                 { 3, ("Wood", 800, "Wood is used for building your base")},
                 { 4, ("Titanium", 350, "Titanium is used for building your base")},
+                { 5, ("Medecine", 100, "Heal up your wounded soldiers")},
             };
         }
 
-        public Resources(int food, int money, int iron, int wood, int titanium)
+        public Resources(int food, int money, int iron, int wood, int titanium, int medecine)
         {
             resourceType = new Dictionary <int, (string, int, string)>
             {
@@ -32,6 +33,7 @@ namespace Assets.Scripts.Model
                 { 2, ("Iron", iron, "Iron is used for building your base")},
                 { 3, ("Wood", wood, "Wood is used for building your base")},
                 { 4, ("Titanium", titanium, "Titanium is used for building your base")},
+                { 5, ("Medecine", medecine, "Heal up your wounded soldiers")},
             };
         }
 

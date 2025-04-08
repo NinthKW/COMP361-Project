@@ -193,7 +193,8 @@ INSERT OR IGNORE INTO Resource (resource_id, name, current_amount) VALUES
 (1, 'Money', 1000),
 (2, 'Iron', 1000),
 (3, 'Wood', 800),
-(4, 'Titanium', 350);
+(4, 'Titanium', 350),
+(5, 'Healing', 100);
 
 INSERT OR IGNORE INTO Soldier (soldier_id, name, level, hp, max_hp, atk, def, role) VALUES
 (1, 'John', 5, 100, 100, 20, 0, 'Infantry'),

@@ -39,7 +39,7 @@ public class HospitalUI : MonoBehaviour
         backButton.GetComponent<Button>().onClick.AddListener(OnBackButtonClicked);
         healSoldierButton.onClick.AddListener(OnHealButtonClicked);
 
-        healsLeftDisplay.GetComponent<TextMeshProUGUI>().text = "Healing Remaining: " + GameManager.Instance.currentGame.resourcesData.GetAmount(6);
+        healsLeftDisplay.GetComponent<TextMeshProUGUI>().text = "Healing Remaining: " + GameManager.Instance.currentGame.resourcesData.GetAmount(5);
     }
 
     // Update is called once per frame
@@ -69,7 +69,7 @@ public class HospitalUI : MonoBehaviour
 
     void OnHealButtonClicked()
     {
-        int healingLeft = GameManager.Instance.currentGame.resourcesData.GetAmount(6);
+        int healingLeft = GameManager.Instance.currentGame.resourcesData.GetAmount(5);
         int healAmount = 10;
         Character soldier = currentSelectedSoldier;
         if (soldier.MaxHealth - soldier.Health < 10)
@@ -81,8 +81,8 @@ public class HospitalUI : MonoBehaviour
         {
             currentSelectedSoldier.Health += healAmount;
 
-            GameManager.Instance.currentGame.resourcesData.SetAmount(6, healingLeft - 1);
-            healsLeftDisplay.GetComponent<TextMeshProUGUI>().text = "Healing Remaining: " + GameManager.Instance.currentGame.resourcesData.GetAmount(6);
+            GameManager.Instance.currentGame.resourcesData.SetAmount(5, healingLeft - 1);
+            healsLeftDisplay.GetComponent<TextMeshProUGUI>().text = "Healing Remaining: " + GameManager.Instance.currentGame.resourcesData.GetAmount(5);
 
             healStatusDisplay.text = "STATUS: Healed " + currentSelectedSoldier.Name;
 
