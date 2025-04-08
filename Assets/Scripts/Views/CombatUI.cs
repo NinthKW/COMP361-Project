@@ -135,11 +135,11 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     }
     void CreateSoldierCards()
     {
-        int midX = (Screen.width / 2) - 200;
+        int midX = (Screen.width / 2) - 220;
         int midY = Screen.height / 2;
         
         // Adjust these values until the spacing feels right.
-        float horizontalOffset = 50f;   // Increase this if soldiers are too close horizontally.
+        float horizontalOffset = 70f;   // Increase this if soldiers are too close horizontally.
         float verticalSpacing = 70f;    // Increase this if soldiers are too close vertically.
         
         allyPositions = new List<Vector3>
@@ -165,7 +165,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
     void CreateEnemyCards()
     {
-    int midX = (Screen.width / 2) + 150;
+    int midX = (Screen.width / 2) + 190;
     int midY = Screen.height / 2;
     
     // Base values for spacing
