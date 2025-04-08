@@ -160,14 +160,14 @@ INSERT INTO Resource VALUES
 
 -- Insert into Soldier
 INSERT INTO Soldier VALUES
-(1, 'John', 5, 100, 100, 20, 15, 'Infantry'),
-(2, 'Alice', 3, 80, 80, 15, 10, 'Sniper'),
-(3, 'Bob', 7, 120, 120, 25, 20, 'Tank'),
-(4, 'Eve', 4, 90, 90, 18, 12, 'Scout'),
-(5, 'Charlie', 6, 110, 110, 22, 17, 'Engineer'),
-(6, 'David', 5, 95, 95, 19, 14, 'Medic'),
-(7, 'Sophia', 4, 85, 85, 16, 11, 'Assault'),
-(8, 'James', 6, 115, 115, 23, 18, 'HeavyGunner'),
+(1, 'John', 5, 100, 100, 20, 0, 'Infantry'),
+(2, 'Alice', 3, 80, 80, 15, 0, 'Sniper'),
+(3, 'Bob', 7, 120, 120, 25, 0, 'Tank'),
+(4, 'Eve', 4, 90, 90, 18, 10, 'Scout'),
+(5, 'Charlie', 6, 110, 110, 22, 15, 'Engineer'),
+(6, 'David', 5, 95, 95, 19, 10, 'Medic'),
+(7, 'Sophia', 4, 85, 85, 16, 0, 'Assault'),
+(8, 'James', 6, 115, 115, 23, 15, 'HeavyGunner'),
 (9, 'Olivia', 3, 75, 75, 14, 9, 'Recon'),
 (10, 'Henry', 7, 300, 300, 75, 50, 'SpecialForces');
 
@@ -221,16 +221,16 @@ INSERT INTO Mission VALUES
 
 -- Insert into ENEMY_TYPES
 INSERT INTO ENEMY_TYPES VALUES
-(1, 'Recon Drone', 50, 8, 4, 10),
-(2, 'Heavy Guard', 120, 15, 7, 20),
-(3, 'Experimental Tank', 180, 18, 10, 20),
-(4, 'Black Ops Sniper', 60, 20, 8, 30),
-(5, 'Mech Soldier', 100, 14, 7, 50),
-(6, 'Cyber Assassin', 90, 18, 9, 50),
-(7, 'Bioengineered Beast', 150, 22, 12, 70),
-(8, 'Psyker', 80, 12, 10, 70),
-(9, 'Prototype AI', 200, 25, 15, 90),
-(10, 'Black Horizon Commander', 300, 30, 20, 100);
+(1, 'Recon Drone', 50, 18, 4, 10),
+(2, 'Heavy Guard', 120, 25, 7, 20),
+(3, 'Experimental Tank', 180, 38, 10, 20),
+(4, 'Black Ops Sniper', 60, 35, 8, 30),
+(5, 'Mech Soldier', 100, 44, 7, 50),
+(6, 'Cyber Assassin', 90, 48, 9, 50),
+(7, 'Bioengineered Beast', 150, 50, 12, 70),
+(8, 'Psyker', 80, 30, 10, 70),
+(9, 'Prototype AI', 200, 45, 15, 90),
+(10, 'Black Horizon Commander', 300, 60, 20, 100);
 
 -- Insert into MISSION_ENEMY (Each mission has multiple enemies)
 INSERT INTO MISSION_ENEMY VALUES
