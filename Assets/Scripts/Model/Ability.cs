@@ -163,6 +163,12 @@ namespace Assets.Scripts.Model
                 {
                     target.Health = Mathf.Min(target.Health + HealAmount, target.MaxHealth);
                     Debug.Log($"{target.Name} healed for {HealAmount} health!");
+
+                    if (CombatUI.Instance != null)
+                    {
+                        CombatUI.Instance.ShowHealText(target, HealAmount);
+                    }
+
                 }
             }
             return true;
@@ -206,6 +212,7 @@ namespace Assets.Scripts.Model
                     healBuff.Duration = 999;
                     healBuff.Apply(healBuff.EffectPerTurn, target);
                     Debug.Log($"{target.Name} will heal for {HealAmount} per turn for the rest of the combat and defense increased by {BuffDefAmount}!");
+
                 }
             }
             return true;
