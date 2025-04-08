@@ -124,7 +124,8 @@ namespace Assets.Scripts.Controller
                     attack: role.BaseAtk,
                     defense: role.BaseDef,
                     maxHealth: role.MaxHealth,
-                    soldierID: _availableSoldiers.Count + 1 // Assuming soldierID is just an index
+                    soldierID: _availableSoldiers.Count + 1, // Assuming soldierID is just an index
+                    bonusStat: new EquipmentBonus(0, 0)
                 );
                 
                 // 将新士兵存入数据库

@@ -136,7 +136,7 @@ namespace Assets.Scripts.Model
                             string roleName = reader["role"].ToString();
                             
                             Role role = new Role(roleName);
-                            Soldier soldier = new Soldier(name, role, level, health, attack, defense, maxHealth, soldierId);
+                            Soldier soldier = new Soldier(name, role, level, health, attack, defense, maxHealth, soldierId, new EquipmentBonus(0,0));
                             this.soldiersData.Add(soldier);
                         }
                     }
@@ -393,7 +393,7 @@ namespace Assets.Scripts.Model
                             string roleName = reader["role"].ToString();
 
                             Role role = new Role(roleName);
-                            Soldier soldier = new(name, role, level, health, attack, defense, maxHealth, soldierId);
+                            Soldier soldier = new(name, role, level, health, attack, defense, maxHealth, soldierId, new EquipmentBonus(0, 0));
                             this.soldiersData.Add(soldier);
                             soldierMap.Add(soldierId, soldier);
                         }
@@ -529,6 +529,10 @@ namespace Assets.Scripts.Model
                             }
 
                             // Adds it to tracker
+                            soldierObj.bonusStat.atk += weaponObj.damage;
+                            soldierObj.bonusStat.atk += equipmentObj.atk;
+                            soldierObj.bonusStat.def += equipmentObj.def;
+
                             SoldierEquipment newSoldierEquipment = new SoldierEquipment(soldierObj, weaponObj, equipmentObj);
                             this.soldierEquipmentData.Add(newSoldierEquipment);
                         }

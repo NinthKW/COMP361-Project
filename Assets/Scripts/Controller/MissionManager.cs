@@ -149,7 +149,8 @@ namespace Assets.Scripts.Controller
 
             for (int i = 0; i < 3; i++)
             {
-                dummyMission.AssignedEnemies.Add(new Enemy("Dummy Enemy", 100, 10, 5, 100, 1, 0));
+                EquipmentBonus dummy = new EquipmentBonus(0, 0);
+                dummyMission.AssignedEnemies.Add(new Enemy("Dummy Enemy", 100, 10, 5, 100, 1, 0, dummy));
             }
             return dummyMission;
         }
@@ -193,7 +194,7 @@ namespace Assets.Scripts.Controller
 
                             for (int i = 0; i < count; i++)
                             {
-                                var enemy = new Enemy(name, hp, attack, dps, maxHealth, 1, exp_reward); 
+                                var enemy = new Enemy(name, hp, attack, dps, maxHealth, 1, exp_reward, new EquipmentBonus(0,0)); 
                                 mission.AssignedEnemies.Add(enemy);
                             }
 
