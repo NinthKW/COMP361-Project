@@ -76,3 +76,4 @@ EditModeTests.csproj
 Scripts.csproj
 *csproj
 .DS_Store
+*.orig
