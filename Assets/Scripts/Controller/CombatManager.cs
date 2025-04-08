@@ -481,16 +481,15 @@ namespace Assets.Scripts.Controller
             IsPlayerTurn = !IsPlayerTurn;
             Debug.Log($"Turn switched to: {(IsPlayerTurn ? "Player" : "Enemy")}");
             if (!IsPlayerTurn) AudioManager.Instance.PlaySound("TurnSwitch");
-            else AudioManager.Instance.PlaySound("TurnSwitchToPlayer");
-            yield return new WaitForSeconds(enemyTurnDelay);
-
-            if (IsPlayerTurn)
+            else 
             {
+                AudioManager.Instance.PlaySound("TurnSwitchToPlayer");
                 BuffsCountDown(); // buffs倒计时
                 AbilityCountDown(); // 技能冷却
                 ResetAttackChances(); // 重置攻击次数
                 CheckAndAssignAbilities(); // 检查并分配技能
             }
+            yield return new WaitForSeconds(enemyTurnDelay);
         }
 
         public Soldier GetRandomSoldier()
