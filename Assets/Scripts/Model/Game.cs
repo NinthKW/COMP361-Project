@@ -191,7 +191,7 @@ namespace Assets.Scripts.Model
 
                                         for (int i = 0; i < count; i++)
                                         {
-                                            var enemy = new Enemy(enemyName, hp, atk, dps, hp, 1, expReward); 
+                                            var enemy = new Enemy(enemyName, hp, atk, dps, hp, 1, expReward, new EquipmentBonus(0, 0)); 
                                             mission.AssignedEnemies.Add(enemy);
                                         }
                                     }
@@ -537,7 +537,7 @@ namespace Assets.Scripts.Model
 
                                         for (int i = 0; i < count; i++)
                                         {
-                                            var enemy = new Enemy(enemyName, hp, atk, dps, hp, 1, expReward); 
+                                            var enemy = new Enemy(enemyName, hp, atk, dps, hp, 1, expReward, new EquipmentBonus(0,0)); 
                                             mission.AssignedEnemies.Add(enemy);
                                         }
                                     }
