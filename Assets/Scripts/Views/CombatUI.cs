@@ -154,8 +154,8 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         int midY = Screen.height / 2;
         
         // Adjust these values until the spacing feels right.
-        float horizontalOffset = 90f;   // Increase this if soldiers are too close horizontally.
-        float verticalSpacing = 120f;    // Increase this if soldiers are too close vertically.
+        float horizontalOffset = 70f;   // Increase this if soldiers are too close horizontally.
+        float verticalSpacing = 70f;    // Increase this if soldiers are too close vertically.
         
         allyPositions = new List<Vector3>
         {
