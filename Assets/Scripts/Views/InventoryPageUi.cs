@@ -17,7 +17,7 @@ public class InventoryPageUI : MonoBehaviour
     
     // Prefab references for headers and list items
     public GameObject headerPrefab;    // A prefab that displays header text
-    public GameObject listItemPrefab;  // A prefab that displays a list item (inventory item)
+    public GameObject listItemPrefab;  // A prefab that displays a list inventory item
     
     // Header texts for each section
     public string weaponsHeaderText = "Weapons";
@@ -25,13 +25,13 @@ public class InventoryPageUI : MonoBehaviour
 
     void Start()
     {
-        // Set up the back button click event
+        
         backButton.onClick.AddListener(OnBackButtonClicked);
-        // Populate both panels with inventory items
+        // Inventory items
         PopulateInventory();
     }
 
-    // Back button functionality 
+
     void OnBackButtonClicked()
     {
         GameManager.Instance.ChangeState(GameState.MainMenuPage);
@@ -50,7 +50,7 @@ public class InventoryPageUI : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        // Instantiate headers for each container
+        
         if (headerPrefab != null)
         {
             GameObject weaponsHeader = Instantiate(headerPrefab, weaponsContainer);
