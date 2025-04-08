@@ -102,8 +102,7 @@ public class InventoryPageUI : MonoBehaviour
             }
         }
 
-        LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)weaponsContainer);
-        LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)equipmentsContainer);
+    
     }
 
     // Utility method to set header text
