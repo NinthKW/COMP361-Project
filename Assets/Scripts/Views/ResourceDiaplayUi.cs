@@ -17,7 +17,6 @@ public class ResourceDisplayUI : MonoBehaviour
     
     public TextMeshProUGUI resourceHeaderTextObject;
 
-    // The header text to display
     public string resourcesHeaderText = "Resources";
 
     void Start()
