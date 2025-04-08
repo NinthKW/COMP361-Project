@@ -167,6 +167,7 @@ public class LoadoutUI : MonoBehaviour
                         equipmentRectTransform.anchoredPosition3D = Vector3.zero;
 
                         selectEquipment = obj.GetComponent<LoadoutButton>().equipment;
+                        equipFound = true;
                         Debug.Log("Equipment placed");
                     }
                 }
@@ -190,7 +191,6 @@ public class LoadoutUI : MonoBehaviour
         if (soldierSelectedField.childCount > 0)
         {
             bool hasPrevious = false;
-            Weapon previousWeapon;
 
             //Move old button back if exists
             try
@@ -242,6 +242,7 @@ public class LoadoutUI : MonoBehaviour
                 if (selectSoldier.Name == se.soldier.Name)
                 {
                     se.weapon = selectWeapon;
+                    found = true;
                 }
             }
 
@@ -251,7 +252,7 @@ public class LoadoutUI : MonoBehaviour
                 SoldierEquipment newSoldierEquipment = new SoldierEquipment(selectSoldier, selectWeapon, selectEquipment);
                 LoadoutManager.Instance.soldierEquipment.Add(newSoldierEquipment);
 
-                Debug.Log("Created new SE with " + selectSoldier.Name + selectWeapon.name + selectEquipment.name);
+                Debug.Log("Created new SE for " + selectSoldier.Name);
             }
         } 
         else
@@ -265,7 +266,71 @@ public class LoadoutUI : MonoBehaviour
     {
         if (soldierSelectedField.childCount > 0)
         {
+            bool hasPrevious = false;
 
+            //Move old button back if exists
+            try
+            {
+                Transform previous = equipmentSelectedField.GetChild(0);
+                previous.SetParent(equipmentField);
+
+                Debug.Log("Previous equipment found");
+
+                RectTransform previousTransform = previous.transform.GetComponent<RectTransform>();
+                previousTransform.anchorMax = new Vector2(0f, 1f);
+                previousTransform.anchorMin = new Vector2(0f, 1f);
+                previousTransform.sizeDelta = new Vector2(150f, 150f);
+                previousTransform.localScale = Vector3.one;
+
+                hasPrevious = true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("no equipment was selected previously");
+            }
+
+            ////Remove atk/def buff from old
+            if (hasPrevious)
+            {
+                selectSoldier.bonusStat.atk -= selectEquipment.atk;
+                selectSoldier.bonusStat.def -= selectEquipment.def;
+            }
+
+            //Move new button in and change current select
+            button.GetComponent<Transform>().SetParent(equipmentSelectedField, false);
+            selectEquipment = button.GetComponent<LoadoutButton>().equipment;
+
+            //Adjust size
+            RectTransform equipmentRectTransform = button.transform.GetComponent<RectTransform>();
+            equipmentRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+            equipmentRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+            equipmentRectTransform.sizeDelta = new Vector2(75f, 75f);
+            equipmentRectTransform.localScale = Vector3.one;
+            equipmentRectTransform.anchoredPosition3D = Vector3.zero;
+
+
+            //Update dmg buffs on soldier
+            selectSoldier.bonusStat.atk += button.GetComponent<LoadoutButton>().equipment.atk;
+            selectSoldier.bonusStat.def += button.GetComponent<LoadoutButton>().equipment.def;
+
+            //Update SoldierEquipment Obj
+            bool found = false;
+            foreach (SoldierEquipment se in LoadoutManager.Instance.soldierEquipment)
+            {
+                if (selectSoldier.Name == se.soldier.Name)
+                {
+                    se.equipment = selectEquipment;
+                }
+            }
+
+            //Add to soldierEquipment list if didn't have before
+            if (!found)
+            {
+                SoldierEquipment newSoldierEquipment = new SoldierEquipment(selectSoldier, selectWeapon, selectEquipment);
+                LoadoutManager.Instance.soldierEquipment.Add(newSoldierEquipment);
+
+                Debug.Log("Created new SE for " + selectSoldier.Name);
+            }
         }
         else
         {
