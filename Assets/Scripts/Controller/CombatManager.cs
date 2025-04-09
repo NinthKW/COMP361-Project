@@ -86,7 +86,7 @@ namespace Assets.Scripts.Controller
             //                     defense: reader.GetInt32(5),
             //                     maxHealth: reader.GetInt32(6)
             //                 );
-            //                 soldier.GainExp(reader.GetInt32(3)); // 单独设置经验值
+            //                 soldier.GainExp(reader.GetInt32(3)); // Set experience separately
 
             //                 _availableSoldiers.Add(soldier);
             //                 Debug.Log($"Loaded soldier: {soldier.Name} ({role.GetRoleName()})");
@@ -128,7 +128,7 @@ namespace Assets.Scripts.Controller
                     bonusStat: new EquipmentBonus(0, 0)
                 );
                 
-                // 将新士兵存入数据库
+                // Save the new soldier to the database
                 using (var connection = new SqliteConnection(dbPath))
                 {
                     connection.Open();
@@ -166,10 +166,11 @@ namespace Assets.Scripts.Controller
 
 
         #region Combat Setup
+        // Modified StartCombat method, taking Mission and list of selected soldiers
         public void UpdateInitialEnemies(Mission mission) 
         {
             _availableEnemies.Clear();
-            _waitingEnemies.Clear(); // 清空等待敌人列表
+            _waitingEnemies.Clear(); // Clear waiting enemies list
 
             if (mission == null || mission.AssignedEnemies == null || mission.AssignedEnemies.Count == 0)
             {
@@ -184,7 +185,7 @@ namespace Assets.Scripts.Controller
             }
         }
 
-        // 修改后的 StartCombat 方法，传入 Mission 对象和玩家选定的士兵列表
+        // Modified StartCombat method, taking Mission and list of selected soldiers
         public void StartCombat(Mission mission, List<Soldier> selectedSoldiers)
         {
             _inBattleEnemies.Clear();
@@ -210,19 +211,19 @@ namespace Assets.Scripts.Controller
                 return;
             }
 
-            currentMission = mission; // 设置当前任务
+            currentMission = mission; // Set current mission
 
-            // 将当前任务的敌人加载到 _availableEnemies 和 _waitingEnemies 中
+            // Load mission's enemies into _availableEnemies and _waitingEnemies
             for (int i = 0; i < mission.AssignedEnemies.Count; i++)
             {
                 if (i < 6)
                 {
-                    _availableEnemies.Add(mission.AssignedEnemies[i]);  // 用于 UI 显示
-                    _inBattleEnemies.Add(mission.AssignedEnemies[i]);   // 用于战斗逻辑处理
+                    _availableEnemies.Add(mission.AssignedEnemies[i]);  // For UI display
+                    _inBattleEnemies.Add(mission.AssignedEnemies[i]);   // For combat logic processing
                 }
                 else
                 {
-                    _waitingEnemies.Add(mission.AssignedEnemies[i]); // 剩下的敌人存入等待列表
+                    _waitingEnemies.Add(mission.AssignedEnemies[i]); // Remaining enemies added to waiting list
                 }
                 Debug.Log($"Added enemy to _availableEnemies: {mission.AssignedEnemies[i].Name}");
             }
@@ -237,9 +238,9 @@ namespace Assets.Scripts.Controller
             IsPlayerTurn = true;
             Debug.Log($"Combat started: {_inBattleSoldiers.Count} vs {_inBattleEnemies.Count}");
             AudioManager.Instance.PlaySound("Combat Start");
-            CheckAndAssignAbilities(); // 检查并分配技能
-            ResetAttackChances(); // 重置攻击次数
-            ApplyTerrainAndWeatherEffects(); // 应用地形和天气效果
+            CheckAndAssignAbilities(); // Check and assign abilities
+            ResetAttackChances(); // Reset attack chances
+            ApplyTerrainAndWeatherEffects(); // Apply terrain and weather effects
         }
         #endregion
 
@@ -290,7 +291,7 @@ namespace Assets.Scripts.Controller
             return true;
         }
 
-        // 在回合结束时调用，检查并补充敌人
+        // Called at turn end to check and replace dead enemies
         public void CheckAndReplaceDeadEnemies()
         {
             var deadEnemies = _inBattleEnemies.Where(e => e.IsDead()).ToList();
@@ -299,6 +300,7 @@ namespace Assets.Scripts.Controller
 
             foreach (var deadEnemy in deadEnemies)
             {
+                Debug.Log("Replacing dead enemy: " + deadEnemy.Name);
                 if (_waitingEnemies.Count > 0)
                 {
                     var newEnemy = _waitingEnemies[0];
@@ -403,7 +405,7 @@ namespace Assets.Scripts.Controller
                     {
                         var sniperAbility = gameObject.AddComponent<SniperDamageAbility>();
                         sniperAbility.Initialize("Precision Shot", cost: 2, cooldown: 1,
-                            description: "High-damage percing attack dealing percentage damage scaling with caster's attack.", caster: soldier);
+                            description: "High-damage piercing attack dealing percentage damage scaling with caster's attack.", caster: soldier);
                         soldier.Abilities.Add(sniperAbility);
                     }
                 }
@@ -427,7 +429,7 @@ namespace Assets.Scripts.Controller
                 return;
             }
 
-            // 从当前任务中加载 Terrain 和 Weather 的效果
+            // Load Terrain and Weather effects from current mission
             terrainAtkEffect = currentMission.terrainAtkEffect;
             Debug.Log($"Terrain Atk Effect: {terrainAtkEffect}");
             terrainDefEffect = currentMission.terrainDefEffect;
@@ -442,7 +444,7 @@ namespace Assets.Scripts.Controller
             weatherHpEffect = currentMission.weatherHpEffect;
             Debug.Log($"Weather HP Effect: {weatherHpEffect}");
 
-            // 对士兵应用效果
+            // Apply effects to soldiers
             foreach (var soldier in _inBattleSoldiers)
             {   
                 if (soldier == null || soldier.IsDead()) continue;
@@ -462,7 +464,7 @@ namespace Assets.Scripts.Controller
 
             foreach (Soldier soldier in _inBattleSoldiers)
             {
-                // 反向撤销加成
+                // Revert applied bonuses
                 if (soldier == null || soldier.IsDead()) continue;
                 soldier.ModifyAttack(-modAtk);
                 soldier.ModifyDefense(-modDef);
@@ -480,16 +482,15 @@ namespace Assets.Scripts.Controller
             IsPlayerTurn = !IsPlayerTurn;
             Debug.Log($"Turn switched to: {(IsPlayerTurn ? "Player" : "Enemy")}");
             if (!IsPlayerTurn) AudioManager.Instance.PlaySound("TurnSwitch");
-            else AudioManager.Instance.PlaySound("TurnSwitchToPlayer");
-            yield return new WaitForSeconds(enemyTurnDelay);
-
-            if (IsPlayerTurn)
+            else 
             {
-                BuffsCountDown(); // buffs倒计时
-                AbilityCountDown(); // 技能冷却
-                ResetAttackChances(); // 重置攻击次数
-                CheckAndAssignAbilities(); // 检查并分配技能
+                AudioManager.Instance.PlaySound("TurnSwitchToPlayer");
+                BuffsCountDown(); // Buff countdown
+                AbilityCountDown(); // Ability cooldown
+                ResetAttackChances(); // Reset attack chances
+                CheckAndAssignAbilities(); // Check and assign abilities
             }
+            yield return new WaitForSeconds(enemyTurnDelay);
         }
 
         public Soldier GetRandomSoldier()
@@ -527,7 +528,7 @@ namespace Assets.Scripts.Controller
             // Reward experience
             if (victory)
             {
-                ApplyMissionRewards(currentMission);  // 调用奖励分发函数
+                ApplyMissionRewards(currentMission);  // Call reward distribution function
 
                 string soldierExpDetails = "";
 
@@ -536,7 +537,7 @@ namespace Assets.Scripts.Controller
                 _inBattleSoldiers.ForEach(c => {
                     if (c is Soldier soldier) 
                     {
-                        soldier.GainExp(totalEnemyExp);  // 士兵获得经验
+                        soldier.GainExp(totalEnemyExp);  // Soldier gains experience
                         soldierExpDetails += $"- {soldier.Name}: Gained {totalEnemyExp} EXP\n";
                     }
                 });
@@ -567,7 +568,7 @@ namespace Assets.Scripts.Controller
             {
                 connection.Open();
 
-                // 更新 Money
+                // Update Money
                 using (var command = connection.CreateCommand())
                 {
                     command.CommandText = @"
@@ -579,7 +580,7 @@ namespace Assets.Scripts.Controller
                     command.ExecuteNonQuery();
                 }
 
-                // 更新资源奖励
+                // Update resource rewards
                 using (var command = connection.CreateCommand())
                 {
                     command.CommandText = @"
@@ -660,7 +661,7 @@ namespace Assets.Scripts.Controller
 
         #region Helper Methods
         private int CountAliveSoldiers() => _inBattleSoldiers.Count(s => s != null && !s.IsDead());
-        public int CountAliveEnemies() => _availableEnemies.Count(e => e != null && !e.IsDead());
+        public int CountAliveEnemies() => _availableEnemies.Count(e => e != null && !e.IsDead()) + _waitingEnemies.Count(e => e != null && !e.IsDead());
         private void BuffsCountDown()
         {
             foreach (var soldier in _inBattleSoldiers)

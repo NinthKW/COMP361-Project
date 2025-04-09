@@ -143,72 +143,92 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     #endregion
 
     #region UI Creation
+    // Call this method to create all character displays.
     void CreateCharacterDisplays()
     {
         CreateSoldierCards();
         CreateEnemyCards();
     }
+
+    /// <summary>
+    /// Computes a screen position from normalized [0,1] coordinates (relative to Screen width/height).
+    /// For example, (0.5,0.5) returns the exact screen center.
+    /// </summary>
+    Vector3 GetScreenPosition(float normalizedX, float normalizedY)
+    {
+        return new Vector3(Screen.width * normalizedX, Screen.height * normalizedY, 0);
+    }
+
     void CreateSoldierCards()
     {
-        int midX = (Screen.width / 2) - 220;
-        int midY = Screen.height / 2;
-        
-        // Adjust these values until the spacing feels right.
-        float horizontalOffset = 70f;   // Increase this if soldiers are too close horizontally.
-        float verticalSpacing = 70f;    // Increase this if soldiers are too close vertically.
-        
+        // Place soldier formation on the left side (e.g., 33% from the left)
+        float baseX = 0.33f;
+        float baseY = 0.5f; // Center vertically
+        Vector3 center = GetScreenPosition(baseX, baseY);
+
+        // Offsets defined as a fraction of the overall screen dimensions.
+        // Adjust these values until the spacing looks good on your devices.
+        float horizontalOffsetPercent = 0.065f;  // 6.5% of Screen.width
+        float verticalSpacingPercent = 0.11f;   // 11% of Screen.height
+
+        // Compute positions relative to our formation center.
         allyPositions = new List<Vector3>
         {
-            new Vector3(midX - horizontalOffset, midY + verticalSpacing * 2, 0),
-            new Vector3(midX + horizontalOffset, midY + verticalSpacing, 0),
-            new Vector3(midX - horizontalOffset, midY, 0),
-            new Vector3(midX + horizontalOffset, midY - verticalSpacing, 0),
-            new Vector3(midX - horizontalOffset, midY - verticalSpacing * 2, 0)
+            center + new Vector3(-Screen.width * horizontalOffsetPercent, Screen.height * verticalSpacingPercent * 2, 0),
+            center + new Vector3(Screen.width * horizontalOffsetPercent, Screen.height * verticalSpacingPercent, 0),
+            center + new Vector3(-Screen.width * horizontalOffsetPercent, 0, 0),
+            center + new Vector3(Screen.width * horizontalOffsetPercent, -Screen.height * verticalSpacingPercent, 0),
+            center + new Vector3(-Screen.width * horizontalOffsetPercent, -Screen.height * verticalSpacingPercent * 2, 0)
         };
 
         foreach (var soldier in CombatManager.Instance.GetInBattleSoldiers())
         {
-            if (soldier is not Soldier validSoldier) continue;
-            
-            var index = CombatManager.Instance.GetInBattleSoldiers().IndexOf(soldier);
+            if (soldier is not Soldier validSoldier)
+                continue;
+
+            // Use the index in the list to assign a position.
+            int index = CombatManager.Instance.GetInBattleSoldiers().IndexOf(soldier);
             var card = CreateCharacterCard(validSoldier, true, allyPositions[index]);
             soldierCards.Add(card);
             validSoldier.SetGameObject(card);
         }
     }
 
-
     void CreateEnemyCards()
     {
-    int midX = (Screen.width / 2) + 190;
-    int midY = Screen.height / 2;
-    
-    // Base values for spacing
-    float horizontalOffset = 95f;
-    float verticalSpacing = 120f;
-    
-    // Extra adjustments for moving the formation further right and increasing spacing
-    float extraRightShift = 80f;       // Additional shift to the right
-    float spacingMultiplier = 1.2f;      // Increase spacing by 20%
+        // Place enemy formation on the right side (e.g., 71% from the left)
+        float baseX = 0.71f;
+        float baseY = 0.5f;
+        Vector3 center = GetScreenPosition(baseX, baseY);
 
-    enemyPositions = new List<Vector3>
-    {
-        // Column 1 (left-most tip): shift right by extraRightShift
-        new Vector3(midX - 2 * horizontalOffset + extraRightShift, midY, 0),
+        // Define spacing as a percentage of screen size.
+        float horizontalOffsetPercent = 0.08f;  // 8% of Screen.width
+        float verticalSpacingPercent = 0.18f;      // 18% of Screen.height
+        float extraRightShiftPercent = 0.05f;     // Extra shift of 5% to the right
+        float spacingMultiplier = 1.2f;           // Multiplier to adjust vertical spacing as needed
 
-        // Column 2 (middle column: 2 enemies, spaced vertically with multiplier)
-        new Vector3(midX - horizontalOffset + extraRightShift, midY + (verticalSpacing * spacingMultiplier) / 2, 0),
-        new Vector3(midX - horizontalOffset + extraRightShift, midY - (verticalSpacing * spacingMultiplier) / 2, 0),
+        enemyPositions = new List<Vector3>
+        {
+            // Column 1 (left-most tip): shift right by extraRightShift
+            center + new Vector3(-2 * Screen.width * horizontalOffsetPercent + Screen.width * extraRightShiftPercent, 0, 0),
 
-        // Column 3 (right column: 3 enemies, evenly spaced vertically)
-        new Vector3(midX + extraRightShift, midY + verticalSpacing * spacingMultiplier, 0),
-        new Vector3(midX + extraRightShift, midY, 0),
-        new Vector3(midX + extraRightShift, midY - verticalSpacing * spacingMultiplier, 0)
-    };
+            // Column 2 (middle column: 2 enemies, spaced vertically)
+            center + new Vector3(-Screen.width * horizontalOffsetPercent + Screen.width * extraRightShiftPercent,
+                                 Screen.height * verticalSpacingPercent * spacingMultiplier / 2, 0),
+            center + new Vector3(-Screen.width * horizontalOffsetPercent + Screen.width * extraRightShiftPercent,
+                                -Screen.height * verticalSpacingPercent * spacingMultiplier / 2, 0),
+
+            // Column 3 (right column: 3 enemies, evenly spaced vertically)
+            center + new Vector3(Screen.width * extraRightShiftPercent,
+                                 Screen.height * verticalSpacingPercent * spacingMultiplier, 0),
+            center + new Vector3(Screen.width * extraRightShiftPercent, 0, 0),
+            center + new Vector3(Screen.width * extraRightShiftPercent,
+                                -Screen.height * verticalSpacingPercent * spacingMultiplier, 0)
+        };
 
         foreach (var enemy in CombatManager.Instance.GetAvailableEnemies())
         {
-            var index = CombatManager.Instance.GetAvailableEnemies().IndexOf(enemy);
+            int index = CombatManager.Instance.GetAvailableEnemies().IndexOf(enemy);
             Debug.Log($"Enemy Index: {index}");
             var card = CreateCharacterCard(enemy, false, enemyPositions[index]);
             enemyCards.Add(card);
@@ -216,7 +236,10 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         }
         foreach (var enemy in CombatManager.Instance.GetWaitingEnemies())
         {
-            var card = CreateCharacterCard(enemy, false, new Vector3(Screen.width + 200, -200, 0));
+            // Position waiting enemies off-screen.
+            // Here we use 105% of Screen.width and -20% of Screen.height, but adjust as needed.
+            Vector3 offScreenPos = new Vector3(Screen.width * 1.05f, -Screen.height * 0.2f, 0);
+            var card = CreateCharacterCard(enemy, false, offScreenPos);
             waitingEnemyCards.Add(card);
             enemy.SetGameObject(card);
         }
@@ -257,13 +280,13 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
         var mission = CombatManager.Instance.currentMission;
 
-        // 更新 Terrain 信息
+        // Update Terrain information
         TerrainText.text = $"Terrain: {mission.terrain}\n" +
                         $"ATK Effect: {mission.terrainAtkEffect}\n" +
                         $"DEF Effect: {mission.terrainDefEffect}\n" +
                         $"HP Effect: {mission.terrainHpEffect}";
 
-        // 更新 Weather 信息
+        // Update Weather information
         WeatherText.text = $"Weather: {mission.weather}\n" +
                         $"ATK Effect: {mission.weatherAtkEffect}\n" +
                         $"DEF Effect: {mission.weatherDefEffect}\n" +
@@ -527,7 +550,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         ClearSelection();
         CheckTurnEnd();
         UpdateCombatState();
-        // 更新敌人数量显示
+        // Update enemy count display
         UpdateEnemyCountDisplay();
     }
 
@@ -553,7 +576,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
     void CleanEnemyUnits()
     {
-        bool anyEnemyRemoved = false; // 用于检查是否有敌人被移除
+        bool anyEnemyRemoved = false; // Used to check if any enemy has been removed
 
         foreach (var card in enemyCards.ToArray())
         {
@@ -565,7 +588,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             var position = card.transform.position;
             enemyCards.Remove(card);
             Destroy(card);
-            anyEnemyRemoved = true; // 标记有敌人被移除
+            anyEnemyRemoved = true; // Mark that an enemy has been removed
             
             // TODO: replace dead units in new logics
             if (waitingEnemyCards.Count > 0)
@@ -578,7 +601,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
         if (anyEnemyRemoved)
         {
-            UpdateEnemyCountDisplay(); // 在清除敌人后更新显示
+            UpdateEnemyCountDisplay(); // Update display after removing enemy
         }
     }
     #endregion
@@ -895,10 +918,12 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     {
         if (enemyCountText == null) return;
 
-        int activeEnemies = CombatManager.Instance.CountAliveEnemies();
+        int activeEnemies = CombatManager.Instance.GetInBattleEnemies().Count;
         int waitingEnemies = CombatManager.Instance.GetWaitingEnemies().Count;
 
-        enemyCountText.text = $"Enemies Remaining: {activeEnemies + waitingEnemies}";
+        enemyCountText.text = $"Enemies Remaining: {activeEnemies + waitingEnemies}\n" +
+                              $"Active: {activeEnemies}\n" +
+                              $"Waiting: {waitingEnemies}";
     }
 
     private void UpdateAbilityCountdownDisplay()
@@ -1020,8 +1045,6 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
                 button.interactable = state;
         }
     }
-
-    
 
     bool CompareAbility(Ability ability, string type)
     {

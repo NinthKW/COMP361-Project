@@ -41,24 +41,23 @@ namespace Assets.Scripts.Model
 
         public virtual void TakeDamage(int damage)
         {
-            int mitigatedDamage = Mathf.Max(0, damage - Def);  // 根据防御力减少伤害
-            mitigatedDamage = Mathf.Max(1, mitigatedDamage);   // 至少造成1点伤害
+            damage = Mathf.Max(1, damage);   // 至少造成1点伤害
 
             if (Shield > 0)
             {
-                if (mitigatedDamage > Shield)
+                if (damage > Shield)
                 {
-                    mitigatedDamage -= Shield;
+                    damage -= Shield;
                     Shield = 0;
                 }
                 else
                 {
-                    Shield -= mitigatedDamage;
-                    mitigatedDamage = 0;
+                    Shield -= damage;
+                    damage = 0;
                 }
             }
 
-            Health = Mathf.Max(Health - mitigatedDamage, 0);
+            Health = Mathf.Max(Health - damage, 0);
 
             if (Health <= 0)
             {

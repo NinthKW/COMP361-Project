@@ -388,10 +388,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1414123528}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -119.82114, y: 121.42078}
-  m_SizeDelta: {x: -653.6566, y: -476.5563}
+  m_SizeDelta: {x: 510.34338, y: 155.4437}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &766986650
 GameObject:
@@ -1371,7 +1371,6 @@ MonoBehaviour:
   newGameButton: {fileID: 267549557}
   loadGameButton: {fileID: 2076794018}
   quitButton: {fileID: 858395616}
-  temp: {fileID: 0}
 --- !u!1 &2017534437
 GameObject:
   m_ObjectHideFlags: 0
