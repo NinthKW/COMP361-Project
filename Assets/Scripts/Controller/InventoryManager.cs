@@ -102,7 +102,7 @@ namespace Assets.Scripts.Controller
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT equipment_id, name, hp, def, atk, cost, resource_amount, resource_typ, unlocked FROM Equipment;";
+                    command.CommandText = "SELECT equipment_id, name, hp, def, atk, cost, resource_amount, resource_type, unlocked FROM Equipment;";
                     using (IDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())

@@ -951,17 +951,31 @@ namespace Assets.Scripts.Model
                 connection.Open();
                 foreach (var soldierEquipment in this.soldierEquipmentData)
                 {
+                    // Questionable cast from Character to Soldier, but I need to do it like this unless I want to refactor half my code
+
                     using (var command = connection.CreateCommand())
                     {
-                            command.CommandText = @"UPDATE Soldier_Equipment SET 
-                                soldier_ID = @soldier_ID, 
-                                weapon_ID = @weapon_ID, 
-                                equipment_ID = @equipment_ID, 
-                                WHERE soldier_ID = @soldier_ID;";
-                            command.Parameters.Add(new SqliteParameter("@soldier_ID", soldierEquipment.soldier));
-                            command.Parameters.Add(new SqliteParameter("@weapon_ID", soldierEquipment.weapon));
-                            command.Parameters.Add(new SqliteParameter("@equipment_ID", soldierEquipment.equipment));
-                            command.ExecuteNonQuery();
+                        command.CommandText = @"UPDATE Soldier_Equipment SET 
+                            soldier_ID = @soldier_ID, 
+                            weapon_ID = @weapon_ID, 
+                            equipment_ID = @equipment_ID 
+                            WHERE soldier_ID = @soldier_ID;";
+
+                        Soldier soldier;
+                        if (soldierEquipment.soldier is Soldier)
+                        {
+                            soldier = (Soldier)soldierEquipment.soldier;
+                        } 
+                        else
+                        {
+                            Debug.Log("Soldier not found, cast failed. Creating dummy.");
+                            soldier = new Soldier("error", new Role("tank"), 1, 1, 1, 1, 1, 1, new EquipmentBonus(1, 1));
+                        }
+
+                        command.Parameters.Add(new SqliteParameter("@soldier_ID", soldier.id));
+                        command.Parameters.Add(new SqliteParameter("@weapon_ID", soldierEquipment.weapon.weapon_id));
+                        command.Parameters.Add(new SqliteParameter("@equipment_ID", soldierEquipment.equipment.equipment_id));
+                        command.ExecuteNonQuery();
                     }
                 }
                 connection.Close();
