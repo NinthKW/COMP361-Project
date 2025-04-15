@@ -271,7 +271,7 @@ namespace Assets.Scripts.Model
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT weapon_id, name, description, damage, cost, resource_amount, resource_type FROM Weapon;";
+                    command.CommandText = "SELECT weapon_id, name, description, damage, cost, resource_amount, resource_type, unlocked FROM Weapon;";
                     using (IDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
@@ -283,9 +283,10 @@ namespace Assets.Scripts.Model
                             int cost = int.Parse(reader["cost"].ToString());
                             int resourceAmount = int.Parse(reader["resource_amount"].ToString());
                             int resourceType = int.Parse(reader["resource_type"].ToString());
+                            bool unlocked = bool.Parse(reader["unlocked"].ToString());
 
                             // Create a new weapon and add it to the inventory.
-                            Weapon weapon = new Weapon(id, name, description, damage, cost, resourceAmount, resourceType);
+                            Weapon weapon = new Weapon(id, name, description, damage, cost, resourceAmount, resourceType, unlocked);
                             inventory.AddWeapon(weapon);
                         }
                     }
@@ -299,7 +300,7 @@ namespace Assets.Scripts.Model
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT equipment_id, name, hp, def, atk, cost, resource_amount, resource_type FROM Equipment;";
+                    command.CommandText = "SELECT equipment_id, name, hp, def, atk, cost, resource_amount, resource_type, unlocked FROM Equipment;";
                     using (IDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
@@ -312,9 +313,10 @@ namespace Assets.Scripts.Model
                             int cost = int.Parse(reader["cost"].ToString());
                             int resourceAmount = int.Parse(reader["resource_amount"].ToString());
                             int resourceType = int.Parse(reader["resource_type"].ToString());
+                            bool unlocked = bool.Parse(reader["unlocked"].ToString());
 
                             // Creates a new equipment item and add it to the inventory
-                            Equipment equipment = new Equipment(id, name, hp, def, atk, cost, resourceAmount, resourceType);
+                            Equipment equipment = new Equipment(id, name, hp, def, atk, cost, resourceAmount, resourceType, unlocked);
                             inventory.AddEquipment(equipment);
                         }
                     }
@@ -627,7 +629,7 @@ namespace Assets.Scripts.Model
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT weapon_id, name, description, damage, cost, resource_amount, resource_type FROM Weapon;";
+                    command.CommandText = "SELECT weapon_id, name, description, damage, cost, resource_amount, resource_type, unlocked FROM Weapon;";
                     using (IDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
@@ -639,9 +641,10 @@ namespace Assets.Scripts.Model
                             int cost = int.Parse(reader["cost"].ToString());
                             int resourceAmount = int.Parse(reader["resource_amount"].ToString());
                             int resourceType = int.Parse(reader["resource_type"].ToString());
+                            bool unlocked = bool.Parse(reader["unlocked"].ToString());
 
                             // Create a new weapon and add it to the inventory.
-                            Weapon weapon = new Weapon(id, name, description, damage, cost, resourceAmount, resourceType);
+                            Weapon weapon = new Weapon(id, name, description, damage, cost, resourceAmount, resourceType, unlocked);
                             inventory.AddWeapon(weapon);
                             weaponMap.Add(id, weapon);
                         }
@@ -657,7 +660,7 @@ namespace Assets.Scripts.Model
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT equipment_id, name, hp, def, atk, cost, resource_amount, resource_type FROM Equipment;";
+                    command.CommandText = "SELECT equipment_id, name, hp, def, atk, cost, resource_amount, resource_type, unlocked FROM Equipment;";
                     using (IDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
@@ -670,9 +673,10 @@ namespace Assets.Scripts.Model
                             int cost = int.Parse(reader["cost"].ToString());
                             int resourceAmount = int.Parse(reader["resource_amount"].ToString());
                             int resourceType = int.Parse(reader["resource_type"].ToString());
+                            bool unlocked = bool.Parse(reader["unlocked"].ToString());
 
                             // Creates a new equipment item and add it to the inventory
-                            Equipment equipment = new Equipment(id, name, hp, def, atk, cost, resourceAmount, resourceType);
+                            Equipment equipment = new Equipment(id, name, hp, def, atk, cost, resourceAmount, resourceType, unlocked);
                             inventory.AddEquipment(equipment);
                             equipmentMap.Add(id, equipment);
                         }
@@ -1003,7 +1007,8 @@ namespace Assets.Scripts.Model
                             damage = @damage, 
                             cost = @cost, 
                             resource_amount = @resourceAmount, 
-                            resource_type = @resourceType
+                            resource_type = @resourceType,
+                            unlocked = @unlocked
                             WHERE weapon_id = @weaponId;";
                         command.Parameters.Add(new SqliteParameter("@name", weapon.name));
                         command.Parameters.Add(new SqliteParameter("@description", weapon.description));
@@ -1012,6 +1017,7 @@ namespace Assets.Scripts.Model
                         command.Parameters.Add(new SqliteParameter("@resourceAmount", weapon.resource_amount));
                         command.Parameters.Add(new SqliteParameter("@resourceType", weapon.resource_type));
                         command.Parameters.Add(new SqliteParameter("@weaponId", weapon.weapon_id));
+                        command.Parameters.Add(new SqliteParameter("@unlocked", weapon.isUnlocked));
                         command.ExecuteNonQuery();
                     }
                 }
@@ -1033,7 +1039,8 @@ namespace Assets.Scripts.Model
                             atk = @atk, 
                             cost = @cost, 
                             resource_amount = @resourceAmount, 
-                            resource_type = @resourceType
+                            resource_type = @resourceType,
+                            unlocked = @unlocked
                             WHERE equipment_id = @equipmentId;";
                         command.Parameters.Add(new SqliteParameter("@name", equipment.name));
                         command.Parameters.Add(new SqliteParameter("@hp", equipment.hp));
@@ -1043,6 +1050,7 @@ namespace Assets.Scripts.Model
                         command.Parameters.Add(new SqliteParameter("@resourceAmount", equipment.resource_amount));
                         command.Parameters.Add(new SqliteParameter("@resourceType", equipment.resource_type));
                         command.Parameters.Add(new SqliteParameter("@equipmentId", equipment.equipment_id));
+                        command.Parameters.Add(new SqliteParameter("@unlocked", equipment.isUnlocked));
                         command.ExecuteNonQuery();
                     }
                 }

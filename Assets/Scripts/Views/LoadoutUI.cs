@@ -63,6 +63,8 @@ public class LoadoutUI : MonoBehaviour
         //Weapon
         foreach (Weapon weapon in LoadoutManager.Instance.weapons)
         {
+            //skip not unlocked weapons
+
             Debug.Log("Adding weapon: " + weapon.name);
             GameObject buttonGameObject = Instantiate(buttonPrefab, weaponField);
             Button button = buttonGameObject.GetComponent<Button>();
@@ -210,7 +212,8 @@ public class LoadoutUI : MonoBehaviour
             }
             catch (System.Exception e)
             {
-                Debug.LogError("no weapon was select previously");
+                Debug.Log("no weapon was select previously");
+                Debug.Log(e);
             }
 
             ////Remove dmg buff from old
@@ -286,7 +289,8 @@ public class LoadoutUI : MonoBehaviour
             }
             catch (System.Exception e)
             {
-                Debug.LogError("no equipment was selected previously");
+                Debug.Log("no equipment was selected previously");
+                Debug.Log(e);
             }
 
             ////Remove atk/def buff from old
@@ -307,7 +311,6 @@ public class LoadoutUI : MonoBehaviour
             equipmentRectTransform.sizeDelta = new Vector2(75f, 75f);
             equipmentRectTransform.localScale = Vector3.one;
             equipmentRectTransform.anchoredPosition3D = Vector3.zero;
-
 
             //Update dmg buffs on soldier
             selectSoldier.bonusStat.atk += button.GetComponent<LoadoutButton>().equipment.atk;
@@ -358,6 +361,7 @@ public class LoadoutUI : MonoBehaviour
         catch (System.Exception e)
         {
             Debug.LogWarning("Move back failed: no children for " + selectedField.name);
+            Debug.Log(e);
         }
 
         return hasPrevious;

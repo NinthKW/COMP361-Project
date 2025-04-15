@@ -293,7 +293,7 @@ INSERT INTO Equipment VALUES
 
 
 INSERT INTO Infrastructure VALUES
-(1, 'HQ', 'Central hub for military operations, will generate money', 3, 1000, 50, 1, 1, 1, 40, -25),
+(1, 'HQ', 'Central hub for military operations, will generate money', 3, 1000, 50, 1, 1, 0, 0, 0),
 (2, 'Training Room', 'Level your soldiers', 3, 900, 45, 5, 1, 0, 0, 0),
 (3, 'Hospital', 'Provides healthcare and recovery for soldiers', 2, 700, 35, 4, 1, 0, 0, 0),
 (4, 'Restaurant', 'Generates food for the base', 3, 1000, 50, 4, 1, 0, 0, 0),

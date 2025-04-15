@@ -70,7 +70,7 @@ namespace Assets.Scripts.Controller
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT weapon_id, name, description, damage, cost, resource_amount, resource_type FROM Weapon;";
+                    command.CommandText = "SELECT weapon_id, name, description, damage, cost, resource_amount, resource_type, unlocked FROM Weapon;";
                     using (IDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
@@ -82,9 +82,10 @@ namespace Assets.Scripts.Controller
                             int cost = int.Parse(reader["cost"].ToString());
                             int resourceAmount = int.Parse(reader["resource_amount"].ToString());
                             int resourceType = int.Parse(reader["resource_type"].ToString());
+                            bool unlocked = bool.Parse(reader["unlocked"].ToString());
 
                             // Create a new weapon and add it to the inventory.
-                            Weapon weapon = new Weapon(id, name, description, damage, cost, resourceAmount, resourceType);
+                            Weapon weapon = new Weapon(id, name, description, damage, cost, resourceAmount, resourceType, unlocked);
                             playerInventory.AddWeapon(weapon);
                         }
                     }
@@ -101,7 +102,7 @@ namespace Assets.Scripts.Controller
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT equipment_id, name, hp, def, atk, cost, resource_amount, resource_type FROM Equipment;";
+                    command.CommandText = "SELECT equipment_id, name, hp, def, atk, cost, resource_amount, resource_typ, unlocked FROM Equipment;";
                     using (IDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
@@ -114,9 +115,10 @@ namespace Assets.Scripts.Controller
                             int cost = int.Parse(reader["cost"].ToString());
                             int resourceAmount = int.Parse(reader["resource_amount"].ToString());
                             int resourceType = int.Parse(reader["resource_type"].ToString());
+                            bool unlocked = bool.Parse(reader["unlocked"].ToString());
 
                             // Creates a new equipment item and add it to the inventory
-                            Equipment equipment = new Equipment(id, name, hp, def, atk, cost, resourceAmount, resourceType);
+                            Equipment equipment = new Equipment(id, name, hp, def, atk, cost, resourceAmount, resourceType, unlocked);
                             playerInventory.AddEquipment(equipment);
                         }
                     }

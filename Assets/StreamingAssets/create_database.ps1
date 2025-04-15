@@ -291,7 +291,7 @@ INSERT OR IGNORE INTO Equipment (equipment_id, name, hp, def, atk, cost, resourc
 (8, 'Nano-Fiber Vest', 60, 12, 8, 220, 18, 8, 1);
 
 INSERT OR IGNORE INTO Infrastructure (building_id, name, description, level, cost, resource_amount, resource_type, unlocked, placed, x, y) VALUES
-(1, 'HQ', 'Central hub for military operations, will generate money', 3, 1000, 50, 1, 1, 1, 40, -25),
+(1, 'HQ', 'Central hub for military operations, will generate money', 3, 1000, 50, 1, 1, 0, 0, 0),
 (2, 'Training Room', 'Level your soldiers', 3, 900, 45, 5, 1, 0, 0, 0),
 (3, 'Hospital', 'Provides healthcare and recovery for soldiers', 2, 700, 35, 4, 1, 0, 0, 0),
 (4, 'Restaurant', 'Generates food for the base', 3, 1000, 50, 4, 1, 0, 0, 0),

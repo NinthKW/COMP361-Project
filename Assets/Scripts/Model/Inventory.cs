@@ -91,9 +91,10 @@ namespace Assets.Scripts.Model
         public int cost;
         public int resource_amount;
         public int resource_type;
+        public bool isUnlocked;
 
         // Constructor for a weapon
-        public Weapon(int weapon_id, string name, string description, int damage, int cost, int resource_amount, int resource_type)
+        public Weapon(int weapon_id, string name, string description, int damage, int cost, int resource_amount, int resource_type, bool isUnlocked)
         {
             this.weapon_id = weapon_id;
             this.name = name;
@@ -102,6 +103,7 @@ namespace Assets.Scripts.Model
             this.cost = cost;
             this.resource_amount = resource_amount;
             this.resource_type = resource_type;
+            this.isUnlocked = isUnlocked;
         }
     }
 
@@ -117,9 +119,10 @@ namespace Assets.Scripts.Model
         public int cost;
         public int resource_amount;
         public int resource_type;
+        public bool isUnlocked;
 
         // Constructor for equipment
-        public Equipment(int equipment_id, string name, int hp, int def, int atk, int cost, int resource_amount, int resource_type)
+        public Equipment(int equipment_id, string name, int hp, int def, int atk, int cost, int resource_amount, int resource_type, bool isUnlocked)
         {
             this.equipment_id = equipment_id;
             this.name = name;
@@ -129,6 +132,7 @@ namespace Assets.Scripts.Model
             this.cost = cost;
             this.resource_amount = resource_amount;
             this.resource_type = resource_type;
+            this.isUnlocked = isUnlocked;
         }
     }
 }
