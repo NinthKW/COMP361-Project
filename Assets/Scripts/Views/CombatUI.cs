@@ -70,6 +70,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     private Character abilityTarget = null;    // Ability target (if target selection needed)
     private bool isAttackExecuting;
     private bool castable = false; // Flag to indicate if the ability is castable
+    private bool casting = false; // Flag to indicate if the ability is being cast
     private readonly List<GameObject> soldierCards = new();
     private readonly List<GameObject> enemyCards = new();
     private readonly List<GameObject> waitingEnemyCards = new();
@@ -80,7 +81,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     private Color controlColor;
     private Color buffColor;
     private Color enemyColor;
-    private Color allyColor;
+    // private Color allyColor;
     private Color transparentColor;
     #endregion
 
@@ -129,7 +130,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
     void SetupColors()
     {
-        ColorUtility.TryParseHtmlString("#A0B6FF", out allyColor);
+        // ColorUtility.TryParseHtmlString("#A0B6FF", out allyColor);
         ColorUtility.TryParseHtmlString("#A0FFB6", out healColor);
         ColorUtility.TryParseHtmlString("#FFA500", out controlColor);
         ColorUtility.TryParseHtmlString("#A0B6FF", out buffColor);
@@ -334,7 +335,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             
             // Execute ability logic
             AudioManager.Instance.PlaySound(selectedAbility.Name);
-            if (!selectedAbility.Activate(targets)) Debug.LogError("Ability activation failed.");
+            if (!selectedAbility.Activate(targets)) UpdateCombatLog("Ability activation failed. No action point.");
             else 
             {
                 selectedAlly.AttackChances -= selectedAbility.Cost;
@@ -344,6 +345,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             selectedAbility = null;
             abilityTarget = null;
             castable = false; // Reset castable state after attack
+            casting = false; // Reset casting state
             attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "Attack";
             endTurnButton.GetComponentInChildren<TextMeshProUGUI>().text = "End Turn";
             attackButton.image.color = Color.gray;
@@ -362,6 +364,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
     private void OnAbilityButtonClicked(Ability ability)
     {
+        casting = true; // Set casting state to true
         selectedAbility = ability;
         // Update Attack button style and prompt based on ability type
         if (CompareAbility(ability, "Heal"))
@@ -383,6 +386,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         else if (CompareAbility(ability, "TauntAll")) // Taunt
         {
             attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "Taunt";
+            endTurnButton.GetComponentInChildren<TextMeshProUGUI>().text = "Cancel";
             selectedTarget = null; // Clear target selection
             attackButton.image.color = new Color(1f, 0.5f, 0f); // Orange
             UpdateCombatLog("Please click to confirm casting taunt ability.");
@@ -391,6 +395,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         else if (CompareAbility(ability, "Buff") || CompareAbility(ability, "Shield"))
         {
             attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "Buff";
+            endTurnButton.GetComponentInChildren<TextMeshProUGUI>().text = "Cancel";
             attackButton.image.color = Color.cyan;
             UpdateCombatLog("Please select an ally for buffing.");
             castable = false;
@@ -398,6 +403,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         else if (CompareAbility(ability, "Damage") || CompareAbility(ability, "Lifesteal"))
         {
             attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "Attack!";
+            endTurnButton.GetComponentInChildren<TextMeshProUGUI>().text = "Cancel";
             attackButton.image.color = Color.red;
             UpdateCombatLog("Please select an enemy for attacking.");
             castable = false;
@@ -730,11 +736,12 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     #region Turn Management
     public void OnEndTurnButton() 
     {
-        if (castable) 
+        if (casting) 
         {
             selectedAbility = null;
             abilityTarget = null;
             castable = false; // Reset castable state after target selection
+            casting = false; // Reset casting state
             attackButton.GetComponentInChildren<TextMeshProUGUI>().text = "Attack";
             endTurnButton.GetComponentInChildren<TextMeshProUGUI>().text = "End Turn";
             attackButton.image.color = Color.gray;
@@ -827,13 +834,19 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             var cooldownText = texts.Length > 1 ? texts[1] : null;
             btnText.text = $"{ability.Name}";
             if (ability.IsOnCooldown) cooldownText.text = $"{ability.CooldownCounter} rounds";
+            else if (HasEnoughActionPoints(soldier, ability.Cost)) cooldownText.text = $"No enough action points";
             else cooldownText.text = "Ready";
             ColorUtility.TryParseHtmlString("#A0B6FF", out var color);
             color.a = 1f;
             btnText.color = color;
             cooldownText.color = color;
+            // Set button color based on ability type
+            if (CompareAbility(ability, "Heal") || CompareAbility(ability, "HealBuff")) color = healColor;
+            else if (CompareAbility(ability, "TauntAll")) color = controlColor;
+            else if (CompareAbility(ability, "Buff") || CompareAbility(ability, "Shield")) color = buffColor;
+            else if (CompareAbility(ability, "Enemy")) color = enemyColor;
             Button btn = abilityButton.GetComponent<Button>();
-            btn.interactable = !ability.IsOnCooldown;
+            btn.interactable = !ability.IsOnCooldown && !IsExhausted(soldier) && HasEnoughActionPoints(soldier, ability.Cost);
             btn.onClick.RemoveAllListeners();
             btn.onClick.AddListener(() => OnAbilityButtonClicked(ability));
         }
@@ -1049,6 +1062,15 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     bool CompareAbility(Ability ability, string type)
     {
         return ability.Type.Equals(type, System.StringComparison.OrdinalIgnoreCase);
+    }
+
+    bool HasEnoughActionPoints(Character character, int cost)
+    {
+        if (character is Soldier soldier)
+        {
+            return soldier.AttackChances >= cost;
+        }
+        return false;
     }
     #endregion
 
