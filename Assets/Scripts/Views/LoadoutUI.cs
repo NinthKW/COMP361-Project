@@ -2,6 +2,7 @@ using Assets.Scripts;
 using Assets.Scripts.Controller;
 using Assets.Scripts.Model;
 using Codice.Client.Common;
+using Codice.Client.Common.FsNodeReaders;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
@@ -58,6 +59,8 @@ public class LoadoutUI : MonoBehaviour
 
             button.onClick.AddListener(() => { onSoldierButtonClicked(buttonGameObject); });
             soldiers.Add(buttonGameObject);
+
+            button.name = "Soldier:" + soldier.Name;
         }
 
         //Weapon
@@ -74,6 +77,8 @@ public class LoadoutUI : MonoBehaviour
 
             button.onClick.AddListener(() => {onWeaponButtonClicked(buttonGameObject); });
             weapons.Add(buttonGameObject);
+
+            button.name = "Weapon:" + weapon.name;
         }
 
         //Equipment
@@ -88,6 +93,8 @@ public class LoadoutUI : MonoBehaviour
 
             button.onClick.AddListener(() => { onEquipmentButtonClicked(buttonGameObject); });
             equipments.Add(buttonGameObject);
+
+            button.name = "Equipment:" + equipment.name;
         }
     }
 
@@ -190,6 +197,17 @@ public class LoadoutUI : MonoBehaviour
 
     void onWeaponButtonClicked(GameObject button)
     {
+        //Check if its button in select field is 
+        Debug.Log("Clicked " +  button.name);
+        bool inSelectField = false;
+        if (button.GetComponent<LoadoutButton>().weapon != null && selectWeapon != null)
+        {
+            if (button.GetComponent<LoadoutButton>().weapon.name == selectWeapon.name)
+            { 
+                inSelectField = true;
+            }
+        }
+
         if (soldierSelectedField.childCount > 0)
         {
             bool hasPrevious = false;
@@ -198,7 +216,7 @@ public class LoadoutUI : MonoBehaviour
             try
             {
                 Transform previous = weaponSelectedField.GetChild(0);
-                previous.SetParent(weaponField);
+                previous.SetParent(weaponField, false);
 
                 Debug.Log("Previous weapon found");
 
@@ -216,46 +234,75 @@ public class LoadoutUI : MonoBehaviour
                 Debug.Log(e);
             }
 
-            ////Remove dmg buff from old
+            //Remove dmg buff from old
             if (hasPrevious)
             {
                 selectSoldier.bonusStat.atk -= selectWeapon.damage;
             }
 
-            //Move new button in and change current select
-            button.GetComponent<Transform>().SetParent(weaponSelectedField, false);
-            selectWeapon = button.GetComponent<LoadoutButton>().weapon;
-
-            //Adjust size
-            RectTransform weaponRectTransform = button.transform.GetComponent<RectTransform>();
-            weaponRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-            weaponRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-            weaponRectTransform.sizeDelta = new Vector2(75f, 75f);
-            weaponRectTransform.localScale = Vector3.one;
-            weaponRectTransform.anchoredPosition3D = Vector3.zero;
+            //Update current selected weapon
+            selectWeapon = null;
 
 
-            //Update dmg buffs on soldier
-            selectSoldier.bonusStat.atk += button.GetComponent<LoadoutButton>().weapon.damage;
-
-            //Update SoldierEquipment Obj
-            bool found = false;
-            foreach (SoldierEquipment se in LoadoutManager.Instance.soldierEquipment)
+            //Run if not the same button
+            if (!inSelectField)
             {
-                if (selectSoldier.Name == se.soldier.Name)
+                //Move new button in and change current select
+                button.GetComponent<Transform>().SetParent(weaponSelectedField, false);
+                selectWeapon = button.GetComponent<LoadoutButton>().weapon;
+
+                //Adjust size
+                RectTransform weaponRectTransform = button.transform.GetComponent<RectTransform>();
+                weaponRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                weaponRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+                weaponRectTransform.sizeDelta = new Vector2(75f, 75f);
+                weaponRectTransform.localScale = Vector3.one;
+                weaponRectTransform.anchoredPosition3D = Vector3.zero;
+
+                //Update dmg buffs on soldier
+                selectSoldier.bonusStat.atk += button.GetComponent<LoadoutButton>().weapon.damage;
+
+                //Update SoldierEquipment Obj
+                bool found = false;
+                foreach (SoldierEquipment se in LoadoutManager.Instance.soldierEquipment)
                 {
-                    se.weapon = selectWeapon;
-                    found = true;
+                    if (selectSoldier.Name == se.soldier.Name)
+                    {
+                        se.weapon = selectWeapon;
+                        found = true;
+                    }
+                }
+
+                //Add to soldierEquipment list if didn't have before
+                if (!found)
+                {
+                    SoldierEquipment newSoldierEquipment = new SoldierEquipment(selectSoldier, selectWeapon, selectEquipment);
+                    LoadoutManager.Instance.soldierEquipment.Add(newSoldierEquipment);
+
+                    Debug.Log("Created new SE for " + selectSoldier.Name);
                 }
             }
-
-            //Add to soldierEquipment list if didn't have before
-            if (!found)
+            //If clicked on same button branch
+            else
             {
-                SoldierEquipment newSoldierEquipment = new SoldierEquipment(selectSoldier, selectWeapon, selectEquipment);
-                LoadoutManager.Instance.soldierEquipment.Add(newSoldierEquipment);
-
-                Debug.Log("Created new SE for " + selectSoldier.Name);
+                //Check if need to remove from SoldierEquipment
+                foreach (SoldierEquipment se in LoadoutManager.Instance.soldierEquipment)
+                {
+                    //Find right soldier loadout
+                    if (selectSoldier.Name == se.soldier.Name)
+                    {
+                        //Remove from list if no wepaon or equipment
+                        if (selectWeapon == null &&  selectEquipment == null)
+                        { 
+                            LoadoutManager.Instance.soldierEquipment.Remove(se);
+                        }
+                        //Remove weapon from list entry
+                        else
+                        {
+                            se.weapon = null;
+                        }
+                    }
+                }
             }
         } 
         else
@@ -267,6 +314,17 @@ public class LoadoutUI : MonoBehaviour
 
     void onEquipmentButtonClicked(GameObject button)
     {
+        //Check if its button in select field is 
+        Debug.Log("Clicked " + button.name);
+        bool inSelectField = false;
+        if (button.GetComponent<LoadoutButton>().equipment != null && selectEquipment != null)
+        {
+            if (button.GetComponent<LoadoutButton>().equipment.name == selectEquipment.name)
+            {
+                inSelectField = true;
+            }
+        }
+
         if (soldierSelectedField.childCount > 0)
         {
             bool hasPrevious = false;
@@ -300,39 +358,63 @@ public class LoadoutUI : MonoBehaviour
                 selectSoldier.bonusStat.def -= selectEquipment.def;
             }
 
-            //Move new button in and change current select
-            button.GetComponent<Transform>().SetParent(equipmentSelectedField, false);
-            selectEquipment = button.GetComponent<LoadoutButton>().equipment;
-
-            //Adjust size
-            RectTransform equipmentRectTransform = button.transform.GetComponent<RectTransform>();
-            equipmentRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-            equipmentRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-            equipmentRectTransform.sizeDelta = new Vector2(75f, 75f);
-            equipmentRectTransform.localScale = Vector3.one;
-            equipmentRectTransform.anchoredPosition3D = Vector3.zero;
-
-            //Update dmg buffs on soldier
-            selectSoldier.bonusStat.atk += button.GetComponent<LoadoutButton>().equipment.atk;
-            selectSoldier.bonusStat.def += button.GetComponent<LoadoutButton>().equipment.def;
-
-            //Update SoldierEquipment Obj
-            bool found = false;
-            foreach (SoldierEquipment se in LoadoutManager.Instance.soldierEquipment)
+            if (!inSelectField)
             {
-                if (selectSoldier.Name == se.soldier.Name)
+
+                //Move new button in and change current select
+                button.GetComponent<Transform>().SetParent(equipmentSelectedField, false);
+                selectEquipment = button.GetComponent<LoadoutButton>().equipment;
+
+                //Adjust size
+                RectTransform equipmentRectTransform = button.transform.GetComponent<RectTransform>();
+                equipmentRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                equipmentRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+                equipmentRectTransform.sizeDelta = new Vector2(75f, 75f);
+                equipmentRectTransform.localScale = Vector3.one;
+                equipmentRectTransform.anchoredPosition3D = Vector3.zero;
+
+                //Update dmg buffs on soldier
+                selectSoldier.bonusStat.atk += button.GetComponent<LoadoutButton>().equipment.atk;
+                selectSoldier.bonusStat.def += button.GetComponent<LoadoutButton>().equipment.def;
+
+                //Update SoldierEquipment Obj
+                bool found = false;
+                foreach (SoldierEquipment se in LoadoutManager.Instance.soldierEquipment)
                 {
-                    se.equipment = selectEquipment;
+                    if (selectSoldier.Name == se.soldier.Name)
+                    {
+                        se.equipment = selectEquipment;
+                    }
                 }
-            }
 
-            //Add to soldierEquipment list if didn't have before
-            if (!found)
+                //Add to soldierEquipment list if didn't have before
+                if (!found)
+                {
+                    SoldierEquipment newSoldierEquipment = new SoldierEquipment(selectSoldier, selectWeapon, selectEquipment);
+                    LoadoutManager.Instance.soldierEquipment.Add(newSoldierEquipment);
+
+                    Debug.Log("Created new SE for " + selectSoldier.Name);
+                }
+            } else
             {
-                SoldierEquipment newSoldierEquipment = new SoldierEquipment(selectSoldier, selectWeapon, selectEquipment);
-                LoadoutManager.Instance.soldierEquipment.Add(newSoldierEquipment);
-
-                Debug.Log("Created new SE for " + selectSoldier.Name);
+                //Check if need to remove from SoldierEquipment
+                foreach (SoldierEquipment se in LoadoutManager.Instance.soldierEquipment)
+                {
+                    //Find right soldier loadout
+                    if (selectSoldier.Name == se.soldier.Name)
+                    {
+                        //Remove from list if no wepaon or equipment
+                        if (selectWeapon == null && selectEquipment == null)
+                        {
+                            LoadoutManager.Instance.soldierEquipment.Remove(se);
+                        }
+                        //Remove weapon from list entry
+                        else
+                        {
+                            se.equipment = null;
+                        }
+                    }
+                }
             }
         }
         else
