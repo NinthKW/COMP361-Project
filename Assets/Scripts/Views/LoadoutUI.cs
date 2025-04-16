@@ -7,8 +7,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using TMPro;
+using Unity.Plastic.Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.UI;
+using static Codice.Client.Common.Connection.AskCredentialsToUser;
 
 public class LoadoutUI : MonoBehaviour
 {
@@ -67,6 +69,10 @@ public class LoadoutUI : MonoBehaviour
         foreach (Weapon weapon in LoadoutManager.Instance.weapons)
         {
             //skip not unlocked weapons
+            if (!weapon.isUnlocked)
+            {
+                continue;
+            }
 
             Debug.Log("Adding weapon: " + weapon.name);
             GameObject buttonGameObject = Instantiate(buttonPrefab, weaponField);
@@ -79,12 +85,30 @@ public class LoadoutUI : MonoBehaviour
             weapons.Add(buttonGameObject);
 
             button.name = "Weapon:" + weapon.name;
+
+            //Disable if equipped 
+            foreach(SoldierEquipment se in LoadoutManager.Instance.soldierEquipment)
+            {
+                if (se.weapon != null)
+                {
+                    if (se.weapon.name == weapon.name)
+                    { 
+                        button.interactable = false;
+                    }
+                }
+            }
         }
 
         //Equipment
         foreach (Equipment equipment in LoadoutManager.Instance.equipments)
         {
-            Debug.Log("Adding soldier: " + equipment.name);
+            //skip not unlocked weapons
+            if (!equipment.isUnlocked)
+            {
+                continue;
+            }
+
+            Debug.Log("Adding equipment: " + equipment.name);
             GameObject buttonGameObject = Instantiate(buttonPrefab, equipmentField);
             Button button = buttonGameObject.GetComponent<Button>();
 
@@ -95,6 +119,18 @@ public class LoadoutUI : MonoBehaviour
             equipments.Add(buttonGameObject);
 
             button.name = "Equipment:" + equipment.name;
+
+            //Disable if equipped 
+            foreach (SoldierEquipment se in LoadoutManager.Instance.soldierEquipment)
+            {
+                if (se.equipment != null)
+                {
+                    if (se.equipment.name ==  equipment.name)
+                    {
+                        button.interactable = false;
+                    }
+                }
+            }
         }
     }
 
@@ -102,6 +138,7 @@ public class LoadoutUI : MonoBehaviour
     {
         //Reset buttons
         bool hasPrevious = moveSelectedBackToGrid(soldierSelectedField, soldierField);
+
         if (hasPrevious)
         {
             moveSelectedBackToGrid(weaponSelectedField, weaponField);
@@ -143,6 +180,9 @@ public class LoadoutUI : MonoBehaviour
                         weaponRectTransform.localScale = Vector3.one;
                         weaponRectTransform.anchoredPosition3D = Vector3.zero;
 
+                        //Enable button
+                        obj.GetComponent<Button>().interactable = true;
+
                         selectWeapon = obj.GetComponent<LoadoutButton>().weapon;
                         wepFound = true;
                         Debug.Log("Weapon placed");
@@ -174,6 +214,9 @@ public class LoadoutUI : MonoBehaviour
                         equipmentRectTransform.sizeDelta = new Vector2(75f, 75f);
                         equipmentRectTransform.localScale = Vector3.one;
                         equipmentRectTransform.anchoredPosition3D = Vector3.zero;
+
+                        //Enable button
+                        obj.GetComponent<Button>().interactable = true;
 
                         selectEquipment = obj.GetComponent<LoadoutButton>().equipment;
                         equipFound = true;
@@ -437,6 +480,14 @@ public class LoadoutUI : MonoBehaviour
             previousTransform.anchorMin = new Vector2(0f, 1f);
             previousTransform.sizeDelta = new Vector2(150f, 150f);
             previousTransform.localScale = Vector3.one;
+
+            
+            //Only disable if its not soldier
+            if (previous.GetComponent<LoadoutButton>().soldier == null)
+            { 
+                previous.GetComponent<Button>().interactable = false;
+            }
+            
 
             hasPrevious = true;
         }
