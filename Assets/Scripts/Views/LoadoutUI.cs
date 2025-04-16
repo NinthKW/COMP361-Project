@@ -201,9 +201,9 @@ public class LoadoutUI : MonoBehaviour
         //Check if its button in select field is 
         Debug.Log("Clicked " +  button.name);
         bool inSelectField = false;
-        if (button.GetComponent<LoadoutButton>().weapon != null && selectEquipment != null)
+        if (button.GetComponent<LoadoutButton>().weapon != null && selectWeapon != null)
         {
-            if (button.GetComponent<LoadoutButton>().weapon.name == selectEquipment.name)
+            if (button.GetComponent<LoadoutButton>().weapon.name == selectWeapon.name)
             { 
                 inSelectField = true;
             }
@@ -217,7 +217,7 @@ public class LoadoutUI : MonoBehaviour
             try
             {
                 Transform previous = weaponSelectedField.GetChild(0);
-                previous.SetParent(weaponField);
+                previous.SetParent(weaponField, false);
 
                 Debug.Log("Previous weapon found");
 
@@ -248,6 +248,7 @@ public class LoadoutUI : MonoBehaviour
             //Run if not the same button
             if (!inSelectField)
             {
+                Debug.Log("Not same button branch");
                 //Move new button in and change current select
                 button.GetComponent<Transform>().SetParent(weaponSelectedField, false);
                 selectWeapon = button.GetComponent<LoadoutButton>().weapon;
@@ -287,13 +288,20 @@ public class LoadoutUI : MonoBehaviour
             else
             {
                 //Check if need to remove from SoldierEquipment
-                if (selectEquipment == null && selectWeapon == null)
+                foreach (SoldierEquipment se in LoadoutManager.Instance.soldierEquipment)
                 {
-                    foreach (SoldierEquipment se in LoadoutManager.Instance.soldierEquipment)
+                    //Find right soldier loadout
+                    if (selectSoldier.Name == se.soldier.Name)
                     {
-                        if (selectSoldier.Name == se.soldier.Name)
-                        {
+                        //Remove from list if no wepaon or equipment
+                        if (selectWeapon == null &&  selectEquipment == null)
+                        { 
                             LoadoutManager.Instance.soldierEquipment.Remove(se);
+                        }
+                        //Remove weapon from list entry
+                        else
+                        {
+                            se.weapon = null;
                         }
                     }
                 }

@@ -1643,6 +1643,7 @@ MonoBehaviour:
   newGameButton: {fileID: 267549557}
   loadGameButton: {fileID: 2076794018}
   quitButton: {fileID: 858395616}
+  temp: {fileID: 104586920}
 --- !u!1 &2017534437
 GameObject:
   m_ObjectHideFlags: 0
