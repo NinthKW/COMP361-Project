@@ -2,12 +2,14 @@ using Assets.Scripts;
 using Assets.Scripts.Controller;
 using Assets.Scripts.Model;
 using Codice.Client.Common;
+using Codice.Client.Common.FsNodeReaders;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static Codice.Client.Common.Connection.AskCredentialsToUser;
 
 public class LoadoutUI : MonoBehaviour
 {
@@ -58,6 +60,8 @@ public class LoadoutUI : MonoBehaviour
 
             button.onClick.AddListener(() => { onSoldierButtonClicked(buttonGameObject); });
             soldiers.Add(buttonGameObject);
+
+            button.name = "Soldier:" + soldier.Name;
         }
 
         //Weapon
@@ -74,6 +78,8 @@ public class LoadoutUI : MonoBehaviour
 
             button.onClick.AddListener(() => {onWeaponButtonClicked(buttonGameObject); });
             weapons.Add(buttonGameObject);
+
+            button.name = "Weapon:" + weapon.name;
         }
 
         //Equipment
@@ -88,6 +94,8 @@ public class LoadoutUI : MonoBehaviour
 
             button.onClick.AddListener(() => { onEquipmentButtonClicked(buttonGameObject); });
             equipments.Add(buttonGameObject);
+
+            button.name = "Equipment:" + equipment.name;
         }
     }
 
@@ -190,6 +198,17 @@ public class LoadoutUI : MonoBehaviour
 
     void onWeaponButtonClicked(GameObject button)
     {
+        //Check if its button in select field is 
+        Debug.Log("Clicked " +  button.name);
+        bool inSelectField = false;
+        if (button.GetComponent<LoadoutButton>().weapon != null && selectEquipment != null)
+        {
+            if (button.GetComponent<LoadoutButton>().weapon.name == selectEquipment.name)
+            { 
+                inSelectField = true;
+            }
+        }
+
         if (soldierSelectedField.childCount > 0)
         {
             bool hasPrevious = false;
@@ -216,46 +235,68 @@ public class LoadoutUI : MonoBehaviour
                 Debug.Log(e);
             }
 
-            ////Remove dmg buff from old
+            //Remove dmg buff from old
             if (hasPrevious)
             {
                 selectSoldier.bonusStat.atk -= selectWeapon.damage;
             }
 
-            //Move new button in and change current select
-            button.GetComponent<Transform>().SetParent(weaponSelectedField, false);
-            selectWeapon = button.GetComponent<LoadoutButton>().weapon;
-
-            //Adjust size
-            RectTransform weaponRectTransform = button.transform.GetComponent<RectTransform>();
-            weaponRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-            weaponRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-            weaponRectTransform.sizeDelta = new Vector2(75f, 75f);
-            weaponRectTransform.localScale = Vector3.one;
-            weaponRectTransform.anchoredPosition3D = Vector3.zero;
+            //Update current selected weapon
+            selectWeapon = null;
 
 
-            //Update dmg buffs on soldier
-            selectSoldier.bonusStat.atk += button.GetComponent<LoadoutButton>().weapon.damage;
-
-            //Update SoldierEquipment Obj
-            bool found = false;
-            foreach (SoldierEquipment se in LoadoutManager.Instance.soldierEquipment)
+            //Run if not the same button
+            if (!inSelectField)
             {
-                if (selectSoldier.Name == se.soldier.Name)
+                //Move new button in and change current select
+                button.GetComponent<Transform>().SetParent(weaponSelectedField, false);
+                selectWeapon = button.GetComponent<LoadoutButton>().weapon;
+
+                //Adjust size
+                RectTransform weaponRectTransform = button.transform.GetComponent<RectTransform>();
+                weaponRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                weaponRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+                weaponRectTransform.sizeDelta = new Vector2(75f, 75f);
+                weaponRectTransform.localScale = Vector3.one;
+                weaponRectTransform.anchoredPosition3D = Vector3.zero;
+
+                //Update dmg buffs on soldier
+                selectSoldier.bonusStat.atk += button.GetComponent<LoadoutButton>().weapon.damage;
+
+                //Update SoldierEquipment Obj
+                bool found = false;
+                foreach (SoldierEquipment se in LoadoutManager.Instance.soldierEquipment)
                 {
-                    se.weapon = selectWeapon;
-                    found = true;
+                    if (selectSoldier.Name == se.soldier.Name)
+                    {
+                        se.weapon = selectWeapon;
+                        found = true;
+                    }
+                }
+
+                //Add to soldierEquipment list if didn't have before
+                if (!found)
+                {
+                    SoldierEquipment newSoldierEquipment = new SoldierEquipment(selectSoldier, selectWeapon, selectEquipment);
+                    LoadoutManager.Instance.soldierEquipment.Add(newSoldierEquipment);
+
+                    Debug.Log("Created new SE for " + selectSoldier.Name);
                 }
             }
-
-            //Add to soldierEquipment list if didn't have before
-            if (!found)
+            //If clicked on same button branch
+            else
             {
-                SoldierEquipment newSoldierEquipment = new SoldierEquipment(selectSoldier, selectWeapon, selectEquipment);
-                LoadoutManager.Instance.soldierEquipment.Add(newSoldierEquipment);
-
-                Debug.Log("Created new SE for " + selectSoldier.Name);
+                //Check if need to remove from SoldierEquipment
+                if (selectEquipment == null && selectWeapon == null)
+                {
+                    foreach (SoldierEquipment se in LoadoutManager.Instance.soldierEquipment)
+                    {
+                        if (selectSoldier.Name == se.soldier.Name)
+                        {
+                            LoadoutManager.Instance.soldierEquipment.Remove(se);
+                        }
+                    }
+                }
             }
         } 
         else
