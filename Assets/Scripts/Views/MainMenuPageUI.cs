@@ -31,15 +31,14 @@ public class MainMenuPageUI : MonoBehaviour // Fardin, Ziyuan Wang
     void ClickedBase()
     {
         BaseManager.Instance.LoadBase();
+        InventoryManager.Instance.loadInventory();
         GameManager.Instance.LoadGameState(GameState.BasePage);
     }
 
     void ClickedStaff()
     {   
         StaffManager.Instance.Load();
-
         GameManager.Instance.LoadGameState(GameState.StaffPage);
-
  
     }
 
@@ -61,6 +60,7 @@ public class MainMenuPageUI : MonoBehaviour // Fardin, Ziyuan Wang
 
     void ClickedInventory()
     {
+        InventoryManager.Instance.loadInventory();
         GameManager.Instance.LoadGameState(GameState.InventoryPage);
     }
 
