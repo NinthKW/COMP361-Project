@@ -10,7 +10,6 @@ using TMPro;
 using Unity.Plastic.Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.UI;
-using static Codice.Client.Common.Connection.AskCredentialsToUser;
 
 public class LoadoutUI : MonoBehaviour
 {
@@ -31,6 +30,9 @@ public class LoadoutUI : MonoBehaviour
     public List<GameObject> soldiers = new List<GameObject>();
     public List<GameObject> weapons = new List<GameObject>();
     public List<GameObject> equipments = new List<GameObject>();
+
+    public TextMeshProUGUI atkDisplayText;
+    public TextMeshProUGUI defDisplayText;
 
     public GameObject buttonPrefab;
 
@@ -235,6 +237,20 @@ public class LoadoutUI : MonoBehaviour
             selectWeapon = null;
             selectEquipment = null;
         }
+
+        int bonusAtk = 0;
+        int bonusDef = 0;
+        if (selectWeapon != null)
+        {
+            bonusAtk += selectWeapon.damage;
+        }
+        if (selectEquipment != null) {
+            bonusAtk += selectEquipment.atk;
+            bonusDef += selectEquipment.def;
+        }
+
+        atkDisplayText.text = "Bonus ATK: " + bonusAtk;
+        defDisplayText.text = "Bonus DEF: " + bonusDef;
     }
 
 
@@ -335,8 +351,8 @@ public class LoadoutUI : MonoBehaviour
                     if (selectSoldier.Name == se.soldier.Name)
                     {
                         //Remove from list if no wepaon or equipment
-                        if (selectWeapon == null &&  selectEquipment == null)
-                        { 
+                        if (selectWeapon == null && selectEquipment == null)
+                        {
                             LoadoutManager.Instance.soldierEquipment.Remove(se);
                         }
                         //Remove weapon from list entry
@@ -351,7 +367,22 @@ public class LoadoutUI : MonoBehaviour
         else
         {
             Debug.LogWarning("No soldier selected");
-        } 
+        }
+
+        int bonusAtk = 0;
+        int bonusDef = 0;
+        if (selectWeapon != null)
+        {
+            bonusAtk += selectWeapon.damage;
+        }
+        if (selectEquipment != null)
+        {
+            bonusAtk += selectEquipment.atk;
+            bonusDef += selectEquipment.def;
+        }
+
+        atkDisplayText.text = "Bonus ATK: " + bonusAtk;
+        defDisplayText.text = "Bonus DEF: " + bonusDef;
     }
 
 
@@ -464,6 +495,21 @@ public class LoadoutUI : MonoBehaviour
         {
             Debug.LogWarning("No soldier selected");
         }
+
+        int bonusAtk = 0;
+        int bonusDef = 0;
+        if (selectWeapon != null)
+        {
+            bonusAtk += selectWeapon.damage;
+        }
+        if (selectEquipment != null)
+        {
+            bonusAtk += selectEquipment.atk;
+            bonusDef += selectEquipment.def;
+        }
+
+        atkDisplayText.text = "Bonus ATK: " + bonusAtk;
+        defDisplayText.text = "Bonus DEF: " + bonusDef;
     }
 
     public bool moveSelectedBackToGrid(Transform selectedField, Transform previousGrid) {
