@@ -238,6 +238,7 @@ public class LoadoutUI : MonoBehaviour
             selectEquipment = null;
         }
 
+        // Update bonus stat text
         int bonusAtk = 0;
         int bonusDef = 0;
         if (selectWeapon != null)
@@ -369,6 +370,7 @@ public class LoadoutUI : MonoBehaviour
             Debug.LogWarning("No soldier selected");
         }
 
+        // Update bonus stat text
         int bonusAtk = 0;
         int bonusDef = 0;
         if (selectWeapon != null)
@@ -496,6 +498,7 @@ public class LoadoutUI : MonoBehaviour
             Debug.LogWarning("No soldier selected");
         }
 
+        // Update bonus stat text
         int bonusAtk = 0;
         int bonusDef = 0;
         if (selectWeapon != null)

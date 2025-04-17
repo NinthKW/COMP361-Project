@@ -66,6 +66,7 @@ namespace Assets.Scripts
                 return;
             }
 
+            //Add all buildings
             Debug.Log("Building count: " + BaseManager.Instance.buildingList.Count);
             foreach (var building in BaseManager.Instance.buildingList)
             {
@@ -82,6 +83,7 @@ namespace Assets.Scripts
                     layoutElement.preferredHeight = buttonRect.sizeDelta.y;
                 }
 
+                //Add sprite
                 Sprite buttonTexture = UnityEngine.Resources.Load<Sprite>("base_" + building.name.ToLower());
                 buttonObj.GetComponent<Image>().sprite = buttonTexture;
                 if (buttonTexture == null)
@@ -99,6 +101,7 @@ namespace Assets.Scripts
                     draggable.building = building;
                 }
 
+                //Create button
                 Button btn = buttonObj.GetComponent<Button>();
                 btn.onClick.AddListener(() => OnSelectedBuilding(building));
                 buttonObj.SetActive(true);
@@ -134,9 +137,8 @@ namespace Assets.Scripts
                     btn.onClick.AddListener(BuildingFunctionality.loadoutFunctionality);
                 }
 
-
-                    //Add to buttonsList
-                    buttonList.Add(buttonObj);
+                //Add to buttonsList
+                buttonList.Add(buttonObj);
             }
 
             GridLayoutGroup grid = missionButtonContainer.GetComponent<GridLayoutGroup>();
