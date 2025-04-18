@@ -181,7 +181,7 @@ INSERT INTO Soldier VALUES
 -- Insert into Weapon
 INSERT INTO Weapon VALUES
 (1, 'Rifle', 'Standard issue rifle', 30, 100, 10, 1, 1),
-(2, 'Sniper', 'Long-range precision rifle', 50, 150, 15, 2, 1),
+(2, 'Sniper2', 'Long-range precision rifle', 50, 150, 15, 2, 1),
 (3, 'Shotgun', 'Close-range heavy impact weapon', 40, 120, 12, 3, 1),
 (4, 'Pistol', 'Lightweight sidearm', 20, 80, 8, 4, 1),
 (5, 'Machine Gun', 'High-rate-of-fire weapon', 35, 200, 20, 5, 1),
