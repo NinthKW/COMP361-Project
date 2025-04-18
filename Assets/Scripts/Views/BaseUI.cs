@@ -5,8 +5,6 @@ using TMPro;
 using UnityEngine;
 using Assets.Scripts.Controller;
 using UnityEngine.UI;
-using Codice.CM.Common.Checkin.Partial.ConflictCheckers;
-
 namespace Assets.Scripts
 {
     public class BaseUI : MonoBehaviour
@@ -120,21 +118,60 @@ namespace Assets.Scripts
                 }
 
                 //Link each building with its functionality
-                if (building.name.ToLower() == "hospital")
+                if (building.name.ToLower() == "hospital") //heal soldiers
                 {
                     btn.onClick.AddListener(BuildingFunctionality.hospitalFunctionality);
                 }
-                else if (building.name.ToLower() == "hq")
+                else if (building.name.ToLower() == "hq") //generate money id1
                 {
-                    btn.onClick.AddListener(BuildingFunctionality.hqFunctionality);
+                    btn.onClick.AddListener(() => BuildingFunctionality.hqFunctionality(buttonObj));
+                    if (building.placed)
+                    { 
+                        ResourceGenerationManager.Instance.Buildings.Find(x => x.resourceID == 1).active = true;
+                    }
                 }
-                else if (building.name.ToLower() == "training room")
+                else if (building.name.ToLower() == "training room") //level up soldiers
                 {
                     btn.onClick.AddListener(BuildingFunctionality.trainingFunctionality);
                 }
-                else if (building.name.ToLower() == "loadout room")
+                else if (building.name.ToLower() == "loadout room") //give soldiers gear
                 {
                     btn.onClick.AddListener(BuildingFunctionality.loadoutFunctionality);
+                }
+                else if (building.name.ToLower() == "restaurant") //generate food id0
+                {
+                    if (building.placed)
+                    {
+                        ResourceGenerationManager.Instance.Buildings.Find(x => x.resourceID == 0).active = true;
+                    }
+                }
+                else if (building.name.ToLower() == "pharmacy") //generate healing id5
+                {
+                    if (building.placed)
+                    {
+                        ResourceGenerationManager.Instance.Buildings.Find(x => x.resourceID == 5).active = true;
+                    }
+                }
+                else if (building.name.ToLower() == "lumber yard") //generate wood id3
+                {
+                    if (building.placed)
+                    {
+                        ResourceGenerationManager.Instance.Buildings.Find(x => x.resourceID == 3).active = true;
+                    }
+                }
+                else if (building.name.ToLower() == "mine") //generate iron id2
+                {
+                    if (building.placed)
+                    {
+                        ResourceGenerationManager.Instance.Buildings.Find(x => x.resourceID == 2).active = true;
+                    }
+                }
+                else if (building.name.ToLower() == "forgery")// generate titanium id4
+                {
+                    if (building.placed)
+                    {
+                        ResourceGenerationManager.Instance.Buildings.Find(x => x.resourceID == 4).active = true;
+                    }
                 }
 
                 //Add to buttonsList
