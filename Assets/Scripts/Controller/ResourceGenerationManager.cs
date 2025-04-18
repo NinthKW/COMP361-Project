@@ -9,7 +9,7 @@ namespace Assets.Scripts.Controller
         public static ResourceGenerationManager Instance;
         public List<ResourceGenerationBuilding> Buildings;
         private float timer = 0f;
-        [SerializeField] private float generationInterval = 1.0f;
+        [SerializeField] private float generationInterval = 60.0f;
 
         void Awake()
         {
