@@ -53,19 +53,41 @@ public class LoadoutUI : MonoBehaviour
     {
         //Soldier
         foreach (Character soldier in LoadoutManager.Instance.soldiers)
+    {
+        Debug.Log("Adding soldier: " + soldier.Name);
+        GameObject buttonGameObject = Instantiate(buttonPrefab, soldierField);
+        Button button = buttonGameObject.GetComponent<Button>();
+
+        buttonGameObject.GetComponent<TextMeshProUGUI>().text = soldier.Name;
+        buttonGameObject.GetComponent<LoadoutButton>().soldier = soldier;
+
+        // —— new: load & assign soldier role sprite ——
+        if (soldier is Soldier soldierData)
         {
-            Debug.Log("Adding soldier: " + soldier.Name);
-            GameObject buttonGameObject = Instantiate(buttonPrefab, soldierField);
-            Button button = buttonGameObject.GetComponent<Button>();
+            string roleName = soldierData.GetRoleName();                  // e.g. "Tank"
+            Sprite roleSprite = UnityEngine.Resources.Load<Sprite>(roleName);         // looks in Assets/Resources/
 
-            buttonGameObject.GetComponent<TextMeshProUGUI>().text = soldier.Name;
-            buttonGameObject.GetComponent<LoadoutButton>().soldier = soldier;
-
-            button.onClick.AddListener(() => { onSoldierButtonClicked(buttonGameObject); });
-            soldiers.Add(buttonGameObject);
-
-            button.name = "Soldier:" + soldier.Name;
+            if (roleSprite != null)
+            {
+                Image img = buttonGameObject.GetComponent<Image>()
+                            ?? buttonGameObject.GetComponentInChildren<Image>();
+                if (img != null)
+                    img.sprite = roleSprite;
+                else
+                    Debug.LogWarning($"[LoadoutUI] No Image on '{buttonGameObject.name}' to show soldier sprite.");
+            }
+            else
+            {
+                Debug.LogWarning($"[LoadoutUI] Soldier sprite not found for role '{roleName}'.");
+            }
         }
+
+        button.onClick.AddListener(() => { onSoldierButtonClicked(buttonGameObject); });
+        soldiers.Add(buttonGameObject);
+
+        button.name = "Soldier:" + soldier.Name;
+    }
+
 
         //Weapon
         foreach (Weapon weapon in LoadoutManager.Instance.weapons)
