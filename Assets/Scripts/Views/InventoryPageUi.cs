@@ -25,10 +25,10 @@ public class InventoryPageUI : MonoBehaviour
 
     void Start()
     {
-        backButton.onClick.AddListener(OnBackButtonClicked);
 
         // Inventory items
         PopulateInventory();
+        backButton.onClick.AddListener(OnBackButtonClicked);
     }
 
 

@@ -1,24 +1,12 @@
+using Assets.Scripts;
 using Assets.Scripts.Controller;
 using Assets.Scripts.Model;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BuildingFunctionality : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-    
+public class BuildingFunctionality
+{   
     public static void hospitalFunctionality()
     {
         Debug.Log("HOSPITAL FUNC CALLED");
@@ -37,8 +25,15 @@ public class BuildingFunctionality : MonoBehaviour
         GameManager.Instance.LoadGameState(GameState.LoadoutPage);
     }
 
-    public static void hqFunctionality()
+    public static void hqFunctionality(GameObject button)
     {
         Debug.Log("HQ FUNC CALLED");
+
+        Debug.Log("Current money: " + GameManager.Instance.currentGame.resourcesData.GetAmount(0));
+        Debug.Log("Current money: " + GameManager.Instance.currentGame.resourcesData.GetAmount(1));
+        Debug.Log("Current money: " + GameManager.Instance.currentGame.resourcesData.GetAmount(2));
+        Debug.Log("Current money: " + GameManager.Instance.currentGame.resourcesData.GetAmount(3));
+        Debug.Log("Current money: " + GameManager.Instance.currentGame.resourcesData.GetAmount(4));
+        Debug.Log("Current money: " + GameManager.Instance.currentGame.resourcesData.GetAmount(5));
     }
 }
