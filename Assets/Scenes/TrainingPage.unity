@@ -765,6 +765,7 @@ GameObject:
   - component: {fileID: 701614451}
   - component: {fileID: 701614450}
   - component: {fileID: 701614449}
+  - component: {fileID: 701614452}
   m_Layer: 5
   m_Name: SoldierField
   m_TagString: Untagged
@@ -789,8 +790,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -304.38718, y: 12}
-  m_SizeDelta: {x: 1200.0056, y: 658.9531}
+  m_AnchoredPosition: {x: -304.39, y: 10.063995}
+  m_SizeDelta: {x: 1200.0056, y: 560.2214}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &701614449
 MonoBehaviour:
@@ -805,7 +806,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.72156864}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -860,6 +861,21 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &701614452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 701614447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 1, g: 1, b: 1, a: 0.5}
+  m_EffectDistance: {x: 5, y: 5}
+  m_UseGraphicAlpha: 1
 --- !u!1 &727864845
 GameObject:
   m_ObjectHideFlags: 0
@@ -1596,8 +1612,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.39001465, y: -0.44000244}
-  m_SizeDelta: {x: 1152.8, y: 668.88}
+  m_AnchoredPosition: {x: -0.001564, y: 0.00081205}
+  m_SizeDelta: {x: 1200, y: 649.28}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1193776518
 MonoBehaviour:
@@ -1625,7 +1641,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.49019608}
+  m_Color: {r: 0.8207547, g: 0.8207547, b: 0.8207547, a: 0.015686275}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2164,7 +2180,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.00015258789}
+  m_AnchoredPosition: {x: -4.2733154, y: 0.000030517578}
   m_SizeDelta: {x: -8.5466, y: -1.864}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1817615036

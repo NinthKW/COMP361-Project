@@ -49,17 +49,41 @@ public class HospitalUI : MonoBehaviour
     }
 
     void populateSoldierGrid()
+{
+    foreach (Character soldier in GameManager.Instance.currentGame.soldiersData)
     {
-        foreach (Character soldier in GameManager.Instance.currentGame.soldiersData)
-        {
-            Debug.Log("Adding soldier: " + soldier.Name);
-            GameObject buttonGameObject = Instantiate(soldierPrefab, soldierGrid);
-            Button button = buttonGameObject.GetComponent<Button>();    
+        Debug.Log("Adding soldier: " + soldier.Name);
+        GameObject buttonGameObject = Instantiate(soldierPrefab, soldierGrid);
+        Button button = buttonGameObject.GetComponent<Button>();
 
-            buttonGameObject.GetComponent<TextMeshProUGUI>().text = soldier.Name;
-            buttonGameObject.GetComponent<HospitalSoldier>().soldier = soldier;
+   
+        buttonGameObject.GetComponent<TextMeshProUGUI>().text = soldier.Name;
+        buttonGameObject.GetComponent<HospitalSoldier>().soldier = soldier;
+
+        // —— new: load & assign role sprite ——
+        if (soldier is Soldier soldierData)
+        {
+            string roleName = soldierData.GetRoleName();              // e.g. "Tank"
+            Sprite roleSprite = UnityEngine.Resources.Load<Sprite>(roleName);     // looks in Assets/Resources/
+
+            if (roleSprite != null)
+            {
+                // try to grab an Image on the prefab or its child
+                Image characterImage = buttonGameObject.GetComponent<Image>()
+                                       ?? buttonGameObject.GetComponentInChildren<Image>();
+                if (characterImage != null)
+                    characterImage.sprite = roleSprite;
+                else
+                    Debug.LogWarning($"[HospitalUI] No Image component on '{buttonGameObject.name}' to show sprite.");
+            }
+            else
+            {
+                Debug.LogWarning($"[HospitalUI] Sprite not found for role '{roleName}'.");
+            }
         }
     }
+}
+
 
     void OnBackButtonClicked()
     {

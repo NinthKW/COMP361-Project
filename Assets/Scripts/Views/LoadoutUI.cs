@@ -53,87 +53,125 @@ public class LoadoutUI : MonoBehaviour
     {
         //Soldier
         foreach (Character soldier in LoadoutManager.Instance.soldiers)
+    {
+        Debug.Log("Adding soldier: " + soldier.Name);
+        GameObject buttonGameObject = Instantiate(buttonPrefab, soldierField);
+        Button button = buttonGameObject.GetComponent<Button>();
+
+        buttonGameObject.GetComponent<TextMeshProUGUI>().text = soldier.Name;
+        buttonGameObject.GetComponent<LoadoutButton>().soldier = soldier;
+
+        // —— new: load & assign soldier role sprite ——
+        if (soldier is Soldier soldierData)
         {
-            Debug.Log("Adding soldier: " + soldier.Name);
-            GameObject buttonGameObject = Instantiate(buttonPrefab, soldierField);
-            Button button = buttonGameObject.GetComponent<Button>();
+            string roleName = soldierData.GetRoleName();                  // e.g. "Tank"
+            Sprite roleSprite = UnityEngine.Resources.Load<Sprite>(roleName);         // looks in Assets/Resources/
 
-            buttonGameObject.GetComponent<TextMeshProUGUI>().text = soldier.Name;
-            buttonGameObject.GetComponent<LoadoutButton>().soldier = soldier;
-
-            button.onClick.AddListener(() => { onSoldierButtonClicked(buttonGameObject); });
-            soldiers.Add(buttonGameObject);
-
-            button.name = "Soldier:" + soldier.Name;
+            if (roleSprite != null)
+            {
+                Image img = buttonGameObject.GetComponent<Image>()
+                            ?? buttonGameObject.GetComponentInChildren<Image>();
+                if (img != null)
+                    img.sprite = roleSprite;
+                else
+                    Debug.LogWarning($"[LoadoutUI] No Image on '{buttonGameObject.name}' to show soldier sprite.");
+            }
+            else
+            {
+                Debug.LogWarning($"[LoadoutUI] Soldier sprite not found for role '{roleName}'.");
+            }
         }
+
+        button.onClick.AddListener(() => { onSoldierButtonClicked(buttonGameObject); });
+        soldiers.Add(buttonGameObject);
+
+        button.name = "Soldier:" + soldier.Name;
+    }
+
 
         //Weapon
         foreach (Weapon weapon in LoadoutManager.Instance.weapons)
+    {
+        if (!weapon.isUnlocked) continue;
+
+        Debug.Log("Adding weapon: " + weapon.name);
+        GameObject buttonGameObject = Instantiate(buttonPrefab, weaponField);
+        Button button = buttonGameObject.GetComponent<Button>();
+
+        buttonGameObject.GetComponent<TextMeshProUGUI>().text = weapon.name;
+        buttonGameObject.GetComponent<LoadoutButton>().weapon = weapon;
+
+        // —— new: load & assign weapon sprite ——
         {
-            //skip not unlocked weapons
-            if (!weapon.isUnlocked)
+            string spriteName = weapon.name;                             // must match PNG name in Resources
+            Sprite weaponSprite = UnityEngine.Resources.Load<Sprite>(spriteName);
+            if (weaponSprite != null)
             {
-                continue;
+                Image img = buttonGameObject.GetComponent<Image>()
+                            ?? buttonGameObject.GetComponentInChildren<Image>();
+                if (img != null)
+                    img.sprite = weaponSprite;
+                else
+                    Debug.LogWarning($"[LoadoutUI] No Image on '{buttonGameObject.name}' to show weapon sprite.");
             }
-
-            Debug.Log("Adding weapon: " + weapon.name);
-            GameObject buttonGameObject = Instantiate(buttonPrefab, weaponField);
-            Button button = buttonGameObject.GetComponent<Button>();
-
-            buttonGameObject.GetComponent<TextMeshProUGUI>().text = weapon.name;
-            buttonGameObject.GetComponent<LoadoutButton>().weapon = weapon;
-
-            button.onClick.AddListener(() => {onWeaponButtonClicked(buttonGameObject); });
-            weapons.Add(buttonGameObject);
-
-            button.name = "Weapon:" + weapon.name;
-
-            //Disable if equipped 
-            foreach(SoldierEquipment se in LoadoutManager.Instance.soldierEquipment)
+            else
             {
-                if (se.weapon != null)
-                {
-                    if (se.weapon.name == weapon.name)
-                    { 
-                        button.interactable = false;
-                    }
-                }
+                Debug.LogWarning($"[LoadoutUI] Weapon sprite not found for '{spriteName}'.");
             }
         }
+
+        button.onClick.AddListener(() => { onWeaponButtonClicked(buttonGameObject); });
+        weapons.Add(buttonGameObject);
+
+        button.name = "Weapon:" + weapon.name;
+
+        // existing disable-if-equipped logic
+        foreach (SoldierEquipment se in LoadoutManager.Instance.soldierEquipment)
+            if (se.weapon?.name == weapon.name)
+                button.interactable = false;
+    }
 
         //Equipment
-        foreach (Equipment equipment in LoadoutManager.Instance.equipments)
+         foreach (Equipment equipment in LoadoutManager.Instance.equipments)
+    {
+        if (!equipment.isUnlocked) continue;
+
+        Debug.Log("Adding equipment: " + equipment.name);
+        GameObject buttonGameObject = Instantiate(buttonPrefab, equipmentField);
+        Button button = buttonGameObject.GetComponent<Button>();
+
+        buttonGameObject.GetComponent<TextMeshProUGUI>().text = equipment.name;
+        buttonGameObject.GetComponent<LoadoutButton>().equipment = equipment;
+
+        // —— new: load & assign equipment sprite ——
         {
-            //skip not unlocked weapons
-            if (!equipment.isUnlocked)
+            string spriteName = equipment.name;                          // must match PNG name in Resources
+            Sprite equipSprite = UnityEngine.Resources.Load<Sprite>(spriteName);
+            if (equipSprite != null)
             {
-                continue;
+                Image img = buttonGameObject.GetComponent<Image>()
+                            ?? buttonGameObject.GetComponentInChildren<Image>();
+                if (img != null)
+                    img.sprite = equipSprite;
+                else
+                    Debug.LogWarning($"[LoadoutUI] No Image on '{buttonGameObject.name}' to show equipment sprite.");
             }
-
-            Debug.Log("Adding equipment: " + equipment.name);
-            GameObject buttonGameObject = Instantiate(buttonPrefab, equipmentField);
-            Button button = buttonGameObject.GetComponent<Button>();
-
-            buttonGameObject.GetComponent<TextMeshProUGUI>().text = equipment.name;
-            buttonGameObject.GetComponent<LoadoutButton>().equipment = equipment;
-
-            button.onClick.AddListener(() => { onEquipmentButtonClicked(buttonGameObject); });
-            equipments.Add(buttonGameObject);
-
-            button.name = "Equipment:" + equipment.name;
-
-            //Disable if equipped 
-            foreach (SoldierEquipment se in LoadoutManager.Instance.soldierEquipment)
+            else
             {
-                if (se.equipment != null)
-                {
-                    if (se.equipment.name ==  equipment.name)
-                    {
-                        button.interactable = false;
-                    }
-                }
+                Debug.LogWarning($"[LoadoutUI] Equipment sprite not found for '{spriteName}'.");
             }
         }
+
+        button.onClick.AddListener(() => { onEquipmentButtonClicked(buttonGameObject); });
+        equipments.Add(buttonGameObject);
+
+        button.name = "Equipment:" + equipment.name;
+
+        // existing disable-if-equipped logic
+        foreach (SoldierEquipment se in LoadoutManager.Instance.soldierEquipment)
+            if (se.equipment?.name == equipment.name)
+                button.interactable = false;
+    }
     }
 
     void onSoldierButtonClicked(GameObject button)
