@@ -2319,8 +2319,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba422750d3c316e429f47ad2eb4b1fca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  occupancyThreshold: 0.5
-  edgeMargin: 20
+  padding: 10
+  freeDrop: 0
   buildingInfoDisplay: {fileID: 0}
 --- !u!114 &1741637236
 MonoBehaviour:
@@ -2703,7 +2703,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6638211622754311118, guid: 0de16f7c551cd264d825bbf17dbbb3cb, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8333495401988132191, guid: 0de16f7c551cd264d825bbf17dbbb3cb, type: 3}
       propertyPath: m_Pivot.x
