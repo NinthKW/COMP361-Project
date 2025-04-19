@@ -145,4 +145,5 @@ MonoBehaviour:
     placed: 0
     x: 0
     y: 0
-  popupPrefab: {fileID: 0}
+  popupPrefab: {fileID: 5102068179615595393, guid: 307f35dcf205cc146897a43b81a3e9cb, type: 3}
+  mainCanvas: {fileID: 0}

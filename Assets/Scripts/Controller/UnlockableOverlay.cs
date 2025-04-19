@@ -9,12 +9,19 @@ public class UnlockableOverlay : MonoBehaviour
 {
     public Base building;
     public GameObject popupPrefab;
-    private GameObject popupObj; 
+    private GameObject popupObj;
 
     // Start is called before the first frame update
     void Start()
     {
-        this.GetComponent<Button>().onClick.AddListener(() => showPopup());
+        this.GetComponent<Button>().onClick.AddListener(() => togglePopup());
+        popupObj = Instantiate(popupPrefab, this.GetComponentInParent<Transform>());
+       
+        popupObj.GetComponent<Transform>().localPosition = new Vector3(250f, -250f);
+        
+        popupObj.SetActive(false);
+
+       
     }
 
     // Update is called once per frame
@@ -23,8 +30,15 @@ public class UnlockableOverlay : MonoBehaviour
         
     }
 
-    void showPopup()
+    void togglePopup()
     {
-
+        if (popupObj.activeSelf)
+        {
+            popupObj.SetActive(false);
+        } else
+        {
+            popupObj.SetActive(true);
+        }
+        
     }
 }
