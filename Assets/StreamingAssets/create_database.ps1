@@ -205,7 +205,7 @@ INSERT OR IGNORE INTO Soldier (soldier_id, name, level, hp, max_hp, atk, def, ro
 (6, 'Henry', 7, 130, 130, 27, 22, 'Infantry');
 
 INSERT OR IGNORE INTO Weapon (weapon_id, name, description, damage, cost, resource_amount, resource_type, unlocked) VALUES
-(1, 'Rifle', 'Standard issue rifle', 30, 100, 10, 1, 1), (2, 'Sniper', 'Long-range precision rifle', 50, 150, 15, 2, 1),
+(1, 'Rifle', 'Standard issue rifle', 30, 100, 10, 1, 1), (2, 'Sniper2', 'Long-range precision rifle', 50, 150, 15, 2, 1),
 (3, 'Shotgun', 'Close-range heavy impact weapon', 40, 120, 12, 3, 1), (4, 'Pistol', 'Lightweight sidearm', 20, 80, 8, 4, 1),
 (5, 'Machine Gun', 'High-rate-of-fire weapon', 35, 200, 20, 5, 1), (6, 'Rocket Launcher', 'Anti-armor weapon', 70, 300, 25, 6, 1),
 (7, 'Energy Blaster', 'Futuristic energy weapon', 60, 250, 18, 7, 1), (8, 'Crossbow', 'Silent ranged weapon', 25, 110, 10, 8, 1),
