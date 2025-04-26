@@ -1,125 +1,69 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using Assets.Scripts.Model;
 using Assets.Scripts.Controller;
-using TMPro;
 
 public class InventoryPageUI : MonoBehaviour
 {
-    // Back button to return to the Main Menu
-    public Button backButton;
-    
-    // These are the containers for the two panels (for weapons and equipments)
-    public Transform weaponsContainer;
-    public Transform equipmentsContainer;
-    
-    // Prefab references for headers and list items
-    public GameObject headerPrefab;    // A prefab that displays header text
-    public GameObject listItemPrefab;  // A prefab that displays a list inventory item
-    
-    // Header texts for each section
-    public string weaponsHeaderText = "Weapons";
-    public string equipmentsHeaderText = "Equipments";
+    [SerializeField] Button backButton;
+    [SerializeField] Transform weaponsContainer, equipmentsContainer;
+    [SerializeField] GameObject headerPrefab, listItemPrefab;
+    [SerializeField] UnlockPopupUI popup;
+    [SerializeField] string weaponsHeaderText = "Weapons";
+    [SerializeField] string equipmentsHeaderText = "Equipment";
 
     void Start()
     {
-
-        // Inventory items
         PopulateInventory();
-        backButton.onClick.AddListener(OnBackButtonClicked);
-    }
-
-
-    void OnBackButtonClicked()
-    {
-        GameManager.Instance.ChangeState(GameState.MainMenuPage);
-        GameManager.Instance.LoadGameState(GameState.MainMenuPage);
+        backButton.onClick.AddListener(OnBack);
     }
 
     public void PopulateInventory()
     {
-        // Clear existing items from both containers
-        foreach (Transform child in weaponsContainer)
+        Clear(weaponsContainer); Clear(equipmentsContainer);
+
+        if (headerPrefab)
         {
-            Destroy(child.gameObject);
-        }
-        foreach (Transform child in equipmentsContainer)
-        {
-            Destroy(child.gameObject);
+            SetHeader(Instantiate(headerPrefab, weaponsContainer), weaponsHeaderText);
+            SetHeader(Instantiate(headerPrefab, equipmentsContainer), equipmentsHeaderText);
         }
 
-        
-        if (headerPrefab != null)
-        {
-            GameObject weaponsHeader = Instantiate(headerPrefab, weaponsContainer);
-            SetHeaderText(weaponsHeader, weaponsHeaderText);
-
-            GameObject equipmentsHeader = Instantiate(headerPrefab, equipmentsContainer);
-            SetHeaderText(equipmentsHeader, equipmentsHeaderText);
-        }
-
-        // Populate Weapons
-        List<Weapon> weapons = InventoryManager.Instance.GetWeapons();
-        foreach (Weapon weapon in weapons)
-        {
-            GameObject newItem = Instantiate(listItemPrefab, weaponsContainer);
-            TextMeshProUGUI tmp = newItem.GetComponent<TextMeshProUGUI>();
-            if (tmp != null)
-            {
-                // Display the weapon's properties
-                tmp.text = $"{weapon.name} | Damage: {weapon.damage} | Cost: {weapon.cost}";
-            }
-            else
-            {
-                Text txt = newItem.GetComponent<Text>();
-                if (txt != null)
-                {
-                    txt.text = $"{weapon.name} | Damage: {weapon.damage} | Cost: {weapon.cost}";
-                }
-            }
-        }
-
-        // Populate Equipments
-        List<Equipment> equipments = InventoryManager.Instance.GetEquipments();
-        foreach (Equipment equipment in equipments)
-        {
-            GameObject newItem = Instantiate(listItemPrefab, equipmentsContainer);
-            TextMeshProUGUI tmp = newItem.GetComponent<TextMeshProUGUI>();
-            if (tmp != null)
-            {
-                // Display the equipment's properties
-                tmp.text = $"{equipment.name} | HP: {equipment.hp} | DEF: {equipment.def} | ATK: {equipment.atk} | Cost: {equipment.cost}";
-            }
-            else
-            {
-                Text txt = newItem.GetComponent<Text>();
-                if (txt != null)
-                {
-                    txt.text = $"{equipment.name} | HP: {equipment.hp} | DEF: {equipment.def} | ATK: {equipment.atk} | Cost: {equipment.cost}";
-                }
-            }
-        }
-
-    
+        foreach (var w in InventoryManager.Instance.GetWeapons()) SpawnRow(w);
+        foreach (var e in InventoryManager.Instance.GetEquipments()) SpawnRow(e);
     }
 
-    // Utility method to set header text
-    void SetHeaderText(GameObject headerObject, string headerText)
+    void SpawnRow(Weapon w)    => CreateRow(w.isUnlocked, weaponsContainer,
+                                            $"{w.name} | DMG:{w.damage} | Cost:{w.cost}",
+                                            () => popup.Show(w));
+    void SpawnRow(Equipment e) => CreateRow(e.isUnlocked, equipmentsContainer,
+                                            $"{e.name} | HP:{e.hp} DEF:{e.def} | Cost:{e.cost}",
+                                            () => popup.Show(e));
+
+    void CreateRow(bool unlocked, Transform parent, string label, UnityEngine.Events.UnityAction click)
     {
-        TextMeshProUGUI tmp = headerObject.GetComponent<TextMeshProUGUI>();
-        if (tmp != null)
-        {
-            tmp.text = headerText;
-        }
-        else
-        {
-            Text txt = headerObject.GetComponent<Text>();
-            if (txt != null)
-            {
-                txt.text = headerText;
-            }
-        }
+        var row = Instantiate(listItemPrefab, parent);
+        row.GetComponentInChildren<TextMeshProUGUI>().text = label;
+        row.GetComponent<CanvasGroup>().alpha = unlocked ? 1f : 0.4f;
+
+        var btn = row.GetComponent<Button>();
+        btn.interactable = !unlocked;
+        if (!unlocked) btn.onClick.AddListener(click);
+    }
+
+    void Clear(Transform t) { foreach (Transform c in t) Destroy(c.gameObject); }
+
+    void SetHeader(GameObject h, string txt)
+    {
+        var tmp = h.GetComponent<TextMeshProUGUI>(); 
+        if (tmp) tmp.text = txt; 
+        else h.GetComponent<Text>().text = txt;
+    }
+
+    void OnBack()
+    {
+        GameManager.Instance.ChangeState(GameState.MainMenuPage);
+        GameManager.Instance.LoadGameState(GameState.MainMenuPage);
     }
 }
