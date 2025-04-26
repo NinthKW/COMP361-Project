@@ -2,78 +2,66 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using Assets.Scripts.Model;
 using Assets.Scripts.Controller;
-using TMPro;
 using ModelResources = Assets.Scripts.Model.Resources;
 
 public class ResourceDisplayUI : MonoBehaviour
 {
-    // The container where resource items will be displayed 
-    public Transform resourcesContainer;
+    // Global access for instant refresh 
+    public static ResourceDisplayUI Instance;
 
-    // The prefab used to display each resource item 
-    public GameObject resourceListItemPrefab;
-    
+    [Header("Layout")]
+    public Transform resourcesContainer;          // parent for resource rows
+    public GameObject resourceListItemPrefab;     // row prefab with TMP/Text
+
+    [Header("Header")]
     public TextMeshProUGUI resourceHeaderTextObject;
-
     public string resourcesHeaderText = "Resources";
-    private float time = 0f;
-    private float interval = 1.0f;
+
+    // Refresh timer  
+    private float timer;
+    private const float REFRESH_SEC = 1f;
+
+    void Awake() => Instance = this;
 
     void Start()
     {
-        // Update the header if you have one placed already
-        if (resourceHeaderTextObject != null)
-        {
+        if (resourceHeaderTextObject)
             resourceHeaderTextObject.text = resourcesHeaderText;
-        }
-        PopulateResources();
+
+        PopulateResources();                       // initial fill
     }
 
-    private void Update()
+    void Update()
     {
-        time += Time.deltaTime;
-        if (time > interval)
+        timer += Time.deltaTime;
+        if (timer >= REFRESH_SEC)
         {
-            time = 0f;
-            PopulateResources();
+            timer = 0f;
+            PopulateResources();                   // periodic update
         }
     }
 
-    void PopulateResources()
+    public void PopulateResources()
     {
-        // Clear any existing children from the resources container
-        foreach (Transform child in resourcesContainer)
-        {
-            Destroy(child.gameObject);
-        }
-        
-        // Retrieve the resource data using your ResourceManager
-        ModelResources resData = ResourceManager.Instance.GetResources();
-        
-        // Iterate through resource IDs 0 to 5 (for Food, Money, Iron, Wood, Titanium, Healing)
-        for (int id = 0; id <= 5; id++)
-        {
-            string resName = resData.GetName(id);
-            int resAmount = resData.GetAmount(id);
+        foreach (Transform c in resourcesContainer) Destroy(c.gameObject);
 
-            // Instantiate a new resource list item under the resources container
-            GameObject newItem = Instantiate(resourceListItemPrefab, resourcesContainer);
+        ModelResources data = ResourceManager.Instance.GetResources();
 
-            
-            TextMeshProUGUI tmp = newItem.GetComponent<TextMeshProUGUI>();
-            if (tmp != null)
-            {
-                tmp.text = $"{resName}: {resAmount}";
-            }
+        for (int id = 0; id <= 5; id++)            // 0–5 : Food..Medicine
+        {
+            string name   = data.GetName(id);
+            int    amount = data.GetAmount(id);
+
+            GameObject row = Instantiate(resourceListItemPrefab, resourcesContainer);
+            var tmp = row.GetComponent<TextMeshProUGUI>();
+            if (tmp) tmp.text = $"{name}: {amount}";
             else
             {
-                Text txt = newItem.GetComponent<Text>();
-                if (txt != null)
-                {
-                    txt.text = $"{resName}: {resAmount}";
-                }
+                var txt = row.GetComponent<Text>();
+                if (txt) txt.text = $"{name}: {amount}";
             }
         }
     }

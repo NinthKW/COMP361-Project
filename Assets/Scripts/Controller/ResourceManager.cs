@@ -97,5 +97,23 @@ namespace Assets.Scripts.Controller
         {
             resources.UpdateAllResources(newAmounts);
         }
+
+        public bool HasEnough(int resId, int amount)
+        {
+            return resources.GetAmount(resId) >= amount;
+        }
+
+        public void Spend(int resId, int amount)
+        {
+            int left = resources.GetAmount(resId) - amount;
+            resources.SetAmount(resId, left);
+
+            // instant UI refresh
+            var rd = FindObjectOfType<ResourceDisplayUI>();
+            rd?.PopulateResources();
+        }
+
+
+        
     }
 }
