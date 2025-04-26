@@ -61,5 +61,29 @@ namespace Assets.Scripts.Controller
         {
             playerInventory.Clear();
         }
+
+        public bool TryUnlock(Weapon w)
+        {
+            if (w.isUnlocked) return true;
+            if (!ResourceManager.Instance.HasEnough(w.resource_type, w.resource_amount))
+                return false;
+
+            ResourceManager.Instance.Spend(w.resource_type, w.resource_amount);
+            w.isUnlocked = true;
+            FindObjectOfType<InventoryPageUI>()?.PopulateInventory();
+            return true;
+        }
+
+        public bool TryUnlock(Equipment e)
+        {
+            if (e.isUnlocked) return true;
+            if (!ResourceManager.Instance.HasEnough(e.resource_type, e.resource_amount))
+                return false;
+
+            ResourceManager.Instance.Spend(e.resource_type, e.resource_amount);
+            e.isUnlocked = true;
+            FindObjectOfType<InventoryPageUI>()?.PopulateInventory();
+            return true;
+        }   
     }
 }

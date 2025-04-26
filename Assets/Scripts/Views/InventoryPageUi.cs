@@ -38,7 +38,7 @@ public class InventoryPageUI : MonoBehaviour
         GameManager.Instance.LoadGameState(GameState.MainMenuPage);
     }
 
-    void PopulateInventory()
+    public void PopulateInventory()
     {
         // Clear existing items from both containers
         foreach (Transform child in weaponsContainer)
