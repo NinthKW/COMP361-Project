@@ -14,6 +14,10 @@ namespace Assets.Scripts.Controller
         [Header("Sound Effects Settings")]
         public AudioSource sfxSource;
         public float sfxVolume = 1.0f;
+
+        [Header("Additive Sound Effects Settings")]
+        public AudioSource additiveMusicSource;
+        public float additiveSfxVolume = 0.7f;
         
         [Header("Audio Clips")]
         public List<AudioClip> backgroundMusic;
@@ -56,6 +60,14 @@ namespace Assets.Scripts.Controller
                 sfxSource.volume = sfxVolume;
             }
 
+            // Initialize additive sound effects source
+            if (additiveMusicSource == null)
+            {
+                additiveMusicSource = gameObject.AddComponent<AudioSource>();
+                additiveMusicSource.loop = true;
+                additiveMusicSource.volume = additiveSfxVolume;
+            }
+
             // Add background music clips to dictionary
             foreach (AudioClip clip in backgroundMusic)
             {
@@ -73,12 +85,6 @@ namespace Assets.Scripts.Controller
                     soundEffectDictionary[clip.name] = clip;
                 }
             }
-            
-            // // Automatically play background music
-            // if (backgroundMusic != null)
-            // {
-            //     PlayMusic(bgmDictionary["Ethereal_Echo_Part_1_menu"]);
-            // }
         }
         
         public void PlayMusic(string musicName)
@@ -110,10 +116,27 @@ namespace Assets.Scripts.Controller
                 Debug.LogWarning("Sound not found: " + soundName);
             }
         }
+
+        public void PlayAdditiveMusic(string soundName)
+        {
+            if (bgmDictionary.ContainsKey(soundName))
+            {
+                additiveMusicSource.PlayOneShot(bgmDictionary[soundName]);
+            }
+            else
+            {
+                Debug.LogWarning("Sound not found: " + soundName);
+            }
+        }
         
         public void StopMusic()
         {
             musicSource.Stop();
+        }
+
+        public void StopAdditiveMusic()
+        {
+            additiveMusicSource.Stop();
         }
         
         public void SetMusicVolume(float volume)

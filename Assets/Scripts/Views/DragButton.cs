@@ -43,6 +43,7 @@ namespace Assets.Scripts
 
         public void OnBeginDrag(PointerEventData eventData)
         {
+            AudioManager.Instance.PlaySound("Building Locking"); // Play a sound when dragging the building
             transform.SetParent(canvas.transform);
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 rectTransform, eventData.position, eventData.pressEventCamera, out pointerOffset);
@@ -61,6 +62,7 @@ namespace Assets.Scripts
 
         public void OnEndDrag(PointerEventData eventData)
         {
+            AudioManager.Instance.PlaySound("Building Locking"); // Play a sound when dragging the building
             canvasGroup.blocksRaycasts = true;
 
             LayoutElement layoutElement = GetComponent<LayoutElement>();

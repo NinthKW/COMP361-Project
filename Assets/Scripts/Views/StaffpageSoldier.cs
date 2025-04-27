@@ -1,3 +1,4 @@
+using Assets.Scripts.Controller;
 using Assets.Scripts.Model;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,6 +17,7 @@ public class StaffpageSoldier : MonoBehaviour
     // Notify StaffpageUI to update the soldier detail panel.
     void OnSoldierSelected()
     {
+        AudioManager.Instance.PlaySound("Building Locking"); // Play a sound when selecting a soldier
         StaffpageUI.Instance.UpdateSoldierDetail(soldier);
     }
 }

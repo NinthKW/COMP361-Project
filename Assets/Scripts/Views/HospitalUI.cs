@@ -111,13 +111,16 @@ public class HospitalUI : MonoBehaviour
             healStatusDisplay.text = "STATUS: Healed " + currentSelectedSoldier.Name;
 
             updateMenu(currentSelectedSoldier);
+            AudioManager.Instance.PlaySound("Nano Heal"); // Play a sound when the button is clicked
         } 
         else if (healingLeft <= 0)
         {
             healStatusDisplay.text = "STATUS: No healing left";
+            AudioManager.Instance.PlaySound("Error");
         } else if (healAmount <= 0)
         {
-           healStatusDisplay.text = "STATUS: Health already full";
+            healStatusDisplay.text = "STATUS: Health already full";
+            AudioManager.Instance.PlaySound("Error");
         }
     }
 
