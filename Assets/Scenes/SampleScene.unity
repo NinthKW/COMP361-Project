@@ -878,10 +878,13 @@ MonoBehaviour:
   musicVolume: 0.5
   sfxSource: {fileID: 0}
   sfxVolume: 0.5
+  additiveMusicSource: {fileID: 0}
+  additiveSfxVolume: 0.7
   backgroundMusic:
   - {fileID: 8300000, guid: c8f1abee00e0d4772a1ffed0ff978063, type: 3}
   - {fileID: 8300000, guid: 1f952e3b647864d3c970ba1ead2b60cf, type: 3}
   - {fileID: 8300000, guid: a7af0ca79182d40099a5ce30251b3a8b, type: 3}
+  - {fileID: 8300000, guid: 6433a7ba3d1d29d43a4547865f6fac3b, type: 3}
   soundEffects:
   - {fileID: 8300000, guid: 2075fc492118d4f6e8ab125b4a033d45, type: 3}
   - {fileID: 8300000, guid: bedab9fa2dcab4fa49ee0b8cc85c8a70, type: 3}
@@ -900,7 +903,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 4f7d3de73f6b5fb48a0f4cf5260dd18c, type: 3}
   - {fileID: 8300000, guid: 584f8fd464f552a44863b8834873666a, type: 3}
   - {fileID: 8300000, guid: 3663b2ebaf294824b8837436bbc6b98c, type: 3}
-  - {fileID: 8300000, guid: 6433a7ba3d1d29d43a4547865f6fac3b, type: 3}
 --- !u!4 &2011980347
 Transform:
   m_ObjectHideFlags: 0

@@ -14,7 +14,7 @@ public class TrainingUI : MonoBehaviour
 
     public Transform soldierGrid;
     public GameObject soldierPrefab;
-    public Character currentSelectedSoldier;
+    public Soldier currentSelectedSoldier;
 
     public TextMeshProUGUI foodLeftDisplay;
     public TextMeshProUGUI levelStatusDisplay;
@@ -101,7 +101,8 @@ public class TrainingUI : MonoBehaviour
 
         if (foodLeft >= levelUpCost)
         {
-            currentSelectedSoldier.Level += 1;
+            currentSelectedSoldier.Experience += currentSelectedSoldier.Level * 100;
+            currentSelectedSoldier.CheckLevelUp();
 
             GameManager.Instance.currentGame.resourcesData.SetAmount(0, foodLeft - levelUpCost);
             foodLeftDisplay.GetComponent<TextMeshProUGUI>().text = "Food Remaining: " + GameManager.Instance.currentGame.resourcesData.GetAmount(0);

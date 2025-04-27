@@ -355,6 +355,7 @@ namespace Assets.Scripts.Controller
 
         public void RemoveTerrainAndWeatherEffects(Mission mission)
         {
+            Debug.Log("Removing terrain and weather effects from soldiers.");
             if (mission == null) return;
 
             int modAtk = mission.terrainAtkEffect + mission.weatherAtkEffect;
@@ -448,8 +449,6 @@ namespace Assets.Scripts.Controller
                 SaveCombatResults(false, "");
             }
 
-            // Remove terrain and weather effects
-            RemoveTerrainAndWeatherEffects(currentMission);
             OnCombatEnd?.Invoke(victory);
             CleanupCombat();
             GameManager.Instance.currentGame.soldiersData = _availableSoldiers; // Save soldiers data to Game instance
@@ -553,6 +552,15 @@ namespace Assets.Scripts.Controller
         {
             // IsPlayerTurn = !IsPlayerTurn;
             StartCoroutine(SwitchTurnRoutine());
+        }
+
+        public void ResetEnemiesAfterCombat()
+        {
+            foreach (var enemy in _inBattleEnemies)
+            {
+                if (enemy == null) continue;
+                enemy.Reset();
+            }
         }
         #endregion
 

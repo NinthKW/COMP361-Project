@@ -203,6 +203,13 @@ public class MissionPreparationUI : MonoBehaviour
         // Assign按钮状态
         bool canAssign = selectedCharacterCard != null && selectedFormationSlot != null;
         assignButton.interactable = canAssign;
+        foreach (var soldierCard in characterCards)
+        {
+            if (soldierCard.Character.IsDead())
+            {
+                soldierCard.GetComponent<Button>().interactable = false;
+            }
+        }
     }
 
     public void OnAssignButtonClicked()
