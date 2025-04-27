@@ -31,15 +31,6 @@ public class FormationSlot : MonoBehaviour
         slotIndexText.text = $"Slot {index + 1}";
         UpdateVisuals();
     }
-    public void Initialize(CombatUI uiController, int index)
-    {
-        combatUI = uiController;
-        slotIndex = index;
-        slotButton.onClick.AddListener(OnSlotClicked);
-        cancelButton.onClick.AddListener(OnCancelClicked);
-        slotIndexText.text = $"Slot {index + 1}";
-        UpdateVisuals();
-    }
 
     void OnSlotClicked()
     {
