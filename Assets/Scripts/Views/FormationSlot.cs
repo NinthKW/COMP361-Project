@@ -5,7 +5,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Assets.Scripts.Model;
 using TMPro;
-
+using Assets.Scripts.Controller;
 
 public class FormationSlot : MonoBehaviour
 {
@@ -31,15 +31,6 @@ public class FormationSlot : MonoBehaviour
         slotIndexText.text = $"Slot {index + 1}";
         UpdateVisuals();
     }
-    public void Initialize(CombatUI uiController, int index)
-    {
-        combatUI = uiController;
-        slotIndex = index;
-        slotButton.onClick.AddListener(OnSlotClicked);
-        cancelButton.onClick.AddListener(OnCancelClicked);
-        slotIndexText.text = $"Slot {index + 1}";
-        UpdateVisuals();
-    }
 
     void OnSlotClicked()
     {
@@ -53,6 +44,7 @@ public class FormationSlot : MonoBehaviour
             ui.ReturnSoldierToContainer(CurrentSoldier);
             CurrentSoldier = null;
             UpdateVisuals();
+            AudioManager.Instance.PlaySound("Select");
         }
     }
 
@@ -69,7 +61,7 @@ public class FormationSlot : MonoBehaviour
 
         if (CurrentSoldier != null)
         {
-            // 加载士兵头像
+            // TODO: Load the soldier's portrait sprite
             // soldierPortrait.sprite = ...
             soldierNameText.text = CurrentSoldier.Name;
             slotBackground.color = Color.magenta; // 选中状态的颜色

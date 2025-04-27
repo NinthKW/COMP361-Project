@@ -9,10 +9,15 @@ using Assets.Scripts.Model;
 
 public class CharacterCard : MonoBehaviour
 {
+    /// <summary>
+    /// Represents a character card in the mission preparation UI.
+    /// </summary>
     [SerializeField] private Image background;
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private TextMeshProUGUI levelText;
     [SerializeField] private Button selectButton;
+    [SerializeField] private Image roleImage;
+
 
     public Character Character { get; private set; }
     private MissionPreparationUI ui;
@@ -23,6 +28,45 @@ public class CharacterCard : MonoBehaviour
         Character = character;
         ui = uiController;
         selectButton.onClick.AddListener(OnClicked);
+          // Set a role-specific sprite for soldiers
+    if (Character is Soldier soldier)
+    {
+        string roleName = soldier.GetRoleName(); // e.g., "Tank", "Medic", etc.
+        // Load sprite from Resources (adjust path if your images are in a subfolder)
+        Sprite roleSprite = UnityEngine.Resources.Load<Sprite>(roleName);
+        if (roleSprite != null)
+        {
+            roleImage.sprite = roleSprite;
+        }
+        else
+        {
+            Debug.LogWarning("No sprite found for role: " + roleName);
+        }
+    }
+     else if (Character is Enemy enemy)
+    {
+        // Use the enemy's name to try to load a specific sprite.
+        string enemyName = enemy.Name;  // Ensure your Enemy class has a Name property.
+        Sprite enemySprite = UnityEngine.Resources.Load<Sprite>(enemyName);
+        if (enemySprite != null)
+        {
+            roleImage.sprite = enemySprite;
+        }
+        else
+        {
+            // Fallback: load a default enemy sprite.
+            enemySprite = UnityEngine.Resources.Load<Sprite>("enemydefault");
+            if (enemySprite != null)
+            {
+                roleImage.sprite = enemySprite;
+            }
+            else
+            {
+                Debug.LogWarning("No sprite found for enemy: " + enemyName);
+            }
+        }
+    }
+   
         UpdateVisuals();
     }
 

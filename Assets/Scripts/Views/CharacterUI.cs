@@ -6,6 +6,9 @@ using Assets.Scripts.Model;
 
 public class CharacterUI : MonoBehaviour
 {
+    /// <summary>
+    /// Represents a character's UI in the combat screen.
+    /// </summary>
     [Header("UI Elements")]
     public Image characterImage;
     public Slider healthBar;
@@ -37,6 +40,50 @@ public class CharacterUI : MonoBehaviour
         this._allyImageColor.a = 1;
         this._enemyImageColor.a = 1;
 
+        // Set a role-specific sprite for soldiers
+    if (_character is Soldier soldier)
+    {
+        string roleName = soldier.GetRoleName(); // e.g., "Tank", "Medic", etc.
+        // Load sprite from Resources/SoldierImages folder.
+        Sprite roleSprite = UnityEngine.Resources.Load<Sprite>(roleName);
+        if (roleSprite != null)
+        {
+            characterImage.sprite = roleSprite;
+        }
+        else
+        {
+            Debug.LogWarning("No sprite found for role: " + roleName);
+        }
+    }
+        else if (_character is Enemy enemy)
+    {
+        // Use the enemy's name to try and load a specific sprite.
+        string enemyName = enemy.Name; // Ensure your Enemy class has a Name property.
+        // Adjust the path if your enemy images are in a subfolder, e.g., "EnemyImages/"
+        Sprite enemySprite = UnityEngine.Resources.Load<Sprite>(enemyName);
+        
+        if (enemySprite != null)
+        {
+            characterImage.sprite = enemySprite;
+        }
+        else
+        {
+            // Fallback: load a default enemy sprite.
+            enemySprite = UnityEngine.Resources.Load<Sprite>("enemydefault");
+            if (enemySprite != null)
+            {
+                characterImage.sprite = enemySprite;
+            }
+            else
+            {
+                Debug.LogWarning("No enemy sprite found for enemy: " + enemyName);
+            }
+        }
+    }
+
+UpdateVisuals(isAlly);
+
+
         UpdateVisuals(isAlly);
     }
 
@@ -66,7 +113,8 @@ public class CharacterUI : MonoBehaviour
         }
         foreach (var buffPair in _character.Buffs)
         {
-            GameObject buffTextObj = new GameObject("BuffText");
+            if (buffPair.Value.IsExpired()) continue;
+            GameObject buffTextObj = new("BuffText");
             buffTextObj.transform.SetParent(buffPanel.transform);
             buffTextObj.transform.localScale = Vector3.one;
             TextMeshProUGUI buffText = buffTextObj.AddComponent<TextMeshProUGUI>();

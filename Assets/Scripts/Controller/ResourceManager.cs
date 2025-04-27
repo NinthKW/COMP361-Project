@@ -13,8 +13,6 @@ namespace Assets.Scripts.Controller
         public static ResourceManager Instance { get; private set; }
         // Holds the resource data
         private Model.Resources resources;
-        // Database path/name
-        public string dbName;
 
         void Awake()
         {
@@ -30,49 +28,7 @@ namespace Assets.Scripts.Controller
                 return;
             }
             
-            resources = new Model.Resources();
-            
-            // Database path from StreamingAssets
-            if (string.IsNullOrEmpty(dbName))
-            {
-                dbName = "URI=file:" + Application.streamingAssetsPath + "/database.db";
-            }
-            
-            // Load resources from the database
-            LoadResources(dbName);
-        }
-
-        // Loads resource data from the database
-        public void LoadResources(string dbName)
-        {
-            using (var connection = new SqliteConnection(dbName))
-            {
-                connection.Open();
-                using (var command = connection.CreateCommand())
-                {
-                    // SQL query to get resource id and amount
-                    command.CommandText = "SELECT resource_id, current_amount FROM Resource;";
-                    using (IDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            int resourceId = int.Parse(reader["resource_id"].ToString());
-                            int currentAmount = int.Parse(reader["current_amount"].ToString());
-                            try
-                            {
-                                // Update the resource amount
-                                resources.SetAmount(resourceId, currentAmount);
-                            }
-                            catch (System.Exception ex)
-                            {
-                                Debug.LogWarning("Resource id " + resourceId + " not found: " + ex.Message);
-                            }
-                        }
-                        reader.Close();
-                    }
-                }
-                connection.Close();
-            }
+            resources = Game.Instance.resourcesData;
         }
 
         // Returns the current Resources instance

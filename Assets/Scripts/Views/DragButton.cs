@@ -1,3 +1,4 @@
+using Assets.Scripts.Controller;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -75,16 +76,60 @@ namespace Assets.Scripts
             rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 150);
             rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
 
+            //get id for potential resource building
+            int resourceID = -2;
+            switch (building.name.ToLower()) {
+                case "hq":
+                    resourceID = 1; 
+                    break;
+                case "restaurant":
+                    resourceID = 0;
+                    break;
+                case "pharmacy": 
+                    resourceID = 5; 
+                    break;
+                case "lumber yard":
+                    resourceID = 3;
+                    break;
+                case "mine":
+                    resourceID = 2;
+                    break;
+                case "forgery":
+                    resourceID = 4;
+                    break;
+                default:
+                    resourceID = -2;
+                    break;
+            }
+
+
             if (transform.parent == canvas.transform)
             {
                 building.placed = false;
                 building.x = 0;
                 building.y = 0;
                 ResetToInitialPosition();
+
+                foreach (ResourceGenerationBuilding res in ResourceGenerationManager.Instance.Buildings)
+                {
+                    if (res.resourceID == resourceID)
+                    {
+                        res.active = false;
+                    }
+                }
+
             } else if (transform.parent == grid2d.transform) {
                 building.placed = true;
                 building.x = (int) System.Math.Round(GetComponent<RectTransform>().anchoredPosition.x);
                 building.y = (int) System.Math.Round(GetComponent<RectTransform>().anchoredPosition.y);
+
+                foreach (ResourceGenerationBuilding res in ResourceGenerationManager.Instance.Buildings)
+                {
+                    if (res.resourceID == resourceID)
+                    {
+                        res.active = true;
+                    }
+                }
             }
         }
 

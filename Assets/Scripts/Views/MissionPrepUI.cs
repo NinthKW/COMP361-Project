@@ -31,6 +31,7 @@ public class MissionPreparationUI : MonoBehaviour
     private List<FormationSlot> formationSlots = new List<FormationSlot>();
     private CharacterCard selectedCharacterCard;
     private FormationSlot selectedFormationSlot;
+    public bool assigningInProgress = false;
 
     void Start()
     {
@@ -42,6 +43,23 @@ public class MissionPreparationUI : MonoBehaviour
         CombatManager.Instance.UpdateInitialEnemies(CombatManager.Instance.currentMission);
         InitializeUI();
         SetupButtons();
+    }
+
+    void Update()
+    {
+        // 如果在空白处点击（不在任何UI上），取消所有选中
+        if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
+        {
+            Debug.Log("Clicked outside of UI, deselecting all.");
+            if (selectedCharacterCard != null)
+            {
+                selectedCharacterCard.SetSelected(false);
+                selectedCharacterCard = null;
+            }
+            selectedFormationSlot = null;
+            UpdateButtonStates();
+        }
+
     }
 
     void InitializeUI()
@@ -158,7 +176,7 @@ public class MissionPreparationUI : MonoBehaviour
         {
             card.SetSelected(true);
         }
-        
+        AudioManager.Instance.PlaySound("Select");
         soldierInfoPanel.UpdateInfo((Soldier) card.Character);
         UpdateButtonStates();
     }
@@ -178,6 +196,7 @@ public class MissionPreparationUI : MonoBehaviour
         {
             card.SetSelected(true);
         }
+        AudioManager.Instance.PlaySound("Select");
         enemyInfoPanel.UpdateInfo((Enemy) card.Character);
         UpdateButtonStates();
     }
@@ -189,6 +208,7 @@ public class MissionPreparationUI : MonoBehaviour
         if (selectedCharacterCard.Character is Soldier)
         {
             selectedFormationSlot = slot;
+            AudioManager.Instance.PlaySound("Select");
             UpdateButtonStates();
         }
         else
@@ -204,10 +224,15 @@ public class MissionPreparationUI : MonoBehaviour
         assignButton.interactable = canAssign;
     }
 
-    void OnAssignButtonClicked()
+    public void OnAssignButtonClicked()
     {
-        if (selectedFormationSlot == null || selectedCharacterCard == null) return;
-
+        assigningInProgress = true;
+        if (selectedFormationSlot == null || selectedCharacterCard == null) 
+        {
+            assigningInProgress = false;
+            return;
+        }
+        
         // 如果槽位已有士兵，先取消
         if (selectedFormationSlot.CurrentSoldier != null)
         {
@@ -218,6 +243,7 @@ public class MissionPreparationUI : MonoBehaviour
         AssignSoldierToSlot((Soldier) selectedCharacterCard.Character, selectedFormationSlot);
         
         // 重置选择
+        assigningInProgress = false;
         ClearSelection();
     }
 
@@ -225,6 +251,7 @@ public class MissionPreparationUI : MonoBehaviour
     {
         slot.AssignSoldier(soldier);
         selectedCharacterCard.SetAssigned(true);
+        AudioManager.Instance.PlaySound("Assign Slot");
     }
 
     public void ReturnSoldierToContainer(Soldier soldier)
@@ -236,8 +263,13 @@ public class MissionPreparationUI : MonoBehaviour
         }
     }
 
-    void ClearSelection()
+    public void ClearSelection()
     {
+        if (assigningInProgress) return;
+        if (selectedCharacterCard != null)
+        {
+            selectedCharacterCard.SetSelected(false);
+        }
         selectedCharacterCard = null;
         selectedFormationSlot = null;
         UpdateButtonStates();

@@ -24,22 +24,27 @@ public class MainMenuPageUI : MonoBehaviour // Fardin, Ziyuan Wang
         missionButton.onClick.AddListener(ClickedMission);
         techButton.onClick.AddListener(ClickedTech);
         exitButton.onClick.AddListener(ClickedExit);
-        researchButton.onClick.AddListener(ClickedResearch);
+        // researchButton.onClick.AddListener(ClickedResearch);
         inventoryButton.onClick.AddListener(ClickedInventory);
     }
 
     void ClickedBase()
     {
+        BaseManager.Instance.LoadBase();
+        InventoryManager.Instance.loadInventory();
         GameManager.Instance.LoadGameState(GameState.BasePage);
     }
 
     void ClickedStaff()
-    {
+    {   
+        StaffManager.Instance.Load();
         GameManager.Instance.LoadGameState(GameState.StaffPage);
+ 
     }
 
     void ClickedMission()
-    {
+    {   
+        MissionManager.Instance.LoadMissionsFromGame();
         GameManager.Instance.LoadGameState(GameState.MissionPage);
     }
 
@@ -55,6 +60,7 @@ public class MainMenuPageUI : MonoBehaviour // Fardin, Ziyuan Wang
 
     void ClickedInventory()
     {
+        InventoryManager.Instance.loadInventory();
         GameManager.Instance.LoadGameState(GameState.InventoryPage);
     }
 

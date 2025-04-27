@@ -97,6 +97,7 @@ CREATE TABLE Mission (
     terrain VARCHAR(50),
     weather VARCHAR(50),
     unlocked BOOL,
+    cleared BOOL,
     FOREIGN KEY (reward_resource) REFERENCES Resource(resource_id),
     FOREIGN KEY(terrain) REFERENCES Terrain(name),
     FOREIGN KEY(weather) REFERENCES Weather(name)
@@ -140,43 +141,47 @@ CREATE TABLE MISSION_ENEMY (
 );
 
 CREATE TABLE ENEMY_TYPES (
-    et_ID INT PRIMARY KEY,
-    et_name VARCHAR(255) NOT NULL,
-    HP INT NOT NULL,
-    base_ATK INT NOT NULL,
-    base_DPS INT NOT NULL
+    et_ID INTEGER PRIMARY KEY,
+    et_name TEXT NOT NULL,
+    HP INTEGER NOT NULL,
+    base_ATK INTEGER NOT NULL,
+    base_DPS INTEGER NOT NULL, -- Assuming DPS means Damage Per Second, keeping INT
+    exp_reward INTEGER NOT NULL 
+);
+
+CREATE TABLE SOLDIER_EQUIPMENT (
+    soldier_ID INTEGER,
+    weapon_ID INTEGER,
+    equipment_ID INTEGER,
+    PRIMARY KEY (soldier_ID, weapon_ID),
+    FOREIGN KEY (soldier_ID) REFERENCES Soldier(soldier_id),
+    FOREIGN KEY (weapon_ID) REFERENCES Weapon(weapon_id),
+    FOREIGN KEY (equipment_ID) REFERENCES Equipment(equipment_id)
 );
 
 -- Insert into Resource
 INSERT INTO Resource VALUES
-(1, 'Iron', 1000),
-(2, 'Wood', 800),
-(3, 'Gold', 600),
-(4, 'Stone', 900),
-(5, 'Crystal', 500),
-(6, 'Copper', 700),
-(7, 'Silver', 400),
-(8, 'Titanium', 350),
-(9, 'Uranium', 250),
-(10, 'Platinum', 150);
+(0, 'Food', 1000),
+(1, 'Money', 1000),
+(2, 'Iron', 1000),
+(3, 'Wood', 800),
+(4, 'Titanium', 350),
+(5, 'Healing', 100);
+
 
 -- Insert into Soldier
 INSERT INTO Soldier VALUES
-(1, 'John', 5, 100, 100, 20, 15, 'Infantry'),
-(2, 'Alice', 3, 80, 80, 15, 10, 'Sniper'),
+(1, 'John', 10, 100, 100, 20, 15, 'Infantry'),
+(2, 'Alice', 5, 80, 80, 15, 10, 'Sniper'),
 (3, 'Bob', 7, 120, 120, 25, 20, 'Tank'),
-(4, 'Eve', 4, 90, 90, 18, 12, 'Scout'),
-(5, 'Charlie', 6, 110, 110, 22, 17, 'Engineer'),
-(6, 'David', 5, 95, 95, 19, 14, 'Medic'),
-(7, 'Sophia', 4, 85, 85, 16, 11, 'Assault'),
-(8, 'James', 6, 115, 115, 23, 18, 'HeavyGunner'),
-(9, 'Olivia', 3, 75, 75, 14, 9, 'Recon'),
-(10, 'Henry', 7, 300, 300, 75, 50, 'SpecialForces');
+(4, 'Charlie', 10, 110, 110, 22, 17, 'Engineer'),
+(5, 'David', 20, 95, 95, 19, 14, 'Medic'),
+(6, 'Henry', 7, 130, 130, 27, 22, 'Infantry');
 
 -- Insert into Weapon
 INSERT INTO Weapon VALUES
 (1, 'Rifle', 'Standard issue rifle', 30, 100, 10, 1, 1),
-(2, 'Sniper', 'Long-range precision rifle', 50, 150, 15, 2, 1),
+(2, 'Sniper2', 'Long-range precision rifle', 50, 150, 15, 2, 1),
 (3, 'Shotgun', 'Close-range heavy impact weapon', 40, 120, 12, 3, 1),
 (4, 'Pistol', 'Lightweight sidearm', 20, 80, 8, 4, 1),
 (5, 'Machine Gun', 'High-rate-of-fire weapon', 35, 200, 20, 5, 1),
@@ -210,29 +215,29 @@ INSERT INTO Weather VALUES
 
 -- Insert into Mission
 INSERT INTO Mission VALUES
-(1, 'Shadow Recon', 'Infiltrate a Black Horizon outpost and gather intelligence.', 3, 120, 15, 1, 'Forest', 'Rainy', 1),
-(2, 'Data Extraction', 'Steal crucial data from a secret research lab.', 4, 180, 20, 2, 'Alien Ruins', 'Foggy', 1),
-(3, 'Supply Interdiction', 'Destroy Black Horizon''s resource supply lines.', 4, 150, 18, 3, 'Plains', 'Sunny', 1),
-(4, 'Elite Guard Assault', 'Attack and eliminate a Black Horizon elite squad.', 5, 250, 22, 4, 'Mountains', 'Snowy', 1),
-(5, 'Weapon Cache Raid', 'Seize advanced weapon samples and destroy the storage facility.', 6, 300, 25, 5, 'Desert', 'Heatwave', 1),
-(6, 'Facility Destruction', 'Sabotage a research facility to halt enemy progress.', 7, 400, 28, 6, 'Swamp', 'Stormy', 1),
-(7, 'Stealth Infiltration', 'Sneak into and investigate the Black Horizon command center.', 6, 350, 26, 7, 'Caves', 'Windy', 1),
-(8, 'The Gauntlet', 'Endure the enemy''s desperate counterattack and defend the facility.', 8, 500, 30, 8, 'Alien Ruins', 'Asteroid Shower', 1),
-(9, 'Final Showdown', 'Assault the Black Horizon main lab and end their operations.', 9, 600, 35, 9, 'Mountains', 'Stormy', 1),
-(10, 'Clean Sweep', 'Search and eliminate all remaining Black Horizon forces.', 10, 800, 50, 10, 'Plains', 'Sunny', 1);
+(1, 'Shadow Recon', 'Infiltrate a Black Horizon outpost and gather intelligence.', 3, 120, 15, 1, 'Forest', 'Rainy', 1, 0),
+(2, 'Data Extraction', 'Steal crucial data from a secret research lab.', 4, 180, 20, 2, 'Alien Ruins', 'Foggy', 1, 0),
+(3, 'Supply Interdiction', 'Destroy Black Horizon''s resource supply lines.', 4, 150, 18, 3, 'Plains', 'Sunny', 1, 0),
+(4, 'Elite Guard Assault', 'Attack and eliminate a Black Horizon elite squad.', 5, 250, 22, 4, 'Mountains', 'Snowy', 1, 0),
+(5, 'Weapon Cache Raid', 'Seize advanced weapon samples and destroy the storage facility.', 6, 300, 25, 5, 'Desert', 'Heatwave', 1, 0),
+(6, 'Facility Destruction', 'Sabotage a research facility to halt enemy progress.', 7, 400, 28, 6, 'Swamp', 'Stormy', 1, 0),
+(7, 'Stealth Infiltration', 'Sneak into and investigate the Black Horizon command center.', 6, 350, 26, 7, 'Caves', 'Windy', 1, 0),
+(8, 'The Gauntlet', 'Endure the enemy''s desperate counterattack and defend the facility.', 8, 500, 30, 8, 'Alien Ruins', 'Asteroid Shower', 1, 0),
+(9, 'Final Showdown', 'Assault the Black Horizon main lab and end their operations.', 9, 600, 35, 9, 'Mountains', 'Stormy', 1, 0),
+(10, 'Clean Sweep', 'Search and eliminate all remaining Black Horizon forces.', 10, 800, 50, 10, 'Plains', 'Sunny', 1, 0);
 
 -- Insert into ENEMY_TYPES
 INSERT INTO ENEMY_TYPES VALUES
-(1, 'Recon Drone', 50, 8, 4),
-(2, 'Heavy Guard', 120, 15, 7),
-(3, 'Experimental Tank', 180, 18, 10),
-(4, 'Black Ops Sniper', 60, 20, 8),
-(5, 'Mech Soldier', 100, 14, 7),
-(6, 'Cyber Assassin', 90, 18, 9),
-(7, 'Bioengineered Beast', 150, 22, 12),
-(8, 'Psyker', 80, 12, 10),
-(9, 'Prototype AI', 200, 25, 15),
-(10, 'Black Horizon Commander', 300, 30, 20);
+(1, 'Recon Drone', 50, 18, 4, 10),
+(2, 'Heavy Guard', 120, 25, 7, 20),
+(3, 'Experimental Tank', 180, 38, 10, 20),
+(4, 'Black Ops Sniper', 60, 35, 8, 30),
+(5, 'Mech Soldier', 100, 44, 7, 50),
+(6, 'Cyber Assassin', 90, 48, 9, 50),
+(7, 'Bioengineered Beast', 150, 50, 12, 70),
+(8, 'Psyker', 80, 30, 10, 70),
+(9, 'Prototype AI', 200, 45, 15, 90),
+(10, 'Black Horizon Commander', 300, 60, 20, 100);
 
 -- Insert into MISSION_ENEMY (Each mission has multiple enemies)
 INSERT INTO MISSION_ENEMY VALUES
@@ -245,7 +250,7 @@ INSERT INTO MISSION_ENEMY VALUES
 (7, 6, 3), (7, 8, 1),
 (8, 3, 2), (8, 9, 1),
 (9, 9, 1), (9, 10, 1),
-(0, 1, 5), (10, 1, 4), (10, 3, 3);
+(10, 2, 5), (10, 1, 4), (10, 3, 3);
 
 -- Insert into MISSION_ASSIGNMENT (Ensuring each mission has soldiers assigned)
 INSERT INTO MISSION_ASSIGNMENT VALUES
@@ -288,16 +293,20 @@ INSERT INTO Equipment VALUES
 
 
 INSERT INTO Infrastructure VALUES
-(1, 'HQ', 'Central hub for military operations', 3, 1000, 50, 1, 1, 1, 40, -25),
-(2, 'Barracks', 'Housing and training facility for soldiers', 2, 800, 40, 2, 1, 0, 0, 0),
-(3, 'Armory', 'Storage for weapons and ammunition', 2, 600, 30, 3, 1, 0, 0, 0),
-(4, 'Research Lab', 'Facility for developing new technologies', 4, 1200, 60, 4, 1, 0, 0, 0),
-(5, 'Power Station', 'Generates energy for the base', 3, 900, 45, 5, 1, 0, 0, 0),
-(6, 'Hospital', 'Provides healthcare and recovery for soldiers', 2, 700, 35, 6, 1, 0, 0, 0),
-(7, 'Radar Station', 'Monitors enemy movements and signals', 3, 1000, 50, 7, 1, 0, 0, 0),
-(8, 'Shield Generator', 'Defensive structure providing energy shields', 5, 1500, 75, 8, 1, 0, 0, 0);
+(1, 'HQ', 'Central hub for military operations, will generate money', 3, 1000, 50, 1, 1, 0, 0, 0),
+(2, 'Training Room', 'Level your soldiers', 3, 900, 45, 5, 1, 0, 0, 0),
+(3, 'Hospital', 'Provides healthcare and recovery for soldiers', 2, 700, 35, 4, 1, 0, 0, 0),
+(4, 'Restaurant', 'Generates food for the base', 3, 1000, 50, 4, 1, 0, 0, 0),
+(5, 'Pharmacy', 'Generates healing for the base', 5, 1500, 75, 4, 1, 0, 0, 0),
+(6, 'Lumber Yard', 'Generates wood for the base', 3, 1000, 50, 4, 1, 0, 0, 0),
+(7, 'Mine', 'Generates iron for the base', 3, 1000, 50, 4, 1, 0, 0, 0),
+(8, 'Forgery', 'Generates titanium for the base', 3, 1000, 50, 4, 1, 0, 0, 0),
+(9, 'Loadout Room', 'Equip weapons and armor onto your soldiers', 3, 1000, 50, 4, 1, 0, 0, 0);
 
-
+INSERT OR IGNORE INTO Soldier_Equipment (soldier_ID, weapon_ID, equipment_ID) VALUES
+(1, 1, 1),
+(2, 2, 2),
+(3, 3, 3);
 
 EOF
 echo "Finished inserting data"
