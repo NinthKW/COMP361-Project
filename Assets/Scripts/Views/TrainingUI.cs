@@ -101,8 +101,7 @@ public class TrainingUI : MonoBehaviour
 
         if (foodLeft >= levelUpCost)
         {
-            currentSelectedSoldier.Experience += currentSelectedSoldier.Level * 100;
-            currentSelectedSoldier.CheckLevelUp();
+            currentSelectedSoldier.GainExp(currentSelectedSoldier.Level * 100);
 
             GameManager.Instance.currentGame.resourcesData.SetAmount(0, foodLeft - levelUpCost);
             foodLeftDisplay.GetComponent<TextMeshProUGUI>().text = "Food Remaining: " + GameManager.Instance.currentGame.resourcesData.GetAmount(0);
