@@ -2,7 +2,8 @@
 using UnityEngine;
 using UnityEngine.UI;        
 using TMPro;                
-using Assets.Scripts.Model; 
+using Assets.Scripts.Model;
+using Assets.Scripts.Controller;
 
 public class TechButton : MonoBehaviour
 {
@@ -37,6 +38,7 @@ public class TechButton : MonoBehaviour
         {
             // Tell the unlock button which tech is selected
             unlockController.SetSelectedTech(this);
+            AudioManager.Instance.PlaySound("Tech Button Click"); // Play a sound when the button is clicked
         }
     }
 
@@ -46,10 +48,12 @@ public class TechButton : MonoBehaviour
         if (TechManager.Instance.UnlockTech(techId))
         {
             UpdateTechInfo();
+            AudioManager.Instance.PlaySound("Tech Button Unlock"); // Play a sound when the tech is unlocked
         }
         else
         {
             // Add these debug lines
+            AudioManager.Instance.PlaySound("Error"); // Play a sound when the unlock fails
             Debug.Log($"Current wood amount: {PlayerResources.Instance.GetResource(1)}");
             Debug.Log($"Current money: {PlayerResources.Instance.GetMoney()}");
         }

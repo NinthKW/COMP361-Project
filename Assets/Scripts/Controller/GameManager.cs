@@ -59,9 +59,8 @@ namespace Assets.Scripts.Controller
         public void LoadGameState(GameState newState)
         {
             currentState = newState;
-            if (newState != GameState.WelcomePage &&
-                newState != GameState.CombatResultPage) 
-            AudioManager.Instance.PlaySound("Select");
+            if (newState != GameState.WelcomePage) AudioManager.Instance.PlaySound("Select");
+            AudioManager.Instance.StopAdditiveMusic();
 
             switch (newState)
             {
@@ -96,15 +95,18 @@ namespace Assets.Scripts.Controller
                     SceneManager.LoadScene("MissionPrepPageUI");
                     break;
                 case GameState.HospitalPage:
+                    AudioManager.Instance.PlayAdditiveMusic("Inside Buildings");
                     SceneManager.LoadScene("HospitalPage");
                     break;
                 case GameState.CombatResultPage:
                     SceneManager.LoadScene("CombatResultPage");
                     break;
                 case GameState.TrainingPage:
+                    AudioManager.Instance.PlayAdditiveMusic("Inside Buildings");
                     SceneManager.LoadScene("TrainingPage");
                     break;
                 case GameState.LoadoutPage:
+                    AudioManager.Instance.PlayAdditiveMusic("Inside Buildings");
                     SceneManager.LoadScene("LoadoutPage");
                     break;
             }

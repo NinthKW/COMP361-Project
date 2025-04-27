@@ -109,10 +109,12 @@ public class TrainingUI : MonoBehaviour
             levelStatusDisplay.text = "STATUS: " + currentSelectedSoldier.Name + " has leveled up";
 
             updateMenu(currentSelectedSoldier);
+            AudioManager.Instance.PlaySound("LevelUp");
         } 
         else
         {
             levelStatusDisplay.text = "STATUS: Not enough food to level up";
+            AudioManager.Instance.PlaySound("Error"); // Play a sound when the button is clicked
         } 
     }
 

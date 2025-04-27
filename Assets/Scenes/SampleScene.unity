@@ -612,6 +612,13 @@ MonoBehaviour:
   currentState: 0
   currentGame:
     MissionsData: []
+    soldiersData:
+    - id: 1
+    - id: 2
+    - id: 3
+    - id: 4
+    - id: 5
+    - id: 6
     basesData: []
     soldierEquipmentData: []
     techData:
@@ -889,6 +896,11 @@ MonoBehaviour:
   - {fileID: 8300000, guid: d2a8e976786f24b6d94948f36248c8e9, type: 3}
   - {fileID: 8300000, guid: 10656b8c0a8f24b72a6c765baa4280fd, type: 3}
   - {fileID: 8300000, guid: 9b2390527d4e14026b5b6872ef79df50, type: 3}
+  - {fileID: 8300000, guid: ed552a44153fd574789ea014f0fbeae2, type: 3}
+  - {fileID: 8300000, guid: 4f7d3de73f6b5fb48a0f4cf5260dd18c, type: 3}
+  - {fileID: 8300000, guid: 584f8fd464f552a44863b8834873666a, type: 3}
+  - {fileID: 8300000, guid: 3663b2ebaf294824b8837436bbc6b98c, type: 3}
+  - {fileID: 8300000, guid: 6433a7ba3d1d29d43a4547865f6fac3b, type: 3}
 --- !u!4 &2011980347
 Transform:
   m_ObjectHideFlags: 0

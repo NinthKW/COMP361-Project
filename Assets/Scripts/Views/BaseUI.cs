@@ -187,6 +187,7 @@ namespace Assets.Scripts
 
         void OnSelectedBuilding(Base building)
         {
+            AudioManager.Instance.PlaySound("Tech Button Click"); // Play a sound when the button is clicked
             selectedBuilding = building;
         }
 
@@ -198,6 +199,7 @@ namespace Assets.Scripts
 
         void OnModeButtonClicked()
         {
+            AudioManager.Instance.PlaySound("Tech Button Click"); // Play a sound when the button is clicked
             Debug.Log("Base mode changed");
 
             ScrollRect scrollRect = scroll.GetComponent<ScrollRect>();
