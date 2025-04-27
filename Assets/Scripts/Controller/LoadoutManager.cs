@@ -7,7 +7,7 @@ using Assets.Scripts.Model;
 public class LoadoutManager : MonoBehaviour
 {
     public static LoadoutManager Instance;
-    public List<Character> soldiers;
+    public List<Soldier> soldiers;
     public List<Weapon> weapons;
     public List<Equipment> equipments;
     public List<SoldierEquipment> soldierEquipment;

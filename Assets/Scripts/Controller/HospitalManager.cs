@@ -6,7 +6,7 @@ using UnityEngine;
 public class HospitalManager : MonoBehaviour
 {
     public static HospitalManager Instance;
-    public List<Character> soldiers = new List<Character>();
+    public List<Soldier> soldiers = new List<Soldier>();
 
     void Awake()
     {
