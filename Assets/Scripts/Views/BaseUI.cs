@@ -11,6 +11,8 @@ namespace Assets.Scripts
     {
         public Transform missionButtonContainer;
         public GameObject missionButtonPrefab;
+        public GameObject lockedBuildingPrefab; 
+
         private Base selectedBuilding;
         private RectTransform tableRect;
         public GameObject grid2d;
@@ -70,6 +72,15 @@ namespace Assets.Scripts
             {
                 Debug.Log("Adding building: " + building.name);
                 GameObject buttonObj = Instantiate(missionButtonPrefab, missionButtonContainer);
+
+                // Putting locked overlay if locked
+                if (!building.unlocked)
+                {
+                    Debug.Log("Locked: " + building.name);
+                    Instantiate(lockedBuildingPrefab, buttonObj.GetComponent<Transform>());
+
+                    buttonObj.GetComponent<DraggableBuilding>().enabled = false;
+                }
 
                 // Increase the button's height (doubling it in this example)
                 RectTransform buttonRect = buttonObj.GetComponent<RectTransform>();
@@ -224,7 +235,10 @@ namespace Assets.Scripts
                 mode = 1;
                 foreach (GameObject button in buttonList)
                 {
-                    button.GetComponent<DraggableBuilding>().enabled = true;
+                    if (button.GetComponent<DraggableBuilding>().building.unlocked == true)
+                    {
+                        button.GetComponent<DraggableBuilding>().enabled = true;
+                    }
                     button.GetComponent<Button>().enabled = false;
                 }
 

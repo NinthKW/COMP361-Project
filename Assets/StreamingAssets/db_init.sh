@@ -294,14 +294,14 @@ INSERT INTO Equipment VALUES
 
 INSERT INTO Infrastructure VALUES
 (1, 'HQ', 'Central hub for military operations, will generate money', 3, 1000, 50, 1, 1, 0, 0, 0),
-(2, 'Training Room', 'Level your soldiers', 3, 900, 45, 5, 1, 0, 0, 0),
-(3, 'Hospital', 'Provides healthcare and recovery for soldiers', 2, 700, 35, 4, 1, 0, 0, 0),
-(4, 'Restaurant', 'Generates food for the base', 3, 1000, 50, 4, 1, 0, 0, 0),
+(2, 'Training Room', 'Level your soldiers', 3, 900, 45, 5, 0, 0, 0, 0),
+(3, 'Hospital', 'Provides healthcare and recovery for soldiers', 2, 700, 35, 4, 0, 0, 0, 0),
+(4, 'Restaurant', 'Generates food for the base', 3, 1000, 50, 4, 0, 0, 0, 0),
 (5, 'Pharmacy', 'Generates healing for the base', 5, 1500, 75, 4, 1, 0, 0, 0),
-(6, 'Lumber Yard', 'Generates wood for the base', 3, 1000, 50, 4, 1, 0, 0, 0),
-(7, 'Mine', 'Generates iron for the base', 3, 1000, 50, 4, 1, 0, 0, 0),
-(8, 'Forgery', 'Generates titanium for the base', 3, 1000, 50, 4, 1, 0, 0, 0),
-(9, 'Loadout Room', 'Equip weapons and armor onto your soldiers', 3, 1000, 50, 4, 1, 0, 0, 0);
+(6, 'Lumber Yard', 'Generates wood for the base', 3, 1000, 50, 4, 0, 0, 0, 0),
+(7, 'Mine', 'Generates iron for the base', 3, 1000, 50, 4, 0, 0, 0, 0),
+(8, 'Forgery', 'Generates titanium for the base', 3, 1000, 50, 4, 0, 0, 0, 0),
+(9, 'Loadout Room', 'Equip weapons and armor onto your soldiers', 3, 1000, 50, 4, 0, 0, 0, 0);
 
 INSERT OR IGNORE INTO Soldier_Equipment (soldier_ID, weapon_ID, equipment_ID) VALUES
 (1, 1, 1),

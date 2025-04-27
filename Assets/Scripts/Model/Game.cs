@@ -43,7 +43,7 @@ namespace Assets.Scripts.Model
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT building_id, name, description, level, cost, resource_amount, resource_type, x, y FROM Infrastructure ORDER BY building_id ASC;";
+                    command.CommandText = "SELECT building_id, name, description, level, cost, resource_amount, resource_type, unlocked, placed, x, y FROM Infrastructure ORDER BY building_id ASC;";
                     using (IDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
@@ -55,11 +55,13 @@ namespace Assets.Scripts.Model
                             int cost = int.Parse(reader["cost"].ToString());
                             int resource_amount = int.Parse(reader["resource_amount"].ToString());
                             int resource_type = int.Parse(reader["resource_type"].ToString());
+                            bool unlocked = bool.Parse(reader["unlocked"].ToString());
+                            bool placed = bool.Parse(reader["placed"].ToString());
                             int x = int.Parse(reader["x"].ToString());
                             int y = int.Parse(reader["y"].ToString());
                             
                             // For a new game, all bases start locked and not placed.
-                            this.basesData.Add(new Base(building_id, name, description, level, cost, resource_amount, resource_type, false, false, x, y));
+                            this.basesData.Add(new Base(building_id, name, description, level, cost, resource_amount, resource_type, unlocked, placed, x, y));
                         }
                     }
                 }
