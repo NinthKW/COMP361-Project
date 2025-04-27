@@ -8,7 +8,7 @@ namespace Assets.Scripts.Model {
         public int techId;
         public string techName;
         public string description;
-        public float costMoney;
+        public int costMoney;
         public int costResourceId;
         public int costResourceAmount;
         public bool isUnlocked;
@@ -17,8 +17,8 @@ namespace Assets.Scripts.Model {
         {
             techId = 0;
         }
-        public Tech(int techId, string techName, string description, float costMoney, 
-                   int costResourceId, int costResourceAmount) 
+        public Tech(int techId, string techName, string description, int costMoney, 
+                   int costResourceId, int costResourceAmount, bool unlocked) 
         {
             this.techId = techId;
             this.techName = techName;
@@ -26,7 +26,7 @@ namespace Assets.Scripts.Model {
             this.costMoney = costMoney;
             this.costResourceId = costResourceId;
             this.costResourceAmount = costResourceAmount;
-            this.isUnlocked = false;
+            this.isUnlocked = unlocked;
         }
     }
 }

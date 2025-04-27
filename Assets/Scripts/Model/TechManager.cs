@@ -1,3 +1,4 @@
+using Assets.Scripts.Controller;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,8 +8,8 @@ namespace Assets.Scripts.Model
     {
         public static TechManager Instance { get; private set; }
         
-        [SerializeField]
-        private List<Tech> availableTechs = new List<Tech>();
+        public List<Tech> availableTechs;
+        public Resources availableResource;
         
         private void Awake()
         {
@@ -32,35 +33,37 @@ namespace Assets.Scripts.Model
             if (tech.isUnlocked) return false;
             
             // Check if player has enough resources
-            if (PlayerResources.Instance == null)
+            if (availableResource == null)
             {
-                Debug.LogError("PlayerResources not found!");
+                Debug.LogError("TechManager not found!");
                 return false;
             }
             
-            if (PlayerResources.Instance.GetMoney() < tech.costMoney)
+            //Check if enough money
+            if (availableResource.GetAmount(1) < tech.costMoney)
             {
-                Debug.Log($"Not enough money! Need {tech.costMoney}, have {PlayerResources.Instance.GetMoney()}");
+                Debug.Log($"Not enough money! Need {tech.costMoney}, have {availableResource.GetAmount(1)}");
                 return false;
             }
             
-            if (PlayerResources.Instance.GetResource(tech.costResourceId) < tech.costResourceAmount)
+            //Check if enough needed resource
+            if (availableResource.GetAmount(tech.costResourceId) < tech.costResourceAmount)
             {
-                string resourceName = new Resources().GetName(tech.costResourceId);
-                Debug.Log($"Not enough {resourceName}! Need {tech.costResourceAmount}, have {PlayerResources.Instance.GetResource(tech.costResourceId)}");
+                string resourceName = availableResource.GetName(tech.costResourceId);
+                Debug.Log($"Not enough {resourceName}! Need {tech.costResourceAmount}, have {availableResource.GetAmount(tech.costResourceId)}");
                 return false;
             }
             
             // If we have enough resources, deduct them and unlock
-            PlayerResources.Instance.DeductMoney(tech.costMoney);
-            PlayerResources.Instance.DeductResource(tech.costResourceId, tech.costResourceAmount);
+            availableResource.SetAmount(1, availableResource.GetAmount(1) - tech.costMoney);
+            availableResource.SetAmount(tech.costResourceId, availableResource.GetAmount(tech.costResourceId) - tech.costResourceAmount);
             
             tech.isUnlocked = true;
 
             // Add debug logs to show remaining resources after purchase
             Debug.Log($"Successfully unlocked {tech.techName}!");
-            Debug.Log($"Remaining money: ${PlayerResources.Instance.GetMoney()}");
-            Debug.Log($"Remaining {PlayerResources.Instance.GetResourceName(tech.costResourceId)}: {PlayerResources.Instance.GetResource(tech.costResourceId)}");
+            Debug.Log($"Remaining money: ${TechManager.Instance.availableResource.GetAmount(1)}");
+            Debug.Log($"Remaining {TechManager.Instance.availableResource.GetAmount(tech.costResourceId)}: {TechManager.Instance.availableResource.GetAmount(tech.costResourceId)}");
             
             return true;
         }
@@ -74,6 +77,12 @@ namespace Assets.Scripts.Model
         public List<Tech> GetAllTechs()
         {
             return availableTechs;
+        }
+
+        public void LoadTech()
+        {
+            availableTechs = GameManager.Instance.currentGame.techData;
+            availableResource = GameManager.Instance.currentGame.resourcesData;
         }
     }
 } 

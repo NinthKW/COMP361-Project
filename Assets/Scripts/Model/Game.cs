@@ -17,7 +17,7 @@ namespace Assets.Scripts.Model
         public List<Character> soldiersData;
         public List<Base> basesData;
         public List<SoldierEquipment> soldierEquipmentData; //empty on new game
-        public Tech techData;
+        public List<Tech> techData;
         public Inventory inventory;
 
         public int maxSoldier;
@@ -30,7 +30,7 @@ namespace Assets.Scripts.Model
             this.MissionsData = new List<Mission>();
             this.soldiersData = new List<Character>();
             this.basesData = new List<Base>();
-            this.techData = new Tech();
+            this.techData = new List<Tech>();
             this.inventory = new Inventory();
             this.soldierEquipmentData = new List<SoldierEquipment>();
 
@@ -246,21 +246,21 @@ namespace Assets.Scripts.Model
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT tech_id, tech_name, description, cost_money, cost_resources_id, cost_resources_amount FROM TECHNOLOGY LIMIT 1;";
+                    command.CommandText = "SELECT tech_id, tech_name, description, cost_money, cost_resources_id, cost_resources_amount, unlocked FROM TECHNOLOGY;";
                     using (IDataReader reader = command.ExecuteReader())
                     {
-                        if (reader.Read())
+                        while (reader.Read())
                         {
                             int techId = int.Parse(reader["tech_id"].ToString());
                             string techName = reader["tech_name"].ToString();
                             string description = reader["description"].ToString();
-                            float costMoney = float.Parse(reader["cost_money"].ToString());
+                            int costMoney = int.Parse(reader["cost_money"].ToString());
                             int costResourceId = int.Parse(reader["cost_resources_id"].ToString());
                             int costResourceAmount = int.Parse(reader["cost_resources_amount"].ToString());
+                            bool unlocked = bool.Parse(reader["unlocked"].ToString());
                             
-                            Tech tech = new Tech(techId, techName, description, costMoney, costResourceId, costResourceAmount);
-                            tech.isUnlocked = false;
-                            this.techData = tech;
+                            Tech tech = new Tech(techId, techName, description, costMoney, costResourceId, costResourceAmount, false);
+                            techData.Add(tech);
                         }
                     }
                 }
@@ -600,24 +600,22 @@ namespace Assets.Scripts.Model
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT tech_id, tech_name, description, cost_money, cost_resources_id, cost_resources_amount, unlocked FROM TECHNOLOGY LIMIT 1;";
+                    command.CommandText = "SELECT tech_id, tech_name, description, cost_money, cost_resources_id, cost_resources_amount, unlocked FROM TECHNOLOGY;";
                     using (IDataReader reader = command.ExecuteReader())
                     {
-                        if (reader.Read())
+                        while (reader.Read())
                         {
                             int techId = int.Parse(reader["tech_id"].ToString());
                             string techName = reader["tech_name"].ToString();
                             string description = reader["description"].ToString();
-                            float costMoney = float.Parse(reader["cost_money"].ToString());
+                            int costMoney = int.Parse(reader["cost_money"].ToString());
                             int costResourceId = int.Parse(reader["cost_resources_id"].ToString());
                             int costResourceAmount = int.Parse(reader["cost_resources_amount"].ToString());
-                            bool isUnlocked = bool.Parse(reader["unlocked"].ToString());
+                            bool unlocked = bool.Parse(reader["unlocked"].ToString());
 
-                            Tech tech = new Tech(techId, techName, description, costMoney, costResourceId, costResourceAmount);
-                            tech.isUnlocked = isUnlocked;
-                            this.techData = tech;
+                            Tech tech = new Tech(techId, techName, description, costMoney, costResourceId, costResourceAmount, unlocked);
+                            techData.Add(tech);
                         }
-                        reader.Close();
                     }
                 }
                 connection.Close();
@@ -989,22 +987,25 @@ namespace Assets.Scripts.Model
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = @"UPDATE TECHNOLOGY SET 
-                        tech_name = @techName,
-                        description = @description,
-                        cost_money = @costMoney,
-                        cost_resources_id = @costResourceId,
-                        cost_resources_amount = @costResourceAmount,
-                        unlocked = @isUnlocked
-                        WHERE tech_id = @techId;";
-                    command.Parameters.Add(new SqliteParameter("@techName", this.techData.techName));
-                    command.Parameters.Add(new SqliteParameter("@description", this.techData.description));
-                    command.Parameters.Add(new SqliteParameter("@costMoney", this.techData.costMoney));
-                    command.Parameters.Add(new SqliteParameter("@costResourceId", this.techData.costResourceId));
-                    command.Parameters.Add(new SqliteParameter("@costResourceAmount", this.techData.costResourceAmount));
-                    command.Parameters.Add(new SqliteParameter("@isUnlocked", this.techData.isUnlocked ? 1 : 0));
-                    command.Parameters.Add(new SqliteParameter("@techId", this.techData.techId));
-                    command.ExecuteNonQuery();
+                    foreach(Tech tech in techData)
+                    {
+                        command.CommandText = @"UPDATE TECHNOLOGY SET 
+                            tech_name = @techName,
+                            description = @description,
+                            cost_money = @costMoney,
+                            cost_resources_id = @costResourceId,
+                            cost_resources_amount = @costResourceAmount,
+                            unlocked = @isUnlocked
+                            WHERE tech_id = @techId;";
+                        command.Parameters.Add(new SqliteParameter("@techName", tech.techName));
+                        command.Parameters.Add(new SqliteParameter("@description", tech.description));
+                        command.Parameters.Add(new SqliteParameter("@costMoney", tech.costMoney));
+                        command.Parameters.Add(new SqliteParameter("@costResourceId", tech.costResourceId));
+                        command.Parameters.Add(new SqliteParameter("@costResourceAmount", tech.costResourceAmount));
+                        command.Parameters.Add(new SqliteParameter("@isUnlocked", tech.isUnlocked ? 1 : 0));
+                        command.Parameters.Add(new SqliteParameter("@techId", tech.techId));
+                        command.ExecuteNonQuery();
+                    }
                 }
                 connection.Close();
             }

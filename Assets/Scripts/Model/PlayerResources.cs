@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Assets.Scripts.Model
 {
-    public class PlayerResources : MonoBehaviour
+    public class PlayerResources : MonoBehaviour // DO NOT USe
     {
         public static PlayerResources Instance { get; private set; }
         

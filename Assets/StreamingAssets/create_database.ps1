@@ -268,16 +268,13 @@ INSERT OR IGNORE INTO MISSION_ASSIGNMENT (mission_id, soldier_id) VALUES
 (10, 9), (10, 10);
 
 INSERT OR IGNORE INTO TECHNOLOGY (tech_id, tech_name, description, cost_money, cost_resources_id, cost_resources_amount, cost_points, prerequisite_id, unlocks_role_id, unlocks_weapon_id, unlocks_equipment_id, unlocked) VALUES
-(1, 'Advanced Tactics', 'Enhance soldier strategies', 100.00, 1, 10, 50, NULL, 1, 1, 1, 1),
-(2, 'Enhanced Armor', 'Increase soldier durability', 200.00, 2, 20, 100, 1, 2, 2, 2, 1),
-(3, 'Laser Weapons', 'Unlock advanced laser weaponry', 300.00, 3, 30, 150, 2, 3, 3, 3, 1),
-(4, 'Cybernetics', 'Augment soldiers with cybernetic enhancements', 400.00, 4, 40, 200, 3, 4, 4, 4, 1),
-(5, 'Stealth Tech', 'Improve stealth and infiltration capabilities', 500.00, 5, 50, 250, 4, 5, 5, 5, 1),
-(6, 'Drone Warfare', 'Deploy drones for recon and combat', 350.00, 6, 25, 180, 1, 6, 6, 6, 1),
-(7, 'Exoskeletons', 'Enhance soldiers physical abilities', 450.00, 7, 35, 220, 2, 7, 7, 7, 1),
-(8, 'Railgun', 'Develop high-energy railguns', 550.00, 8, 45, 300, 3, 8, 8, 8, 1),
-(9, 'AI Combat Assist', 'Integrate AI-assisted targeting', 600.00, 9, 55, 350, 4, 9, 9, 9, 1),
-(10, 'Orbital Strike', 'Unlock powerful satellite-based attacks', 700.00, 10, 65, 400, 5, 10, 10, 10, 1);
+(1, 'Training Room', 'Enhance soldier strategies', 100.00, 2, 10, 50, NULL, 1, 1, 1, 1),
+(2, 'Hospital', 'Increase soldier durability', 200.00, 2, 20, 100, 1, 2, 2, 2, 1),
+(3, 'Restaurant', 'Unlock advanced laser weaponry', 300.00, 3, 30, 150, 2, 3, 3, 3, 1),
+(4, 'Lumber Yard', 'Augment soldiers with cybernetic enhancements', 400.00, 4, 40, 200, 3, 4, 4, 4, 1),
+(5, 'Mine', 'Improve stealth and infiltration capabilities', 500.00, 3, 50, 250, 4, 5, 5, 5, 1),
+(6, 'Forgery', 'Deploy drones for recon and combat', 350.00, 4, 25, 180, 1, 6, 6, 6, 1),
+(7, 'Loadout Room', 'Enhance soldiers physical abilities', 450.00, 2, 35, 220, 2, 7, 7, 7, 1);
 
 
 INSERT OR IGNORE INTO Equipment (equipment_id, name, hp, def, atk, cost, resource_amount, resource_type, unlocked) VALUES

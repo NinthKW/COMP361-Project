@@ -18,7 +18,11 @@ namespace Assets.Scripts.Views
         [SerializeField]
         private TextMeshProUGUI moneyText;
         [SerializeField]
+        private TextMeshProUGUI ironText;
+        [SerializeField]
         private TextMeshProUGUI woodText;
+        [SerializeField]
+        private TextMeshProUGUI titaniumText;
 
         void Awake()
         {
@@ -27,13 +31,6 @@ namespace Assets.Scripts.Views
             foreach (var controller in controllers)
             {
                 DestroyImmediate(controller);
-            }
-            
-            // Add PlayerResources if it doesn't exist
-            if (PlayerResources.Instance == null)
-            {
-                GameObject resourceManager = new GameObject("PlayerResources");
-                resourceManager.AddComponent<PlayerResources>();
             }
         }
 
@@ -53,20 +50,24 @@ namespace Assets.Scripts.Views
 
         private void UpdateResourceDisplay()
         {
-            if (PlayerResources.Instance != null)
+            if (TechManager.Instance != null)
             {
-                moneyText.text = $"Money: ${PlayerResources.Instance.GetMoney()}";
-                woodText.text = $"Resources: {PlayerResources.Instance.GetResource(1)}";
+                moneyText.text = $"Money: ${TechManager.Instance.availableResource.GetAmount(1)}";
+                ironText.text = $"Iron: ${TechManager.Instance.availableResource.GetAmount(2)}";
+                woodText.text = $"Wood: ${TechManager.Instance.availableResource.GetAmount(3)}";
+                titaniumText.text = $"Titanium: ${TechManager.Instance.availableResource.GetAmount(4)}";
             }
         }
 
         //  Update the display every frame or change when new tech is unlocked
         void Update()
         {
-            if (PlayerResources.Instance != null && moneyText != null && woodText != null)
+            if (TechManager.Instance != null && moneyText != null && woodText != null)
             {
-                moneyText.text = $"Money: ${PlayerResources.Instance.GetMoney()}";
-                woodText.text = $"Resources: {PlayerResources.Instance.GetResource(1)}";
+                moneyText.text = $"Money: ${TechManager.Instance.availableResource.GetAmount(1)}";
+                ironText.text = $"Iron: ${TechManager.Instance.availableResource.GetAmount(2)}";
+                woodText.text = $"Wood: ${TechManager.Instance.availableResource.GetAmount(3)}";
+                titaniumText.text = $"Titanium: ${TechManager.Instance.availableResource.GetAmount(4)}";
             }
         }
 
