@@ -53,51 +53,6 @@ namespace Assets.Scripts.Controller
             _availableSoldiers.Clear();
             _availableSoldiers = Game.Instance.GetSoldiers();
             Debug.Log($"Loaded {_availableSoldiers.Count} soldiers from Game instance.");
-
-            // using (var connection = new SqliteConnection(dbPath))
-            // {
-            //     connection.Open();
-                
-            //     using (var command = connection.CreateCommand())
-            //     {
-            //         command.CommandText = @"
-            //             SELECT 
-            //                 name, 
-            //                 role, 
-            //                 level,
-            //                 hp,
-            //                 atk,
-            //                 def,
-            //                 max_hp
-            //             FROM Soldier";
-
-            //         using var reader = command.ExecuteReader();
-            //         while (reader.Read())
-            //         {
-            //             try
-            //             {
-            //                 var role = new Role(reader.GetString(1));
-            //                 var soldier = new Soldier(
-            //                     name: reader.GetString(0),
-            //                     role: role,
-            //                     level: reader.GetInt32(2),
-            //                     health: reader.GetInt32(3),
-            //                     attack: reader.GetInt32(4),
-            //                     defense: reader.GetInt32(5),
-            //                     maxHealth: reader.GetInt32(6)
-            //                 );
-            //                 soldier.GainExp(reader.GetInt32(3)); // Set experience separately
-
-            //                 _availableSoldiers.Add(soldier);
-            //                 Debug.Log($"Loaded soldier: {soldier.Name} ({role.GetRoleName()})");
-            //             }
-            //             catch (Exception ex)
-            //             {
-            //                 Debug.LogError($"Failed to load soldier: {ex.Message}");
-            //             }
-            //         }
-            //     }
-            // }
         }
         #endregion
 
