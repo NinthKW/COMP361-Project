@@ -29,7 +29,7 @@ namespace Assets.Scripts
 
         void selectSoldier()
         {
-            TrainingUI.Instance.currentSelectedSoldier = soldier;
+            TrainingUI.Instance.currentSelectedSoldier = (Soldier) soldier;
             Debug.Log("Current soldier selected: " + TrainingUI.Instance.currentSelectedSoldier.Name);
 
             TrainingUI.Instance.updateMenu(soldier);
