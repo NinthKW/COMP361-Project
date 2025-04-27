@@ -39,7 +39,7 @@ namespace Assets.Scripts.Controller
         public void LoadMissionsFromGame()
         {
             missions.Clear();
-            missions.AddRange(Game.Instance.MissionsData);
+            missions.AddRange(GameManager.Instance.currentGame.MissionsData);
             Debug.Log($"Loaded {missions.Count} missions from Game instance.");
         }
 

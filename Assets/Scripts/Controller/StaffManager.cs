@@ -9,7 +9,7 @@ public class StaffManager : MonoBehaviour
 
     // This list will hold the loaded soldier data.
     // You can use this list in your UI to populate the grid.
-    public List<Character> soldiers = new List<Character>();
+    public List<Soldier> soldiers = new List<Soldier>();
 
     void Awake()
     {
