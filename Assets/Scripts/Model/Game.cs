@@ -14,7 +14,7 @@ namespace Assets.Scripts.Model
         public static Game Instance;
         public Resources resourcesData;
         public List<Mission> MissionsData;
-        public List<Character> soldiersData;
+        public List<Soldier> soldiersData;
         public List<Base> basesData;
         public List<SoldierEquipment> soldierEquipmentData; //empty on new game
         public Tech techData;
@@ -28,7 +28,7 @@ namespace Assets.Scripts.Model
             // Resources
             this.resourcesData = new Resources();
             this.MissionsData = new List<Mission>();
-            this.soldiersData = new List<Character>();
+            this.soldiersData = new List<Soldier>();
             this.basesData = new List<Base>();
             this.techData = new Tech();
             this.inventory = new Inventory();
@@ -557,9 +557,9 @@ namespace Assets.Scripts.Model
             //MissionManager.Instance.missions = this.MissionsData;
 
             // Soldiers
-            this.soldiersData = new List<Character>();
+            this.soldiersData = new List<Soldier>();
             // Needed for SoldierEquipment
-            Dictionary<int, Character> soldierMap = new Dictionary<int, Character>();
+            Dictionary<int, Soldier> soldierMap = new Dictionary<int, Soldier>();
             using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
@@ -699,7 +699,7 @@ namespace Assets.Scripts.Model
                             int weapon = int.Parse(reader["weapon_ID"].ToString());
                             int equipment = int.Parse(reader["equipment_ID"].ToString());
                             
-                            Character soldierObj;
+                            Soldier soldierObj;
                             Weapon weaponObj;
                             Equipment equipmentObj;
 
@@ -733,6 +733,7 @@ namespace Assets.Scripts.Model
 
         public void SaveGameData()
         {
+            Debug.Log("Saving game data...");
             string dbPath = "URI=file:" + Application.streamingAssetsPath + "/database.db";
 
             // resources
@@ -1072,14 +1073,7 @@ namespace Assets.Scripts.Model
 
         public List<Soldier> GetSoldiers()
         {
-            List<Soldier> soldiers = new ();
-            foreach (var character in this.soldiersData)
-            {
-                if (character is Soldier soldier)
-                {
-                    soldiers.Add(soldier);
-                }
-            }
+            List<Soldier> soldiers = new(this.soldiersData);
             return soldiers;
         }
     }

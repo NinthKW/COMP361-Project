@@ -85,9 +85,18 @@ namespace Assets.Scripts.Model
 
         protected virtual int CalculateDamage(Character target)
         {
-            // 基础伤害 = 攻击者的攻击力 - 目标的防御力
-            int damage = Atk - target.Def;
-            damage = Mathf.Max(1, damage);  // 确保伤害至少为 1
+            int damage;
+            if (this.Atk >= target.Def)
+            {
+                damage = Atk;
+            }
+            else
+            {
+                float ratio = Atk / (float)target.Def;
+                float decayFactor = 1f - Mathf.Exp(-ratio);
+                damage = Mathf.Max(1, Mathf.RoundToInt(Atk * decayFactor));
+            }
+            damage = Mathf.Max(1, damage);
             return damage;
         }
 
@@ -127,6 +136,11 @@ namespace Assets.Scripts.Model
         {
             AttackChances = MaxAttacksPerTurn;
         }
+
+        public void ResetBuffs()
+        {
+            Buffs.Clear();
+        }
     }
 
     [Serializable]
@@ -144,14 +158,6 @@ namespace Assets.Scripts.Model
             AttackChances = 1;
             MaxAttacksPerTurn = 1;
         }
-
-        protected override int CalculateDamage(Character target)
-        {
-            int damage = BaseDamage + Level * 2 - target.Def;
-            damage = Mathf.Max(1, damage);  // 确保至少造成 1 点伤害
-            return damage;
-        }
-
         protected override void HandleDeath(Character killer = null)
         {
             base.HandleDeath();
@@ -180,18 +186,6 @@ namespace Assets.Scripts.Model
             ObjectTag = "Soldier";
             Def = defense;
             id = soldierID;
-        }
-
-        protected override int CalculateDamage(Character target)
-        {
-            int baseDamage = Atk;  // 基础攻击力
-            if (_hasGun) baseDamage += 15;
-
-            // 根据攻击者与目标的防御力差异计算伤害
-            int damage = baseDamage + Level * 3 - target.Def;
-            damage = Mathf.Max(1, damage);  // 确保至少造成 1 点伤害
-
-            return damage;
         }
 
         public string GetRoleName()
@@ -228,8 +222,7 @@ namespace Assets.Scripts.Model
 
         public override void TakeDamage(int damage)
         {
-            int mitigatedDamage = Mathf.Max(0, damage - Def);
-            base.TakeDamage(mitigatedDamage);
+            base.TakeDamage(damage);
         }
 
         public void ModifyAttack(int amount)
@@ -255,6 +248,14 @@ namespace Assets.Scripts.Model
             foreach (var ability in Abilities)
             {
                 ability.UpdateAbilityValues(this);
+            }
+        }
+
+        public void ResetAbilities()
+        {
+            foreach (var ability in Abilities)
+            {
+                ability.Reset();
             }
         }
     }

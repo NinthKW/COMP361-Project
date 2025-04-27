@@ -6,7 +6,7 @@ using UnityEngine;
 public class TrainingManager : MonoBehaviour
 {
     public static TrainingManager Instance;
-    public List<Character> soldiers = new List<Character>();
+    public List<Soldier> soldiers = new List<Soldier>();
 
     void Awake()
     {
