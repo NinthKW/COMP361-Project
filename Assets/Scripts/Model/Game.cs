@@ -61,21 +61,11 @@ namespace Assets.Scripts.Model
                             int y = int.Parse(reader["y"].ToString());
                             
                             // For a new game, all bases start locked and not placed.
-                            this.basesData.Add(new Base(building_id, name, description, level, cost, resource_amount, resource_type, unlocked, placed, x, y));
+                            this.basesData.Add(new Base(building_id, name, description, level, cost, resource_amount, resource_type, false, false, 0, 0));
                         }
                     }
                 }
                 connection.Close();
-            }
-            
-            foreach (Base building in this.basesData) {
-                if (building.name.ToLower().Equals("barracks"))
-                {
-                    if (building.placed)
-                    {
-                        maxSoldier += 1;
-                    }
-                }
             }
 
 
@@ -288,7 +278,7 @@ namespace Assets.Scripts.Model
                             bool unlocked = bool.Parse(reader["unlocked"].ToString());
 
                             // Create a new weapon and add it to the inventory.
-                            Weapon weapon = new Weapon(id, name, description, damage, cost, resourceAmount, resourceType, unlocked);
+                            Weapon weapon = new Weapon(id, name, description, damage, cost, resourceAmount, resourceType, false);
                             inventory.AddWeapon(weapon);
                         }
                     }
@@ -318,7 +308,7 @@ namespace Assets.Scripts.Model
                             bool unlocked = bool.Parse(reader["unlocked"].ToString());
 
                             // Creates a new equipment item and add it to the inventory
-                            Equipment equipment = new Equipment(id, name, hp, def, atk, cost, resourceAmount, resourceType, unlocked);
+                            Equipment equipment = new Equipment(id, name, hp, def, atk, cost, resourceAmount, resourceType, false);
                             inventory.AddEquipment(equipment);
                         }
                     }
@@ -418,17 +408,11 @@ namespace Assets.Scripts.Model
                 connection.Close();
             }
 
-            //Initialize maxSoldier
-            foreach (Base building in this.basesData) {
-                if (Equals(building.name.ToLower(), "barracks")) 
-                {
-                    if (building.placed)
-                    {
-                        maxSoldier += 1;
-                    }
-                }
-            }
 
+            //Reset resource generation buildings
+            ResourceGenerationManager.Instance.Buildings = new List<ResourceGenerationBuilding>();
+            ResourceGenerationManager.Instance.populate();
+            //NOTE: Loading the proper placed resourceGenerationBuildings will be in BaseUI
 
             // Missions
             this.MissionsData = new List<Mission>();
@@ -595,6 +579,7 @@ namespace Assets.Scripts.Model
             }
 
             // tech
+            techData = new List<Tech>();
             using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();

@@ -10,6 +10,7 @@ namespace Assets.Scripts.Model
         
         public List<Tech> availableTechs;
         public Resources availableResource;
+        public List<Base> buildingList;
         
         private void Awake()
         {
@@ -59,6 +60,8 @@ namespace Assets.Scripts.Model
             availableResource.SetAmount(tech.costResourceId, availableResource.GetAmount(tech.costResourceId) - tech.costResourceAmount);
             
             tech.isUnlocked = true;
+            Base unlockedBuilding = buildingList.Find(t => t.name == tech.techName);
+            unlockedBuilding.unlocked = true;
 
             // Add debug logs to show remaining resources after purchase
             Debug.Log($"Successfully unlocked {tech.techName}!");
@@ -83,6 +86,7 @@ namespace Assets.Scripts.Model
         {
             availableTechs = GameManager.Instance.currentGame.techData;
             availableResource = GameManager.Instance.currentGame.resourcesData;
+            buildingList = GameManager.Instance.currentGame.basesData;
         }
     }
 } 

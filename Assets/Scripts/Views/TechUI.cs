@@ -65,9 +65,9 @@ namespace Assets.Scripts.Views
             if (TechManager.Instance != null && moneyText != null && woodText != null)
             {
                 moneyText.text = $"Money: ${TechManager.Instance.availableResource.GetAmount(1)}";
-                ironText.text = $"Iron: ${TechManager.Instance.availableResource.GetAmount(2)}";
-                woodText.text = $"Wood: ${TechManager.Instance.availableResource.GetAmount(3)}";
-                titaniumText.text = $"Titanium: ${TechManager.Instance.availableResource.GetAmount(4)}";
+                ironText.text = $"Iron: {TechManager.Instance.availableResource.GetAmount(2)}";
+                woodText.text = $"Wood: {TechManager.Instance.availableResource.GetAmount(3)}";
+                titaniumText.text = $"Titanium: {TechManager.Instance.availableResource.GetAmount(4)}";
             }
         }
 

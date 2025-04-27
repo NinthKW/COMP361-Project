@@ -128,7 +128,7 @@ namespace Assets.Scripts
                     rectTransform.anchoredPosition = new Vector2((float) building.x, (float) building.y);
                 }
 
-                //Link each building with its functionality
+                //Link each building with its functionality and enable resource generation if placed
                 if (building.name.ToLower() == "hospital") //heal soldiers
                 {
                     btn.onClick.AddListener(BuildingFunctionality.hospitalFunctionality);

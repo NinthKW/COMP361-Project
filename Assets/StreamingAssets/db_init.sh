@@ -268,13 +268,15 @@ INSERT INTO MISSION_ASSIGNMENT VALUES
 
 -- Insert into TECHNOLOGY
 INSERT INTO TECHNOLOGY VALUES
-(1, 'Training Room', 'Enhance soldier strategies', 100.00, 2, 10, 50, NULL, 1, 1, 1, 1),
-(2, 'Hospital', 'Increase soldier durability', 200.00, 2, 20, 100, 1, 2, 2, 2, 1),
-(3, 'Restaurant', 'Unlock advanced laser weaponry', 300.00, 3, 30, 150, 2, 3, 3, 3, 1),
-(4, 'Lumber Yard', 'Augment soldiers with cybernetic enhancements', 400.00, 4, 40, 200, 3, 4, 4, 4, 1),
-(5, 'Mine', 'Improve stealth and infiltration capabilities', 500.00, 3, 50, 250, 4, 5, 5, 5, 1),
-(6, 'Forgery', 'Deploy drones for recon and combat', 350.00, 4, 25, 180, 1, 6, 6, 6, 1),
-(7, 'Loadout Room', 'Enhance soldiers physical abilities', 450.00, 2, 35, 220, 2, 7, 7, 7, 1);
+(1, 'Training Room', 'Enhance soldier levels', 100.00, 2, 10, 50, NULL, 1, 1, 1, 1),
+(2, 'Hospital', 'Healing station for soldier', 200.00, 2, 20, 100, 1, 2, 2, 2, 1),
+(3, 'Restaurant', 'Generate the energy for soldiers to level up', 300.00, 3, 30, 150, 2, 3, 3, 3, 1),
+(4, 'Lumber Yard', 'Generate wood for the base', 400.00, 4, 40, 200, 3, 4, 4, 4, 1),
+(5, 'Mine', 'Generate iron for the base', 500.00, 3, 50, 250, 4, 5, 5, 5, 1),
+(6, 'Forgery', 'Generate titanium for the base', 350.00, 4, 25, 180, 1, 6, 6, 6, 1),
+(7, 'Loadout Room', 'Equip your soldiers with weapons and armor', 450.00, 2, 35, 220, 2, 7, 7, 7, 1),
+(8, 'HQ', 'Generate money for the base', 50.00, 2, 5, 220, 2, 7, 7, 7, 1),
+(9, 'Pharmacy', 'Generate medecine for the base', 50.00, 2, 10, 220, 2, 7, 7, 7, 1);
 
 
 -- Insert into Equipment
@@ -290,11 +292,11 @@ INSERT INTO Equipment VALUES
 
 
 INSERT INTO Infrastructure VALUES
-(1, 'HQ', 'Central hub for military operations, will generate money', 3, 1000, 50, 1, 1, 0, 0, 0),
+(1, 'HQ', 'Central hub for military operations, will generate money', 3, 1000, 50, 1, 0, 0, 0, 0),
 (2, 'Training Room', 'Level your soldiers', 3, 900, 45, 5, 0, 0, 0, 0),
 (3, 'Hospital', 'Provides healthcare and recovery for soldiers', 2, 700, 35, 4, 0, 0, 0, 0),
 (4, 'Restaurant', 'Generates food for the base', 3, 1000, 50, 4, 0, 0, 0, 0),
-(5, 'Pharmacy', 'Generates healing for the base', 5, 1500, 75, 4, 1, 0, 0, 0),
+(5, 'Pharmacy', 'Generates healing for the base', 5, 1500, 75, 4, 0, 0, 0, 0),
 (6, 'Lumber Yard', 'Generates wood for the base', 3, 1000, 50, 4, 0, 0, 0, 0),
 (7, 'Mine', 'Generates iron for the base', 3, 1000, 50, 4, 0, 0, 0, 0),
 (8, 'Forgery', 'Generates titanium for the base', 3, 1000, 50, 4, 0, 0, 0, 0),
