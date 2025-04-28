@@ -402,8 +402,8 @@ namespace Assets.Scripts.Controller
                 .ToList();
 
             if (validSoldiers.Count == 0)
-            {   
-                
+            {    
+                return null; // No valid soldiers available
                 //Debug.LogError("No valid soldiers available. Cannot select any soldier.");
                 //throw new InvalidOperationException("No valid soldier available.");
             }
