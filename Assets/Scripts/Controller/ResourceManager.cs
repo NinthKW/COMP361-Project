@@ -12,7 +12,7 @@ namespace Assets.Scripts.Controller
         
         public static ResourceManager Instance { get; private set; }
         // Holds the resource data
-        private Model.Resources resources;
+        //private Model.Resources resources;
 
         void Awake()
         {
@@ -28,27 +28,20 @@ namespace Assets.Scripts.Controller
                 return;
             }
             
-            resources = Game.Instance.resourcesData;
+            //resources = Game.Instance.resourcesData;
         }
 
         // Returns the current Resources instance
         public Model.Resources GetResources()
         {
-            return resources;
+            return Game.Instance.resourcesData;
         }
 
         // Returns the name of a resource by id
         public string GetResourceName(int resourceId)
-        {
-            try
-            {
-                return resources.GetName(resourceId);
-            }
-            catch (System.Exception ex)
-            {
-                Debug.LogWarning("Error getting resource name for id " + resourceId + ": " + ex.Message);
-                return "";
-            }
+        {   
+            Debug.Log("GetResourceName called with id: " + resourceId);
+            return Game.Instance.resourcesData.GetName(resourceId);
         }
 
         // Returns the description of a resource by id
@@ -56,7 +49,7 @@ namespace Assets.Scripts.Controller
         {
             try
             {
-                return resources.GetDescription(resourceId);
+                return Game.Instance.resourcesData.GetDescription(resourceId);
             }
             catch (System.Exception ex)
             {
@@ -70,7 +63,7 @@ namespace Assets.Scripts.Controller
         {
             try
             {
-                return resources.GetAmount(resourceId);
+                return Game.Instance.resourcesData.GetAmount(resourceId);
             }
             catch (System.Exception ex)
             {
@@ -84,7 +77,7 @@ namespace Assets.Scripts.Controller
         {
             try
             {
-                resources.SetAmount(resourceId, newAmount);
+                Game.Instance.resourcesData.SetAmount(resourceId, newAmount);
             }
             catch (System.Exception ex)
             {
@@ -95,7 +88,7 @@ namespace Assets.Scripts.Controller
         // Updates all resource amounts
         public void UpdateAllResources(Dictionary<int, int> newAmounts)
         {
-            resources.UpdateAllResources(newAmounts);
+            Game.Instance.resourcesData.UpdateAllResources(newAmounts);
         }
     }
 }

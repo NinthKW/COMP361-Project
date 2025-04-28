@@ -21,8 +21,6 @@ namespace Assets.Scripts.Controller
                 Instance = this;
                 DontDestroyOnLoad(gameObject);
 
-                dbPath = "URI=file:" + Application.streamingAssetsPath + "/database.db";
-                Debug.Log("Database path: " + dbPath);
             }
             else
             {

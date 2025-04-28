@@ -184,12 +184,12 @@ INSERT INTO Weapon VALUES
 (2, 'Sniper2', 'Long-range precision rifle', 50, 150, 15, 2, 1),
 (3, 'Shotgun', 'Close-range heavy impact weapon', 40, 120, 12, 3, 1),
 (4, 'Pistol', 'Lightweight sidearm', 20, 80, 8, 4, 1),
-(5, 'Machine Gun', 'High-rate-of-fire weapon', 35, 200, 20, 5, 1),
-(6, 'Rocket Launcher', 'Anti-armor weapon', 70, 300, 25, 6, 1),
-(7, 'Energy Blaster', 'Futuristic energy weapon', 60, 250, 18, 7, 1),
-(8, 'Crossbow', 'Silent ranged weapon', 25, 110, 10, 8, 1),
-(9, 'Flamethrower', 'Burn enemies with fire', 45, 180, 22, 9, 1),
-(10, 'Plasma Rifle', 'High-tech plasma weapon', 65, 350, 30, 10, 1);
+(5, 'Machine Gun', 'High-rate-of-fire weapon', 35, 200, 20, 1, 1),
+(6, 'Rocket Launcher', 'Anti-armor weapon', 70, 300, 25, 1, 1),
+(7, 'Energy Blaster', 'Futuristic energy weapon', 60, 250, 18, 1, 1),
+(8, 'Crossbow', 'Silent ranged weapon', 25, 110, 10, 1, 1),
+(9, 'Flamethrower', 'Burn enemies with fire', 45, 180, 22, 1, 1),
+(10, 'Plasma Rifle', 'High-tech plasma weapon', 65, 350, 30, 1, 1);
 
 -- Insert into Terrain
 INSERT INTO Terrain VALUES
@@ -215,16 +215,16 @@ INSERT INTO Weather VALUES
 
 -- Insert into Mission
 INSERT INTO Mission VALUES
-(1, 'Shadow Recon', 'Infiltrate a Black Horizon outpost and gather intelligence.', 3, 120, 15, 1, 'Forest', 'Rainy', 1, 0),
-(2, 'Data Extraction', 'Steal crucial data from a secret research lab.', 4, 180, 20, 2, 'Alien Ruins', 'Foggy', 1, 0),
-(3, 'Supply Interdiction', 'Destroy Black Horizon''s resource supply lines.', 4, 150, 18, 3, 'Plains', 'Sunny', 1, 0),
-(4, 'Elite Guard Assault', 'Attack and eliminate a Black Horizon elite squad.', 5, 250, 22, 4, 'Mountains', 'Snowy', 1, 0),
-(5, 'Weapon Cache Raid', 'Seize advanced weapon samples and destroy the storage facility.', 6, 300, 25, 5, 'Desert', 'Heatwave', 1, 0),
-(6, 'Facility Destruction', 'Sabotage a research facility to halt enemy progress.', 7, 400, 28, 6, 'Swamp', 'Stormy', 1, 0),
-(7, 'Stealth Infiltration', 'Sneak into and investigate the Black Horizon command center.', 6, 350, 26, 7, 'Caves', 'Windy', 1, 0),
-(8, 'The Gauntlet', 'Endure the enemy''s desperate counterattack and defend the facility.', 8, 500, 30, 8, 'Alien Ruins', 'Asteroid Shower', 1, 0),
-(9, 'Final Showdown', 'Assault the Black Horizon main lab and end their operations.', 9, 600, 35, 9, 'Mountains', 'Stormy', 1, 0),
-(10, 'Clean Sweep', 'Search and eliminate all remaining Black Horizon forces.', 10, 800, 50, 10, 'Plains', 'Sunny', 1, 0);
+(1, 'Shadow Recon', 'Infiltrate a Black Horizon outpost and gather intelligence.', 3, 120, 15, 0, 'Forest', 'Rainy', 1, 0),
+(2, 'Data Extraction', 'Steal crucial data from a secret research lab.', 4, 180, 20, 1, 'Alien Ruins', 'Foggy', 1, 0),
+(3, 'Supply Interdiction', 'Destroy Black Horizon''s resource supply lines.', 4, 150, 18, 2, 'Plains', 'Sunny', 1, 0),
+(4, 'Elite Guard Assault', 'Attack and eliminate a Black Horizon elite squad.', 5, 250, 22, 2, 'Mountains', 'Snowy', 1, 0),
+(5, 'Weapon Cache Raid', 'Seize advanced weapon samples and destroy the storage facility.', 6, 300, 25, 3, 'Desert', 'Heatwave', 1, 0),
+(6, 'Facility Destruction', 'Sabotage a research facility to halt enemy progress.', 7, 400, 28, 3, 'Swamp', 'Stormy', 1, 0),
+(7, 'Stealth Infiltration', 'Sneak into and investigate the Black Horizon command center.', 6, 350, 26, 4, 'Caves', 'Windy', 1, 0),
+(8, 'The Gauntlet', 'Endure the enemy''s desperate counterattack and defend the facility.', 8, 500, 30, 4, 'Alien Ruins', 'Asteroid Shower', 1, 0),
+(9, 'Final Showdown', 'Assault the Black Horizon main lab and end their operations.', 9, 600, 35, 5, 'Mountains', 'Stormy', 1, 0),
+(10, 'Clean Sweep', 'Search and eliminate all remaining Black Horizon forces.', 10, 800, 50, 5, 'Plains', 'Sunny', 1, 0);
 
 -- Insert into ENEMY_TYPES
 INSERT OR IGNORE INTO ENEMY_TYPES (et_ID, et_name, HP, base_ATK, base_DPS, exp_reward) VALUES
@@ -304,10 +304,10 @@ INSERT OR IGNORE INTO Equipment (equipment_id, name, hp, def, atk, cost, resourc
 (2, 'Stealth Suit', 25, 7, 12, 180, 12, 2, 1),
 (3, 'Exo-Skeleton', 70, 25, 8, 280, 22, 3, 1),
 (4, 'Power Gauntlets', 25, 8, 22, 160, 10, 4, 1),
-(5, 'Reinforced Helmet', 8, 4, 4, 80, 6, 5, 1),
-(6, 'Kinetic Boots', 20, 6, 8, 100, 8, 6, 1),
-(7, 'Personal Shield Generator', 35, 18, 4, 230, 18, 7, 1),
-(8, 'Nano‑Fiber Vest', 55, 14, 7, 200, 16, 8, 1);
+(5, 'Reinforced Helmet', 8, 4, 4, 80, 6, 1, 1),
+(6, 'Kinetic Boots', 20, 6, 8, 100, 8, 1, 1),
+(7, 'Personal Shield Generator', 35, 18, 4, 230, 18, 1, 1),
+(8, 'Nano‑Fiber Vest', 55, 14, 7, 200, 16, 1, 1);
 
 INSERT INTO Infrastructure VALUES
 (1, 'HQ', 'Central hub for military operations, will generate money', 3, 1000, 50, 1, 0, 0, 0, 0),
