@@ -16,6 +16,7 @@ namespace Assets.Scripts.Controller
             if (Instance == null)
             {
                 Instance = this;
+                populate();
                 DontDestroyOnLoad(gameObject);
             }
             else
