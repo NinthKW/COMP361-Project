@@ -132,7 +132,7 @@ namespace Assets.Scripts
             droppedRect.anchoredPosition = finalPos;
 
             if (buildingInfoDisplay != null)
-                buildingInfoDisplay.text = "Building placed: " + draggable.name;
+                buildingInfoDisplay.text = "";
         }
     }
 }
