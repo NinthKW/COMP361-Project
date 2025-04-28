@@ -334,7 +334,7 @@ namespace Assets.Scripts.Model
                             int cost = int.Parse(reader["cost"].ToString());
                             int resourceAmount = int.Parse(reader["resource_amount"].ToString());
                             int resourceType = int.Parse(reader["resource_type"].ToString());
-                            bool unlocked = bool.Parse(reader["unlocked"].ToString());
+                            bool unlocked = true;
 
                             // Create a new weapon and add it to the inventory.
                             Weapon weapon = new Weapon(id, name, description, damage, cost, resourceAmount, resourceType, unlocked);
@@ -366,7 +366,7 @@ namespace Assets.Scripts.Model
                             int cost = int.Parse(reader["cost"].ToString());
                             int resourceAmount = int.Parse(reader["resource_amount"].ToString());
                             int resourceType = int.Parse(reader["resource_type"].ToString());
-                            bool unlocked = bool.Parse(reader["unlocked"].ToString());
+                            bool unlocked = true;
 
                             // Creates a new equipment item and add it to the inventory
                             Equipment equipment = new Equipment(id, name, hp, def, atk, cost, resourceAmount, resourceType, unlocked);
