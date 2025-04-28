@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using TMPro;                
 using Assets.Scripts.Model;
 using Assets.Scripts.Controller;
+using Assets.Scripts.Views;
 
 public class TechButton : MonoBehaviour
 {
@@ -18,6 +19,8 @@ public class TechButton : MonoBehaviour
     
     private Tech tech;      // Holds the tech data for this button
     private UnlockButtonController unlockController;  // Reference to the unlock button
+    public TextMeshProUGUI nameText;
+    public TextMeshProUGUI descriptionText;
 
     private void Start()
     {
@@ -39,6 +42,11 @@ public class TechButton : MonoBehaviour
             // Tell the unlock button which tech is selected
             unlockController.SetSelectedTech(this);
             AudioManager.Instance.PlaySound("Tech Button Click"); // Play a sound when the button is clicked
+
+            // I know its inverted, keep it that way
+            Tech currentTech = TechManager.Instance.GetAllTechs().Find(t => t.techId == techId);
+            descriptionText.text = "Selected: " + currentTech.techName;
+            nameText.text = currentTech.description;
         }
     }
 
@@ -54,8 +62,8 @@ public class TechButton : MonoBehaviour
         {
             // Add these debug lines
             AudioManager.Instance.PlaySound("Error"); // Play a sound when the unlock fails
-            Debug.Log($"Current wood amount: {PlayerResources.Instance.GetResource(1)}");
-            Debug.Log($"Current money: {PlayerResources.Instance.GetMoney()}");
+            Debug.Log($"Current wood amount: {TechManager.Instance.availableResource.GetAmount(1)}");
+            Debug.Log($"Current money: {TechManager.Instance.availableResource.GetAmount(0)}");
         }
     }
 
@@ -72,7 +80,7 @@ public class TechButton : MonoBehaviour
         {
             // Update the display texts
             techNameText.text = tech.techName;
-            costText.text = $"Cost: ${tech.costMoney}\n{tech.costResourceAmount} Resource";
+            costText.text = $"Cost: ${tech.costMoney}\n{tech.costResourceAmount} {TechManager.Instance.availableResource.GetName(tech.costResourceId)}";
             
             // Disable the button if tech is already unlocked
             button.interactable = !tech.isUnlocked;

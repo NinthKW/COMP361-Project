@@ -171,12 +171,12 @@ INSERT INTO Resource VALUES
 
 -- Insert into Soldier
 INSERT INTO Soldier VALUES
-(1, 'John', 10, 100, 100, 20, 15, 'Infantry'),
-(2, 'Alice', 5, 80, 80, 15, 10, 'Sniper'),
-(3, 'Bob', 7, 120, 120, 25, 20, 'Tank'),
-(4, 'Charlie', 10, 110, 110, 22, 17, 'Engineer'),
-(5, 'David', 20, 95, 95, 19, 14, 'Medic'),
-(6, 'Henry', 7, 130, 130, 27, 22, 'Infantry');
+(1, 'John', 1, 100, 100, 20, 15, 'Infantry'),
+(2, 'Alice', 1, 80, 80, 15, 10, 'Sniper'),
+(3, 'Bob', 1, 120, 120, 25, 20, 'Tank'),
+(4, 'Charlie', 1, 110, 110, 22, 17, 'Engineer'),
+(5, 'David', 1, 95, 95, 19, 14, 'Medic'),
+(6, 'Henry', 1, 130, 130, 27, 22, 'Infantry');
 
 -- Insert into Weapon
 INSERT INTO Weapon VALUES
@@ -227,30 +227,50 @@ INSERT INTO Mission VALUES
 (10, 'Clean Sweep', 'Search and eliminate all remaining Black Horizon forces.', 10, 800, 50, 10, 'Plains', 'Sunny', 1, 0);
 
 -- Insert into ENEMY_TYPES
-INSERT INTO ENEMY_TYPES VALUES
-(1, 'Recon Drone', 50, 18, 4, 10),
-(2, 'Heavy Guard', 120, 25, 7, 20),
-(3, 'Experimental Tank', 180, 38, 10, 20),
-(4, 'Black Ops Sniper', 60, 35, 8, 30),
-(5, 'Mech Soldier', 100, 44, 7, 50),
-(6, 'Cyber Assassin', 90, 48, 9, 50),
-(7, 'Bioengineered Beast', 150, 50, 12, 70),
-(8, 'Psyker', 80, 30, 10, 70),
-(9, 'Prototype AI', 200, 45, 15, 90),
-(10, 'Black Horizon Commander', 300, 60, 20, 100);
+INSERT OR IGNORE INTO ENEMY_TYPES (et_ID, et_name, HP, base_ATK, base_DPS, exp_reward) VALUES
+(1, 'Recon Drone', 50, 40, 4, 10),
+(2, 'Heavy Guard', 120, 55, 40, 20),
+(3, 'Experimental Tank', 480, 68, 100, 20),
+(4, 'Black Ops Sniper', 260, 70, 25, 30),
+(5, 'Mech Soldier', 500, 90, 60, 50),
+(6, 'Cyber Assassin', 50, 100000, 0, 50),
+(7, 'Bioengineered Beast', 450, 50, 150, 70),
+(8, 'Psyker', 280, 60, 10, 160),
+(9, 'Prototype AI', 500, 90, 15, 300),
+(10, 'Black Horizon Commander', 3000, 150, 200, 1000);
 
--- Insert into MISSION_ENEMY (Each mission has multiple enemies)
-INSERT INTO MISSION_ENEMY VALUES
-(1, 1, 5), (1, 2, 2),
-(2, 2, 3), (2, 3, 1),
-(3, 1, 4), (3, 2, 2),
-(4, 2, 3), (4, 4, 2),
-(5, 3, 2), (5, 4, 1),
-(6, 7, 2), (6, 8, 1),
-(7, 6, 3), (7, 8, 1),
-(8, 3, 2), (8, 9, 1),
-(9, 9, 1), (9, 10, 1),
-(10, 2, 5), (10, 1, 4), (10, 3, 3);
+
+INSERT OR IGNORE INTO MISSION_ENEMY (mission_id, et_id, count) VALUES
+-- Easy Recon: mostly drones with a stray beast
+(1, 1, 6),  (1, 2, 6),
+
+-- Data Extraction: mix of snipers, mechs and a few drones
+(2, 4, 9),  (2, 5, 3),  (2, 1, 3),
+
+-- Supply Interdiction: tanks backed by guards and assassins
+(3, 3, 10),  (3, 2, 3),  (3, 6, 1),
+
+-- Elite Guard Assault: guards, tanks, beasts and a psyker
+(4, 2, 2),  (4, 3, 2),  (4, 7, 1),  (4, 8, 1),
+
+-- Weapon Cache Raid: snipers, drones and mech soldiers
+(5, 4, 2),  (5, 1, 4),  (5, 5, 6),
+
+-- Facility Destruction: prototype AI leading mechs and drones
+(6, 9, 1),  (6, 5, 2),  (6, 1, 15),
+
+-- Stealth Infiltration: assassins, snipers and guards in the shadows
+(7, 6, 2),  (7, 4, 2),  (7, 2, 3),
+
+-- The Gauntlet: heavy mechs flanked by AI and tanks
+(8, 5, 3),  (8, 9, 1),  (8, 3, 1),  (8, 8, 1),
+
+-- Final Showdown Prep: AI overlord with tanks and snipers
+(9, 9, 2),  (9, 3, 2),  (9, 4, 1),  (9, 1, 3), (9, 7, 1),
+
+-- Clean Sweep: commander supported by AI, beasts and psykers
+(10, 10, 1),  (10, 9, 2),  (10, 7, 1),  (10, 8, 1);
+
 
 -- Insert into MISSION_ASSIGNMENT (Ensuring each mission has soldiers assigned)
 INSERT INTO MISSION_ASSIGNMENT VALUES
@@ -268,40 +288,37 @@ INSERT INTO MISSION_ASSIGNMENT VALUES
 
 -- Insert into TECHNOLOGY
 INSERT INTO TECHNOLOGY VALUES
-(1, 'Advanced Tactics', 'Enhance soldier strategies', 100, 1, 10, 50, NULL, 1, 1, 1, 1),
-(2, 'Enhanced Armor', 'Increase soldier durability', 200, 2, 20, 100, 1, 2, 2, 2, 1),
-(3, 'Laser Weapons', 'Unlock advanced laser weaponry', 300, 3, 30, 150, 2, 3, 3, 3, 1),
-(4, 'Cybernetics', 'Augment soldiers with cybernetic enhancements', 400, 4, 40, 200, 3, 4, 4, 4, 1),
-(5, 'Stealth Tech', 'Improve stealth and infiltration capabilities', 500, 5, 50, 250, 4, 5, 5, 5, 1),
-(6, 'Drone Warfare', 'Deploy drones for recon and combat', 350, 6, 25, 180, 1, 6, 6, 6, 1),
-(7, 'Exoskeletons', 'Enhance soldiers physical abilities', 450, 7, 35, 220, 2, 7, 7, 7, 1),
-(8, 'Railgun', 'Develop high-energy railguns', 550, 8, 45, 300, 3, 8, 8, 8, 1),
-(9, 'AI Combat Assist', 'Integrate AI-assisted targeting', 600, 9, 55, 350, 4, 9, 9, 9, 1),
-(10, 'Orbital Strike', 'Unlock powerful satellite-based attacks', 700, 10, 65, 400, 5, 10, 10, 10, 1);
+(1, 'Training Room', 'Enhance soldier levels', 100.00, 2, 10, 50, NULL, 1, 1, 1, 1),
+(2, 'Hospital', 'Healing station for soldier', 200.00, 2, 20, 100, 1, 2, 2, 2, 1),
+(3, 'Restaurant', 'Generate the energy for soldiers to level up', 300.00, 3, 30, 150, 2, 3, 3, 3, 1),
+(4, 'Lumber Yard', 'Generate wood for the base', 400.00, 4, 40, 200, 3, 4, 4, 4, 1),
+(5, 'Mine', 'Generate iron for the base', 500.00, 3, 50, 250, 4, 5, 5, 5, 1),
+(6, 'Forgery', 'Generate titanium for the base', 350.00, 4, 25, 180, 1, 6, 6, 6, 1),
+(7, 'Loadout Room', 'Equip your soldiers with weapons and armor', 450.00, 2, 35, 220, 2, 7, 7, 7, 1),
+(8, 'HQ', 'Generate money for the base', 50.00, 2, 5, 220, 2, 7, 7, 7, 1),
+(9, 'Pharmacy', 'Generate medecine for the base', 50.00, 2, 10, 220, 2, 7, 7, 7, 1);
 
 
--- Insert into Equipment
-INSERT INTO Equipment VALUES
-(1, 'Combat Armor', 50, 10, 5, 150, 10, 1, 1),
-(2, 'Stealth Suit', 20, 5, 15, 200, 15, 2, 1),
-(3, 'Exo-Skeleton', 80, 20, 10, 300, 25, 3, 1),
-(4, 'Power Gauntlets', 30, 10, 25, 180, 12, 4, 1),
-(5, 'Reinforced Helmet', 10, 5, 5, 100, 8, 5, 1),
-(6, 'Kinetic Boots', 25, 5, 10, 120, 10, 6, 1),
-(7, 'Personal Shield Generator', 40, 15, 5, 250, 20, 7, 1),
-(8, 'Nano-Fiber Vest', 60, 12, 8, 220, 18, 8, 1);
-
+INSERT OR IGNORE INTO Equipment (equipment_id, name, hp, def, atk, cost, resource_amount, resource_type, unlocked) VALUES
+(1, 'Combat Armor', 40, 12, 4, 120, 8, 1, 1),
+(2, 'Stealth Suit', 25, 7, 12, 180, 12, 2, 1),
+(3, 'Exo-Skeleton', 70, 25, 8, 280, 22, 3, 1),
+(4, 'Power Gauntlets', 25, 8, 22, 160, 10, 4, 1),
+(5, 'Reinforced Helmet', 8, 4, 4, 80, 6, 5, 1),
+(6, 'Kinetic Boots', 20, 6, 8, 100, 8, 6, 1),
+(7, 'Personal Shield Generator', 35, 18, 4, 230, 18, 7, 1),
+(8, 'Nano‑Fiber Vest', 55, 14, 7, 200, 16, 8, 1);
 
 INSERT INTO Infrastructure VALUES
-(1, 'HQ', 'Central hub for military operations, will generate money', 3, 1000, 50, 1, 1, 0, 0, 0),
-(2, 'Training Room', 'Level your soldiers', 3, 900, 45, 5, 1, 0, 0, 0),
-(3, 'Hospital', 'Provides healthcare and recovery for soldiers', 2, 700, 35, 4, 1, 0, 0, 0),
-(4, 'Restaurant', 'Generates food for the base', 3, 1000, 50, 4, 1, 0, 0, 0),
-(5, 'Pharmacy', 'Generates healing for the base', 5, 1500, 75, 4, 1, 0, 0, 0),
-(6, 'Lumber Yard', 'Generates wood for the base', 3, 1000, 50, 4, 1, 0, 0, 0),
-(7, 'Mine', 'Generates iron for the base', 3, 1000, 50, 4, 1, 0, 0, 0),
-(8, 'Forgery', 'Generates titanium for the base', 3, 1000, 50, 4, 1, 0, 0, 0),
-(9, 'Loadout Room', 'Equip weapons and armor onto your soldiers', 3, 1000, 50, 4, 1, 0, 0, 0);
+(1, 'HQ', 'Central hub for military operations, will generate money', 3, 1000, 50, 1, 0, 0, 0, 0),
+(2, 'Training Room', 'Level your soldiers', 3, 900, 45, 5, 0, 0, 0, 0),
+(3, 'Hospital', 'Provides healthcare and recovery for soldiers', 2, 700, 35, 4, 0, 0, 0, 0),
+(4, 'Restaurant', 'Generates food for the base', 3, 1000, 50, 4, 0, 0, 0, 0),
+(5, 'Pharmacy', 'Generates healing for the base', 5, 1500, 75, 4, 0, 0, 0, 0),
+(6, 'Lumber Yard', 'Generates wood for the base', 3, 1000, 50, 4, 0, 0, 0, 0),
+(7, 'Mine', 'Generates iron for the base', 3, 1000, 50, 4, 0, 0, 0, 0),
+(8, 'Forgery', 'Generates titanium for the base', 3, 1000, 50, 4, 0, 0, 0, 0),
+(9, 'Loadout Room', 'Equip weapons and armor onto your soldiers', 3, 1000, 50, 4, 0, 0, 0, 0);
 
 INSERT OR IGNORE INTO Soldier_Equipment (soldier_ID, weapon_ID, equipment_ID) VALUES
 (1, 1, 1),

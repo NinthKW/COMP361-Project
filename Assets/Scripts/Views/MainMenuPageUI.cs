@@ -50,6 +50,7 @@ public class MainMenuPageUI : MonoBehaviour // Fardin, Ziyuan Wang
 
     void ClickedTech()
     {
+        TechManager.Instance.LoadTech();
         GameManager.Instance.LoadGameState(GameState.TechPage);
     }
 

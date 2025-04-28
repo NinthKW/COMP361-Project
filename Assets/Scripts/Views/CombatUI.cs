@@ -967,7 +967,6 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
     void HandleRetreatConfirmed(RetreatConfirmation window)
     {   
-        CombatManager.Instance.RemoveTerrainAndWeatherEffects(CombatManager.Instance.currentMission);
         Destroy(window.gameObject);
         OnCombatEnd(false);
     }
@@ -1078,6 +1077,8 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     {
         DisableAllControls();
         ShowEndMessage(victory);
+        CombatManager.Instance.RemoveTerrainAndWeatherEffects(CombatManager.Instance.currentMission);
+        CombatManager.Instance.ResetEnemiesAfterCombat();
         AudioManager.Instance.PlayMusic("Menu");
         if (victory == false){
             CombatManager.Instance.SaveCombatResults(victory, "");

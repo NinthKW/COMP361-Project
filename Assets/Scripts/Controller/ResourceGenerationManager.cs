@@ -7,18 +7,16 @@ namespace Assets.Scripts.Controller
     public class ResourceGenerationManager : MonoBehaviour
     {
         public static ResourceGenerationManager Instance;
-        public List<ResourceGenerationBuilding> Buildings;
-        private float timer = 0f;
-        [SerializeField] private float generationInterval = 60.0f;
+        public List<ResourceGenerationBuilding> Buildings = new List<ResourceGenerationBuilding>();
+        [SerializeField] private float timer = 0f;
+        [SerializeField] private float generationInterval = 10.0f;
 
         void Awake()
         {
             if (Instance == null)
             {
                 Instance = this;
-                Buildings = new List<ResourceGenerationBuilding>();
                 populate();
-
                 DontDestroyOnLoad(gameObject);
             }
             else
@@ -29,7 +27,7 @@ namespace Assets.Scripts.Controller
 
         // Update is called once per frame
         void Update()
-        {
+        { 
             timer += Time.deltaTime;
             if (timer >= generationInterval)
             {
@@ -47,14 +45,14 @@ namespace Assets.Scripts.Controller
         }
 
         //Add all resource generation amounts to list
-        void populate()
+        public void populate()
         {
-            Buildings.Add(new ResourceGenerationBuilding(0, 10));
-            Buildings.Add(new ResourceGenerationBuilding(1, 20));
-            Buildings.Add(new ResourceGenerationBuilding(2, 30));
-            Buildings.Add(new ResourceGenerationBuilding(3, 40));
-            Buildings.Add(new ResourceGenerationBuilding(4, 50));
-            Buildings.Add(new ResourceGenerationBuilding(5, 60));
+            Buildings.Add(new ResourceGenerationBuilding(0, 5));
+            Buildings.Add(new ResourceGenerationBuilding(1, 10));
+            Buildings.Add(new ResourceGenerationBuilding(2, 5));
+            Buildings.Add(new ResourceGenerationBuilding(3, 5));
+            Buildings.Add(new ResourceGenerationBuilding(4, 5));
+            Buildings.Add(new ResourceGenerationBuilding(5, 5));
         }
 
     }

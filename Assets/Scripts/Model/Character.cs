@@ -108,7 +108,6 @@ namespace Assets.Scripts.Model
 
         public bool IsDead() {
             if (Health <= 0) {
-                MaxAttacksPerTurn = 0;
                 AttackChances = 0;
                 return true;
             }
@@ -140,6 +139,13 @@ namespace Assets.Scripts.Model
         public void ResetBuffs()
         {
             Buffs.Clear();
+        }
+
+        public void Reset()
+        {
+            Health = MaxHealth;
+            ResetAttackChances();
+            ResetBuffs();
         }
     }
 
