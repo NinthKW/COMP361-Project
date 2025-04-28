@@ -1349,7 +1349,6 @@ GameObject:
   - component: {fileID: 1377942238}
   - component: {fileID: 1377942237}
   - component: {fileID: 1377942240}
-  - component: {fileID: 1377942241}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1475,25 +1474,6 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
---- !u!114 &1377942241
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1377942236}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a2c6445ce4b04c6691ca849e21f97fd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  backButton: {fileID: 0}
-  weaponsContainer: {fileID: 0}
-  equipmentsContainer: {fileID: 0}
-  headerPrefab: {fileID: 0}
-  listItemPrefab: {fileID: 0}
-  weaponsHeaderText: Weapons
-  equipmentsHeaderText: Equipments
 --- !u!1 &1503658507
 GameObject:
   m_ObjectHideFlags: 0
