@@ -359,7 +359,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             HideAbilityPanel();
             abilityInfoPanel.SetActive(false);
         }
-        CombatManager.Instance.CheckCombatEnd();
+        // CombatManager.Instance.CheckCombatEnd();
     }
 
     private void OnAbilityButtonClicked(Ability ability)
