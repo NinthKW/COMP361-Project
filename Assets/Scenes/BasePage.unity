@@ -677,6 +677,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   missionButtonContainer: {fileID: 13296011}
   missionButtonPrefab: {fileID: 2153828838381728940, guid: d519a059879fe1d45a2cebae72445002, type: 3}
+  lockedBuildingPrefab: {fileID: 2784113277793805055, guid: 2d0968f3bc7bc8046a3bb922d3119e7b, type: 3}
   grid2d: {fileID: 1741637233}
   scroll: {fileID: 849967047}
   backButton: {fileID: 950102096}

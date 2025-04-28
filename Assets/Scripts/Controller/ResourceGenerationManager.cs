@@ -7,8 +7,8 @@ namespace Assets.Scripts.Controller
     public class ResourceGenerationManager : MonoBehaviour
     {
         public static ResourceGenerationManager Instance;
-        public List<ResourceGenerationBuilding> Buildings;
-        private float timer = 0f;
+        public List<ResourceGenerationBuilding> Buildings = new List<ResourceGenerationBuilding>();
+        [SerializeField] private float timer = 0f;
         [SerializeField] private float generationInterval = 60.0f;
 
         void Awake()
@@ -16,9 +16,6 @@ namespace Assets.Scripts.Controller
             if (Instance == null)
             {
                 Instance = this;
-                Buildings = new List<ResourceGenerationBuilding>();
-                populate();
-
                 DontDestroyOnLoad(gameObject);
             }
             else
@@ -29,7 +26,7 @@ namespace Assets.Scripts.Controller
 
         // Update is called once per frame
         void Update()
-        {
+        { 
             timer += Time.deltaTime;
             if (timer >= generationInterval)
             {
@@ -47,7 +44,7 @@ namespace Assets.Scripts.Controller
         }
 
         //Add all resource generation amounts to list
-        void populate()
+        public void populate()
         {
             Buildings.Add(new ResourceGenerationBuilding(0, 10));
             Buildings.Add(new ResourceGenerationBuilding(1, 20));
