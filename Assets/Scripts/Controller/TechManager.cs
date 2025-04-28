@@ -12,7 +12,7 @@ namespace Assets.Scripts.Model
         public Resources availableResource;
         public List<Base> buildingList;
         
-        private void Awake()
+        void Awake()
         {
             if (Instance == null)
             {
