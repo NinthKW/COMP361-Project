@@ -232,9 +232,9 @@ INSERT OR IGNORE INTO Mission (mission_id, name, description, difficulty, reward
 (10, 'Clean Sweep', 'Search and eliminate all remaining Black Horizon forces.', 10, 800, 50, 10, 'Plains', 'Sunny', 1, 0);
 
 INSERT OR IGNORE INTO ENEMY_TYPES (et_ID, et_name, HP, base_ATK, base_DPS, exp_reward) VALUES
-(1, 'Recon Drone', 50, 40, 4, 10),
-(2, 'Heavy Guard', 120, 55, 40, 20),
-(3, 'Experimental Tank', 480, 68, 100, 20),
+(1, 'Recon Drone', 50, 20, 4, 10),
+(2, 'Heavy Guard', 120, 75, 40, 20),
+(3, 'Experimental Tank', 480, 38, 100, 20),
 (4, 'Black Ops Sniper', 260, 70, 25, 30),
 (5, 'Mech Soldier', 500, 90, 60, 50),
 (6, 'Cyber Assassin', 50, 100000, 0, 50),

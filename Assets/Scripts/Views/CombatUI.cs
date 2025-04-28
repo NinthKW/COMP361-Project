@@ -937,6 +937,11 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
                               $"Active: {activeEnemies}\n" +
                               $"Waiting: {waitingEnemies}";
     }
+
+    private void UpdateAbilityCountdownDisplay()
+    {
+        
+    }
     
     #endregion
 
