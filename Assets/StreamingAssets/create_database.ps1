@@ -347,10 +347,6 @@ INSERT INTO Infrastructure VALUES
 (8, 'Forgery', 'Generates titanium for the base', 3, 1000, 50, 4, 0, 0, 0, 0),
 (9, 'Loadout Room', 'Equip weapons and armor onto your soldiers', 3, 1000, 50, 4, 0, 0, 0, 0);
 
-INSERT OR IGNORE INTO Soldier_Equipment (soldier_ID, weapon_ID, equipment_ID) VALUES
-(1, 1, 1),
-(2, 2, 2),
-(3, 3, 3);
 
 "@ # End of Here-String
 
