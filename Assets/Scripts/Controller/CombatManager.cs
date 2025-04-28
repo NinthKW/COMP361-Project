@@ -5,6 +5,7 @@ using System.Data;
 using Mono.Data.Sqlite;
 using System;
 using System.Linq;
+using UnityEngine.Analytics;
 
 namespace Assets.Scripts.Controller 
 {
@@ -401,9 +402,10 @@ namespace Assets.Scripts.Controller
                 .ToList();
 
             if (validSoldiers.Count == 0)
-            {
-                Debug.LogError("No valid soldiers available. Cannot select any soldier.");
-                throw new InvalidOperationException("No valid soldier available.");
+            {   
+                
+                //Debug.LogError("No valid soldiers available. Cannot select any soldier.");
+                //throw new InvalidOperationException("No valid soldier available.");
             }
 
             var tauntSoldiers = validSoldiers
