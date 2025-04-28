@@ -1152,6 +1152,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   availableTechs: []
+  buildingList: []
 --- !u!1001 &5513713407794041489
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1274,6 +1275,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 374087201378088722, guid: e11e789f7102fff4fac73f514e0be4cc, type: 3}
+      propertyPath: generationInterval
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 2041089874699066666, guid: e11e789f7102fff4fac73f514e0be4cc, type: 3}
       propertyPath: m_Name
       value: ResourceGenerationManager
