@@ -54,8 +54,8 @@ public class TechButton : MonoBehaviour
         {
             // Add these debug lines
             AudioManager.Instance.PlaySound("Error"); // Play a sound when the unlock fails
-            Debug.Log($"Current wood amount: {PlayerResources.Instance.GetResource(1)}");
-            Debug.Log($"Current money: {PlayerResources.Instance.GetMoney()}");
+            Debug.Log($"Current wood amount: {TechManager.Instance.availableResource.GetAmount(1)}");
+            Debug.Log($"Current money: {TechManager.Instance.availableResource.GetAmount(0)}");
         }
     }
 
@@ -72,7 +72,7 @@ public class TechButton : MonoBehaviour
         {
             // Update the display texts
             techNameText.text = tech.techName;
-            costText.text = $"Cost: ${tech.costMoney}\n{tech.costResourceAmount} Resource";
+            costText.text = $"Cost: ${tech.costMoney}\n{tech.costResourceAmount} {TechManager.Instance.availableResource.GetName(tech.costResourceId)}";
             
             // Disable the button if tech is already unlocked
             button.interactable = !tech.isUnlocked;
