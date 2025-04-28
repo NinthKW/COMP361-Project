@@ -42,50 +42,49 @@ if (Test-Path -Path $DB_FILE -PathType Leaf) {
 
     # Define the SQL commands using a PowerShell Here-String
     $sqlCommands = @"
-CREATE TABLE IF NOT EXISTS Resource (
-    resource_id INTEGER PRIMARY KEY,
-    name TEXT,
-    current_amount INTEGER
+CREATE TABLE Resource (
+    resource_id INT PRIMARY KEY,
+    name VARCHAR(255),
+    current_amount INT
 );
 
-CREATE TABLE IF NOT EXISTS Soldier (
-    soldier_id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL,
-    level INTEGER DEFAULT 1,
-    hp INTEGER,
-    max_hp INTEGER,
-    atk INTEGER,
-    def INTEGER,
-    role TEXT
+CREATE TABLE Soldier (
+    soldier_id INT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL, 
+    level INT DEFAULT 1,
+    hp INT,
+    max_hp INT,
+    atk INT,
+    def INT,
+    role VARCHAR(50)   
 );
 
-CREATE TABLE IF NOT EXISTS Weapon (
-    weapon_id INTEGER PRIMARY KEY,
-    name TEXT,
-    description TEXT,
-    damage INTEGER,
-    cost INTEGER,
-    resource_amount INTEGER,
-    resource_type INTEGER,
-    unlocked BOOLEAN,
+CREATE TABLE Weapon (
+    weapon_id INT PRIMARY KEY,
+    name VARCHAR(255),
+    description VARCHAR(1000),
+    damage INT, 
+    cost INT,
+    resource_amount INT,
+    resource_type INT,
+    unlocked BOOL,
     FOREIGN KEY (resource_type) REFERENCES Resource(resource_id)
 );
 
-
-CREATE TABLE IF NOT EXISTS Equipment (
-    equipment_id INTEGER PRIMARY KEY,
-    name TEXT,
-    hp INTEGER,
-    def INTEGER,
-    atk INTEGER,
-    cost INTEGER,
-    resource_amount INTEGER,
-    resource_type INTEGER,
-    unlocked BOOLEAN,
+CREATE TABLE Equipment (
+    equipment_id INT PRIMARY KEY,
+    name VARCHAR(255),
+    hp INT,
+    def INT,
+    atk INT, 
+    cost INT,
+    resource_amount INT,
+    resource_type INT,
+    unlocked BOOL,
     FOREIGN KEY (resource_type) REFERENCES Resource(resource_id)
 );
 
-CREATE TABLE IF NOT EXISTS Infrastructure (
+CREATE TABLE Infrastructure (
     building_id INTEGER PRIMARY KEY,
     name TEXT,
     description TEXT,
@@ -100,50 +99,50 @@ CREATE TABLE IF NOT EXISTS Infrastructure (
     FOREIGN KEY (resource_type) REFERENCES Resource(resource_id)
 );
 
-CREATE TABLE IF NOT EXISTS Weather (
-    name TEXT PRIMARY KEY,
-    atk_effect INTEGER,
-    def_effect INTEGER,
-    hp_effect INTEGER
+CREATE TABLE Weather ( 
+    name VARCHAR(255) PRIMARY KEY,
+    atk_effect INT,
+    def_effect INT,
+    hp_effect INT
 );
 
-CREATE TABLE IF NOT EXISTS Terrain (
-    name TEXT PRIMARY KEY,
-    atk_effect INTEGER,
-    def_effect INTEGER,
-    hp_effect INTEGER
+CREATE TABLE Terrain ( 
+    name VARCHAR(255) PRIMARY KEY,
+    atk_effect INT,
+    def_effect INT,
+    hp_effect INT
 );
 
-CREATE TABLE IF NOT EXISTS Mission (
-    mission_id INTEGER PRIMARY KEY,
-    name TEXT,
-    description TEXT,
-    difficulty INTEGER,
-    reward_money INTEGER,
-    reward_amount INTEGER,
-    reward_resource INTEGER,
-    terrain TEXT,
-    weather TEXT,
-    unlocked BOOLEAN,
-    cleared BOOLEAN,
+CREATE TABLE Mission (
+    mission_id INT PRIMARY KEY,
+    name VARCHAR(200),
+    description VARCHAR(1000),
+    difficulty INT,
+    reward_money INT,
+    reward_amount INT,
+    reward_resource INT,
+    terrain VARCHAR(50),
+    weather VARCHAR(50),
+    unlocked BOOL,
+    cleared BOOL,
     FOREIGN KEY (reward_resource) REFERENCES Resource(resource_id),
     FOREIGN KEY(terrain) REFERENCES Terrain(name),
     FOREIGN KEY(weather) REFERENCES Weather(name)
 );
 
-CREATE TABLE IF NOT EXISTS TECHNOLOGY (
-    tech_id INTEGER PRIMARY KEY,
-    tech_name TEXT NOT NULL,
+CREATE TABLE TECHNOLOGY (
+    tech_id INT PRIMARY KEY,
+    tech_name VARCHAR(255) NOT NULL,
     description TEXT,
-    cost_money REAL DEFAULT 0, -- Changed DECIMAL to REAL for SQLite compatibility
-    cost_resources_id INTEGER,
-    cost_resources_amount INTEGER DEFAULT 0,
-    cost_points INTEGER DEFAULT 0,
-    prerequisite_id INTEGER,
-    unlocks_role_id INTEGER,
-    unlocks_weapon_id INTEGER,
-    unlocks_equipment_id INTEGER,
-    unlocked BOOLEAN,
+    cost_money DECIMAL(10,2) DEFAULT 0,
+    cost_resources_id INT,
+    cost_resources_amount INT DEFAULT 0,
+    cost_points INT DEFAULT 0,
+    prerequisite_id INT,
+    unlocks_role_id INT,
+    unlocks_weapon_id INT,
+    unlocks_equipment_id INT,
+    unlocked BOOL,
     FOREIGN KEY (cost_resources_id) REFERENCES Resource(resource_id),
     FOREIGN KEY (prerequisite_id) REFERENCES TECHNOLOGY(tech_id),
     FOREIGN KEY (unlocks_role_id) REFERENCES Soldier(soldier_id),
@@ -151,24 +150,24 @@ CREATE TABLE IF NOT EXISTS TECHNOLOGY (
     FOREIGN KEY (unlocks_equipment_id) REFERENCES Equipment(equipment_id)
 );
 
-CREATE TABLE IF NOT EXISTS MISSION_ASSIGNMENT (
-    mission_id INTEGER,
-    soldier_id INTEGER,
+CREATE TABLE MISSION_ASSIGNMENT (
+    mission_id INT,
+    soldier_id INT,
     PRIMARY KEY (mission_id, soldier_id),
     FOREIGN KEY (mission_id) REFERENCES Mission(mission_id),
     FOREIGN KEY (soldier_id) REFERENCES Soldier(soldier_id)
 );
 
-CREATE TABLE IF NOT EXISTS MISSION_ENEMY (
-    mission_id INTEGER,
-    et_id INTEGER,
-    count INTEGER DEFAULT 0,
+CREATE TABLE MISSION_ENEMY (
+    mission_id INT,
+    et_id INT,
+    count INT DEFAULT 0,
     PRIMARY KEY (mission_id, et_id),
     FOREIGN KEY (mission_id) REFERENCES Mission(mission_id),
     FOREIGN KEY (et_id) REFERENCES ENEMY_TYPES(et_id)
 );
 
-CREATE TABLE IF NOT EXISTS ENEMY_TYPES (
+CREATE TABLE ENEMY_TYPES (
     et_ID INTEGER PRIMARY KEY,
     et_name TEXT NOT NULL,
     HP INTEGER NOT NULL,
@@ -177,7 +176,7 @@ CREATE TABLE IF NOT EXISTS ENEMY_TYPES (
     exp_reward INTEGER NOT NULL 
 );
 
-CREATE TABLE IF NOT EXISTS SOLDIER_EQUIPMENT (
+CREATE TABLE SOLDIER_EQUIPMENT (
     soldier_ID INTEGER,
     weapon_ID INTEGER,
     equipment_ID INTEGER,
@@ -187,8 +186,8 @@ CREATE TABLE IF NOT EXISTS SOLDIER_EQUIPMENT (
     FOREIGN KEY (equipment_ID) REFERENCES Equipment(equipment_id)
 );
 
--- Insert data (using INSERT OR IGNORE to prevent errors if data already exists)
-INSERT OR IGNORE INTO Resource (resource_id, name, current_amount) VALUES
+-- Insert into Resource
+INSERT INTO Resource VALUES
 (0, 'Food', 1000),
 (1, 'Money', 1000),
 (2, 'Iron', 1000),
@@ -196,7 +195,9 @@ INSERT OR IGNORE INTO Resource (resource_id, name, current_amount) VALUES
 (4, 'Titanium', 350),
 (5, 'Healing', 100);
 
-INSERT OR IGNORE INTO Soldier (soldier_id, name, level, hp, max_hp, atk, def, role) VALUES
+
+-- Insert into Soldier
+INSERT INTO Soldier VALUES
 (1, 'John', 1, 100, 100, 20, 15, 'Infantry'),
 (2, 'Alice', 1, 80, 80, 15, 10, 'Sniper'),
 (3, 'Bob', 1, 120, 120, 25, 20, 'Tank'),
@@ -204,22 +205,43 @@ INSERT OR IGNORE INTO Soldier (soldier_id, name, level, hp, max_hp, atk, def, ro
 (5, 'David', 1, 95, 95, 19, 14, 'Medic'),
 (6, 'Henry', 1, 130, 130, 27, 22, 'Infantry');
 
-INSERT OR IGNORE INTO Weapon (weapon_id, name, description, damage, cost, resource_amount, resource_type, unlocked) VALUES
-(1, 'Rifle', 'Standard issue rifle', 30, 100, 10, 1, 1), (2, 'Sniper2', 'Long-range precision rifle', 50, 150, 15, 2, 1),
-(3, 'Shotgun', 'Close-range heavy impact weapon', 40, 120, 12, 3, 1), (4, 'Pistol', 'Lightweight sidearm', 20, 80, 8, 4, 1),
-(5, 'Machine Gun', 'High-rate-of-fire weapon', 35, 200, 20, 5, 1), (6, 'Rocket Launcher', 'Anti-armor weapon', 70, 300, 25, 6, 1),
-(7, 'Energy Blaster', 'Futuristic energy weapon', 60, 250, 18, 7, 1), (8, 'Crossbow', 'Silent ranged weapon', 25, 110, 10, 8, 1),
-(9, 'Flamethrower', 'Burn enemies with fire', 45, 180, 22, 9, 1), (10, 'Plasma Rifle', 'High-tech plasma weapon', 65, 350, 30, 10, 1);
+-- Insert into Weapon
+INSERT INTO Weapon VALUES
+(1, 'Rifle', 'Standard issue rifle', 30, 100, 10, 1, 1),
+(2, 'Sniper2', 'Long-range precision rifle', 50, 150, 15, 2, 1),
+(3, 'Shotgun', 'Close-range heavy impact weapon', 40, 120, 12, 3, 1),
+(4, 'Pistol', 'Lightweight sidearm', 20, 80, 8, 4, 1),
+(5, 'Machine Gun', 'High-rate-of-fire weapon', 35, 200, 20, 5, 1),
+(6, 'Rocket Launcher', 'Anti-armor weapon', 70, 300, 25, 6, 1),
+(7, 'Energy Blaster', 'Futuristic energy weapon', 60, 250, 18, 7, 1),
+(8, 'Crossbow', 'Silent ranged weapon', 25, 110, 10, 8, 1),
+(9, 'Flamethrower', 'Burn enemies with fire', 45, 180, 22, 9, 1),
+(10, 'Plasma Rifle', 'High-tech plasma weapon', 65, 350, 30, 10, 1);
 
-INSERT OR IGNORE INTO Terrain (name, atk_effect, def_effect, hp_effect) VALUES
-('Plains', 5, 5, 10), ('Forest', 10, 15, -5), ('Mountains', 15, 20, -10), ('Desert', 20, -5, -15),
-('Swamp', -10, 10, 5), ('Caves', 10, 5, 0), ('Frozen Wasteland', -5, 15, -20), ('Alien Ruins', 15, 10, 10);
+-- Insert into Terrain
+INSERT INTO Terrain VALUES
+('Plains', 5, 5, 10),
+('Forest', 10, 15, -5),
+('Mountains', 15, 20, -10),
+('Desert', 20, -5, -15),
+('Swamp', -10, 10, 5),
+('Caves', 10, 5, 0),
+('Frozen Wasteland', -5, 15, -20),
+('Alien Ruins', 15, 10, 10);
 
-INSERT OR IGNORE INTO Weather (name, atk_effect, def_effect, hp_effect) VALUES
-('Sunny', 5, 5, 0), ('Rainy', -5, 10, 5), ('Stormy', -10, 15, -5), ('Foggy', 0, 10, 0),
-('Snowy', -10, 5, -10), ('Windy', 5, -5, 0), ('Heatwave', 10, -10, -5), ('Asteroid Shower', -15, 20, -20);
+-- Insert into Weather
+INSERT INTO Weather VALUES
+('Sunny', 5, 5, 0),
+('Rainy', -5, 10, 5),
+('Stormy', -10, 15, -5),
+('Foggy', 0, 10, 0),
+('Snowy', -10, 5, -10),
+('Windy', 5, -5, 0),
+('Heatwave', 10, -10, -5),
+('Asteroid Shower', -15, 20, -20);
 
-INSERT OR IGNORE INTO Mission (mission_id, name, description, difficulty, reward_money, reward_amount, reward_resource, terrain, weather, unlocked, cleared) VALUES
+-- Insert into Mission
+INSERT INTO Mission VALUES
 (1, 'Shadow Recon', 'Infiltrate a Black Horizon outpost and gather intelligence.', 3, 120, 15, 1, 'Forest', 'Rainy', 1, 0),
 (2, 'Data Extraction', 'Steal crucial data from a secret research lab.', 4, 180, 20, 2, 'Alien Ruins', 'Foggy', 1, 0),
 (3, 'Supply Interdiction', 'Destroy Black Horizon''s resource supply lines.', 4, 150, 18, 3, 'Plains', 'Sunny', 1, 0),
@@ -231,10 +253,11 @@ INSERT OR IGNORE INTO Mission (mission_id, name, description, difficulty, reward
 (9, 'Final Showdown', 'Assault the Black Horizon main lab and end their operations.', 9, 600, 35, 9, 'Mountains', 'Stormy', 1, 0),
 (10, 'Clean Sweep', 'Search and eliminate all remaining Black Horizon forces.', 10, 800, 50, 10, 'Plains', 'Sunny', 1, 0);
 
+-- Insert into ENEMY_TYPES
 INSERT OR IGNORE INTO ENEMY_TYPES (et_ID, et_name, HP, base_ATK, base_DPS, exp_reward) VALUES
-(1, 'Recon Drone', 50, 20, 4, 10),
-(2, 'Heavy Guard', 120, 75, 40, 20),
-(3, 'Experimental Tank', 480, 38, 100, 20),
+(1, 'Recon Drone', 50, 40, 4, 10),
+(2, 'Heavy Guard', 120, 55, 40, 20),
+(3, 'Experimental Tank', 480, 68, 100, 20),
 (4, 'Black Ops Sniper', 260, 70, 25, 30),
 (5, 'Mech Soldier', 500, 90, 60, 50),
 (6, 'Cyber Assassin', 50, 100000, 0, 50),
@@ -242,6 +265,7 @@ INSERT OR IGNORE INTO ENEMY_TYPES (et_ID, et_name, HP, base_ATK, base_DPS, exp_r
 (8, 'Psyker', 280, 60, 10, 160),
 (9, 'Prototype AI', 500, 90, 15, 300),
 (10, 'Black Horizon Commander', 3000, 150, 200, 1000);
+
 
 INSERT OR IGNORE INTO MISSION_ENEMY (mission_id, et_id, count) VALUES
 -- Easy Recon: mostly drones with a stray beast
@@ -274,7 +298,9 @@ INSERT OR IGNORE INTO MISSION_ENEMY (mission_id, et_id, count) VALUES
 -- Clean Sweep: commander supported by AI, beasts and psykers
 (10, 10, 1),  (10, 9, 2),  (10, 7, 1),  (10, 8, 1);
 
-INSERT OR IGNORE INTO MISSION_ASSIGNMENT (mission_id, soldier_id) VALUES
+
+-- Insert into MISSION_ASSIGNMENT (Ensuring each mission has soldiers assigned)
+INSERT INTO MISSION_ASSIGNMENT VALUES
 (1, 1), (1, 2), 
 (2, 3), (2, 4),
 (3, 5), (3, 6),
@@ -286,7 +312,9 @@ INSERT OR IGNORE INTO MISSION_ASSIGNMENT (mission_id, soldier_id) VALUES
 (9, 6), (9, 8),
 (10, 9), (10, 10);
 
-INSERT OR IGNORE INTO TECHNOLOGY (tech_id, tech_name, description, cost_money, cost_resources_id, cost_resources_amount, cost_points, prerequisite_id, unlocks_role_id, unlocks_weapon_id, unlocks_equipment_id, unlocked) VALUES
+
+-- Insert into TECHNOLOGY
+INSERT INTO TECHNOLOGY VALUES
 (1, 'Training Room', 'Enhance soldier levels', 100.00, 2, 10, 50, NULL, 1, 1, 1, 1),
 (2, 'Hospital', 'Healing station for soldier', 200.00, 2, 20, 100, 1, 2, 2, 2, 1),
 (3, 'Restaurant', 'Generate the energy for soldiers to level up', 300.00, 3, 30, 150, 2, 3, 3, 3, 1),
@@ -308,7 +336,7 @@ INSERT OR IGNORE INTO Equipment (equipment_id, name, hp, def, atk, cost, resourc
 (7, 'Personal Shield Generator', 35, 18, 4, 230, 18, 7, 1),
 (8, 'Nano‑Fiber Vest', 55, 14, 7, 200, 16, 8, 1);
 
-INSERT OR IGNORE INTO Infrastructure (building_id, name, description, level, cost, resource_amount, resource_type, unlocked, placed, x, y) VALUES
+INSERT INTO Infrastructure VALUES
 (1, 'HQ', 'Central hub for military operations, will generate money', 3, 1000, 50, 1, 0, 0, 0, 0),
 (2, 'Training Room', 'Level your soldiers', 3, 900, 45, 5, 0, 0, 0, 0),
 (3, 'Hospital', 'Provides healthcare and recovery for soldiers', 2, 700, 35, 4, 0, 0, 0, 0),

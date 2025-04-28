@@ -333,7 +333,7 @@ namespace Assets.Scripts.Model
             base.Initialize(name, cost, cooldown, duration, description, "TauntAll", caster);
             UpdateAbilityValues(caster);
             tauntBuff = new Buff("Taunt", TauntDuration, false, 
-                                (target) => target.Def = BuffDefAmount);
+                                null, (target) => target.Def = BuffDefAmount);
         }
 
         public override bool Activate(List<Character> targets)
@@ -347,6 +347,7 @@ namespace Assets.Scripts.Model
                     tauntBuff.BuffedCharacter = target;
                     tauntBuff.Duration = TauntDuration;
                     target.Buffs.Add(this, tauntBuff);
+                    tauntBuff.Apply(tauntBuff.EffectOnStart, target);
                     Debug.Log($"{target.Name} is taunting for {TauntDuration} turns and defense increased by {BuffDefAmount}!");
                 }
             }
@@ -356,7 +357,7 @@ namespace Assets.Scripts.Model
         public override void UpdateAbilityValues(Character caster)
         {
             TauntDuration = Mathf.Max(2, 2 + caster.Level / 4); // Ensure at least 2 turns of taunt
-            BuffDefAmount = caster.Def * 2;
+            BuffDefAmount = caster.Def * 3;
         }
     }
     #endregion

@@ -171,12 +171,12 @@ INSERT INTO Resource VALUES
 
 -- Insert into Soldier
 INSERT INTO Soldier VALUES
-(1, 'John', 10, 100, 100, 20, 15, 'Infantry'),
-(2, 'Alice', 5, 80, 80, 15, 10, 'Sniper'),
-(3, 'Bob', 7, 120, 120, 25, 20, 'Tank'),
-(4, 'Charlie', 10, 110, 110, 22, 17, 'Engineer'),
-(5, 'David', 20, 95, 95, 19, 14, 'Medic'),
-(6, 'Henry', 7, 130, 130, 27, 22, 'Infantry');
+(1, 'John', 1, 100, 100, 20, 15, 'Infantry'),
+(2, 'Alice', 1, 80, 80, 15, 10, 'Sniper'),
+(3, 'Bob', 1, 120, 120, 25, 20, 'Tank'),
+(4, 'Charlie', 1, 110, 110, 22, 17, 'Engineer'),
+(5, 'David', 1, 95, 95, 19, 14, 'Medic'),
+(6, 'Henry', 1, 130, 130, 27, 22, 'Infantry');
 
 -- Insert into Weapon
 INSERT INTO Weapon VALUES
@@ -227,30 +227,50 @@ INSERT INTO Mission VALUES
 (10, 'Clean Sweep', 'Search and eliminate all remaining Black Horizon forces.', 10, 800, 50, 10, 'Plains', 'Sunny', 1, 0);
 
 -- Insert into ENEMY_TYPES
-INSERT INTO ENEMY_TYPES VALUES
-(1, 'Recon Drone', 50, 18, 4, 10),
-(2, 'Heavy Guard', 120, 25, 7, 20),
-(3, 'Experimental Tank', 180, 38, 10, 20),
-(4, 'Black Ops Sniper', 60, 35, 8, 30),
-(5, 'Mech Soldier', 100, 44, 7, 50),
-(6, 'Cyber Assassin', 90, 48, 9, 50),
-(7, 'Bioengineered Beast', 150, 50, 12, 70),
-(8, 'Psyker', 80, 30, 10, 70),
-(9, 'Prototype AI', 200, 45, 15, 90),
-(10, 'Black Horizon Commander', 300, 60, 20, 100);
+INSERT OR IGNORE INTO ENEMY_TYPES (et_ID, et_name, HP, base_ATK, base_DPS, exp_reward) VALUES
+(1, 'Recon Drone', 50, 40, 4, 10),
+(2, 'Heavy Guard', 120, 55, 40, 20),
+(3, 'Experimental Tank', 480, 68, 100, 20),
+(4, 'Black Ops Sniper', 260, 70, 25, 30),
+(5, 'Mech Soldier', 500, 90, 60, 50),
+(6, 'Cyber Assassin', 50, 100000, 0, 50),
+(7, 'Bioengineered Beast', 450, 50, 150, 70),
+(8, 'Psyker', 280, 60, 10, 160),
+(9, 'Prototype AI', 500, 90, 15, 300),
+(10, 'Black Horizon Commander', 3000, 150, 200, 1000);
 
--- Insert into MISSION_ENEMY (Each mission has multiple enemies)
-INSERT INTO MISSION_ENEMY VALUES
-(1, 1, 5), (1, 2, 2),
-(2, 2, 3), (2, 3, 1),
-(3, 1, 4), (3, 2, 2),
-(4, 2, 3), (4, 4, 2),
-(5, 3, 2), (5, 4, 1),
-(6, 7, 2), (6, 8, 1),
-(7, 6, 3), (7, 8, 1),
-(8, 3, 2), (8, 9, 1),
-(9, 9, 1), (9, 10, 1),
-(10, 2, 5), (10, 1, 4), (10, 3, 3);
+
+INSERT OR IGNORE INTO MISSION_ENEMY (mission_id, et_id, count) VALUES
+-- Easy Recon: mostly drones with a stray beast
+(1, 1, 6),  (1, 2, 6),
+
+-- Data Extraction: mix of snipers, mechs and a few drones
+(2, 4, 9),  (2, 5, 3),  (2, 1, 3),
+
+-- Supply Interdiction: tanks backed by guards and assassins
+(3, 3, 10),  (3, 2, 3),  (3, 6, 1),
+
+-- Elite Guard Assault: guards, tanks, beasts and a psyker
+(4, 2, 2),  (4, 3, 2),  (4, 7, 1),  (4, 8, 1),
+
+-- Weapon Cache Raid: snipers, drones and mech soldiers
+(5, 4, 2),  (5, 1, 4),  (5, 5, 6),
+
+-- Facility Destruction: prototype AI leading mechs and drones
+(6, 9, 1),  (6, 5, 2),  (6, 1, 15),
+
+-- Stealth Infiltration: assassins, snipers and guards in the shadows
+(7, 6, 2),  (7, 4, 2),  (7, 2, 3),
+
+-- The Gauntlet: heavy mechs flanked by AI and tanks
+(8, 5, 3),  (8, 9, 1),  (8, 3, 1),  (8, 8, 1),
+
+-- Final Showdown Prep: AI overlord with tanks and snipers
+(9, 9, 2),  (9, 3, 2),  (9, 4, 1),  (9, 1, 3), (9, 7, 1),
+
+-- Clean Sweep: commander supported by AI, beasts and psykers
+(10, 10, 1),  (10, 9, 2),  (10, 7, 1),  (10, 8, 1);
+
 
 -- Insert into MISSION_ASSIGNMENT (Ensuring each mission has soldiers assigned)
 INSERT INTO MISSION_ASSIGNMENT VALUES

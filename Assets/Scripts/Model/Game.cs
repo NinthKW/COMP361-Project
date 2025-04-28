@@ -36,7 +36,7 @@ namespace Assets.Scripts.Model
 
             maxSoldier = 5;
             
-            string dbPath = "URI=file:" + Application.streamingAssetsPath + "/database.db";
+            string dbPath = "URI=file:" + Application.streamingAssetsPath + "/database_init.db";
             // Bases
             using (var connection = new SqliteConnection(dbPath))
             {
@@ -313,6 +313,7 @@ namespace Assets.Scripts.Model
                 }
                 connection.Close();
             }
+            SaveGameData(); // Save initial game data to the database
         }
 
 
@@ -568,6 +569,7 @@ namespace Assets.Scripts.Model
                             Role role = new Role(roleName);
                             Soldier soldier = new(name, role, level, health, attack, defense, maxHealth, soldierId, new EquipmentBonus(0, 0));
                             this.soldiersData.Add(soldier);
+                            Debug.Log($"health {health}/{maxHealth}");
                             soldierMap.Add(soldierId, soldier);
                         }
                         reader.Close();
