@@ -14,7 +14,7 @@ public class TrainingUI : MonoBehaviour
 
     public Transform soldierGrid;
     public GameObject soldierPrefab;
-    public Character currentSelectedSoldier;
+    public Soldier currentSelectedSoldier;
 
     public TextMeshProUGUI foodLeftDisplay;
     public TextMeshProUGUI levelStatusDisplay;
@@ -101,7 +101,7 @@ public class TrainingUI : MonoBehaviour
 
         if (foodLeft >= levelUpCost)
         {
-            currentSelectedSoldier.Level += 1;
+            currentSelectedSoldier.GainExp(currentSelectedSoldier.Level * 100);
 
             GameManager.Instance.currentGame.resourcesData.SetAmount(0, foodLeft - levelUpCost);
             foodLeftDisplay.GetComponent<TextMeshProUGUI>().text = "Food Remaining: " + GameManager.Instance.currentGame.resourcesData.GetAmount(0);
@@ -109,10 +109,12 @@ public class TrainingUI : MonoBehaviour
             levelStatusDisplay.text = "STATUS: " + currentSelectedSoldier.Name + " has leveled up";
 
             updateMenu(currentSelectedSoldier);
+            AudioManager.Instance.PlaySound("LevelUp");
         } 
         else
         {
             levelStatusDisplay.text = "STATUS: Not enough food to level up";
+            AudioManager.Instance.PlaySound("Error"); // Play a sound when the button is clicked
         } 
     }
 

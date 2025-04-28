@@ -45,7 +45,7 @@ public class StaffpageUI : MonoBehaviour
     // Create a button for each soldier in the game's soldiersData list.
     public void PopulateSoldierGrid()
     {
-        List<Character> soldiers = StaffManager.Instance.soldiers;
+        List<Soldier> soldiers = StaffManager.Instance.soldiers;
         // Optionally, clear previous grid elements:
         foreach (Transform child in soldierGrid)
         {

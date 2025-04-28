@@ -82,9 +82,11 @@ public class CharacterUI : MonoBehaviour
     }
 
 UpdateVisuals(isAlly);
+    }
 
-
-        UpdateVisuals(isAlly);
+    void Update()
+    {
+        UpdateVisuals(_character is Soldier);
     }
 
     void UpdateVisuals(bool isAlly)

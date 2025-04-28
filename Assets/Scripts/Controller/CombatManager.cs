@@ -51,117 +51,13 @@ namespace Assets.Scripts.Controller
         private void InitializeAvailableUnits()
         {
             _availableSoldiers.Clear();
-            _availableSoldiers = Game.Instance.GetSoldiers();
+            // _availableSoldiers = GameManager.Instance.currentGame.soldiersData;
             Debug.Log($"Loaded {_availableSoldiers.Count} soldiers from Game instance.");
-
-            // using (var connection = new SqliteConnection(dbPath))
-            // {
-            //     connection.Open();
-                
-            //     using (var command = connection.CreateCommand())
-            //     {
-            //         command.CommandText = @"
-            //             SELECT 
-            //                 name, 
-            //                 role, 
-            //                 level,
-            //                 hp,
-            //                 atk,
-            //                 def,
-            //                 max_hp
-            //             FROM Soldier";
-
-            //         using var reader = command.ExecuteReader();
-            //         while (reader.Read())
-            //         {
-            //             try
-            //             {
-            //                 var role = new Role(reader.GetString(1));
-            //                 var soldier = new Soldier(
-            //                     name: reader.GetString(0),
-            //                     role: role,
-            //                     level: reader.GetInt32(2),
-            //                     health: reader.GetInt32(3),
-            //                     attack: reader.GetInt32(4),
-            //                     defense: reader.GetInt32(5),
-            //                     maxHealth: reader.GetInt32(6)
-            //                 );
-            //                 soldier.GainExp(reader.GetInt32(3)); // Set experience separately
-
-            //                 _availableSoldiers.Add(soldier);
-            //                 Debug.Log($"Loaded soldier: {soldier.Name} ({role.GetRoleName()})");
-            //             }
-            //             catch (Exception ex)
-            //             {
-            //                 Debug.LogError($"Failed to load soldier: {ex.Message}");
-            //             }
-            //         }
-            //     }
-            // }
         }
         #endregion
 
         #region Soldier Management
-        public void AddSoldier(Soldier soldier)
-        {
-            if (soldier == null) return;
-            if (_availableSoldiers.Contains(soldier)) return;
-            
-            _availableSoldiers.Add(soldier);
-            Debug.Log($"Added soldier: {soldier.Name}");
-        }
-
-        public Soldier CreateNewSoldier(string soldierName, string roleType)
-        {
-            try
-            {
-                var role = new Role(roleType);
-                var newSoldier = new Soldier(
-                    name: soldierName,
-                    role: role,
-                    level: 1,
-                    health: role.MaxHealth,
-                    attack: role.BaseAtk,
-                    defense: role.BaseDef,
-                    maxHealth: role.MaxHealth,
-                    soldierID: _availableSoldiers.Count + 1, // Assuming soldierID is just an index
-                    bonusStat: new EquipmentBonus(0, 0)
-                );
-                
-                // Save the new soldier to the database
-                using (var connection = new SqliteConnection(dbPath))
-                {
-                    connection.Open();
-                    using (var command = connection.CreateCommand())
-                    {
-                        command.CommandText = @"
-                            INSERT INTO Soldier 
-                                (name, role, level, exp, health, attack, defense)
-                            VALUES
-                                (@name, @role, @level, @exp, @health, @attack, @defense)";
-                        
-                        command.Parameters.AddWithValue("@name", soldierName);
-                        command.Parameters.AddWithValue("@role", roleType);
-                        command.Parameters.AddWithValue("@level", 1);
-                        command.Parameters.AddWithValue("@exp", 0);
-                        command.Parameters.AddWithValue("@health", role.MaxHealth);
-                        command.Parameters.AddWithValue("@attack", role.BaseAtk);
-                        command.Parameters.AddWithValue("@defense", role.BaseDef);
-
-                        
-                        command.ExecuteNonQuery();
-                    }
-                }
-                
-                _availableSoldiers.Add(newSoldier);
-                return newSoldier;
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Failed to create soldier: {ex.Message}");
-                return null;
-            }
-        }
+        
         #endregion
 
 
@@ -188,6 +84,7 @@ namespace Assets.Scripts.Controller
         // Modified StartCombat method, taking Mission and list of selected soldiers
         public void StartCombat(Mission mission, List<Soldier> selectedSoldiers)
         {
+            _availableSoldiers = GameManager.Instance.currentGame.soldiersData; // Load available soldiers from Game instance
             _inBattleEnemies.Clear();
             _inBattleSoldiers.Clear();
             _availableEnemies.Clear();
@@ -240,6 +137,8 @@ namespace Assets.Scripts.Controller
             AudioManager.Instance.PlaySound("Combat Start");
             CheckAndAssignAbilities(); // Check and assign abilities
             ResetAttackChances(); // Reset attack chances
+            ResetAbilities(); // Reset abilities
+            ResetBuffs(); // Reset buffs
             ApplyTerrainAndWeatherEffects(); // Apply terrain and weather effects
         }
         #endregion
@@ -456,6 +355,7 @@ namespace Assets.Scripts.Controller
 
         public void RemoveTerrainAndWeatherEffects(Mission mission)
         {
+            Debug.Log("Removing terrain and weather effects from soldiers.");
             if (mission == null) return;
 
             int modAtk = mission.terrainAtkEffect + mission.weatherAtkEffect;
@@ -548,10 +448,11 @@ namespace Assets.Scripts.Controller
             {
                 SaveCombatResults(false, "");
             }
-            // Remove terrain and weather effects
-            RemoveTerrainAndWeatherEffects(currentMission);
+
             OnCombatEnd?.Invoke(victory);
             CleanupCombat();
+            GameManager.Instance.currentGame.soldiersData = _availableSoldiers; // Save soldiers data to Game instance
+            GameManager.Instance.currentGame.SaveGameData(); // Save game data to file
         }
 
         public void ApplyMissionRewards(Mission mission)
@@ -652,6 +553,15 @@ namespace Assets.Scripts.Controller
             // IsPlayerTurn = !IsPlayerTurn;
             StartCoroutine(SwitchTurnRoutine());
         }
+
+        public void ResetEnemiesAfterCombat()
+        {
+            foreach (var enemy in _inBattleEnemies)
+            {
+                if (enemy == null) continue;
+                enemy.Reset();
+            }
+        }
         #endregion
 
         public void SetcurrentMission(Mission mission)
@@ -717,6 +627,24 @@ namespace Assets.Scripts.Controller
                 enemy.ResetAttackChances();
             }
             return;
+        }
+
+        public void ResetAbilities()
+        {
+            foreach (var soldier in _inBattleSoldiers)
+            {
+                if (soldier == null || soldier.IsDead()) continue;
+                soldier.ResetAbilities();
+            }
+        }
+
+        public void ResetBuffs()
+        {
+            foreach (var soldier in _inBattleSoldiers)
+            {
+                if (soldier == null || soldier.IsDead()) continue;
+                soldier.ResetBuffs();
+            }
         }
         #endregion
     }

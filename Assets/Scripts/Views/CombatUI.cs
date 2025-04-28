@@ -312,7 +312,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
                 UpdateCombatLog("Not enough action points to cast this ability.");
                 return;
             }
-            // If the ability requires a target (Heal and Buff) then a target must be selected
+            // // If the ability requires a target (Heal and Buff) then a target must be selected
             if ((CompareAbility(selectedAbility, "Heal") || 
                 CompareAbility(selectedAbility, "Buff") || 
                 CompareAbility(selectedAbility, "HealBuff")) && 
@@ -352,7 +352,6 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             HideAbilityPanel();
             abilityInfoPanel.SetActive(false);
             PostAttackCleanup();
-            return;
         }
         else if (CanAttack()) 
         {
@@ -360,6 +359,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             HideAbilityPanel();
             abilityInfoPanel.SetActive(false);
         }
+        CombatManager.Instance.CheckCombatEnd();
     }
 
     private void OnAbilityButtonClicked(Ability ability)
@@ -470,7 +470,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         objTransform.position = targetPos;
     }
 
-    private void ShowDamageText(Character target, int damage)
+    public void ShowDamageText(Character target, int damage)
     {
         Canvas canvas = FindObjectOfType<Canvas>();
 
@@ -556,7 +556,6 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
         ClearSelection();
         CheckTurnEnd();
         UpdateCombatState();
-        // Update enemy count display
         UpdateEnemyCountDisplay();
     }
 
@@ -834,7 +833,7 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
             var cooldownText = texts.Length > 1 ? texts[1] : null;
             btnText.text = $"{ability.Name}";
             if (ability.IsOnCooldown) cooldownText.text = $"{ability.CooldownCounter} rounds";
-            else if (HasEnoughActionPoints(soldier, ability.Cost)) cooldownText.text = $"No enough action points";
+            else if (!HasEnoughActionPoints(soldier, ability.Cost)) cooldownText.text = $"No enough action points";
             else cooldownText.text = "Ready";
             ColorUtility.TryParseHtmlString("#A0B6FF", out var color);
             color.a = 1f;
@@ -938,11 +937,6 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
                               $"Active: {activeEnemies}\n" +
                               $"Waiting: {waitingEnemies}";
     }
-
-    private void UpdateAbilityCountdownDisplay()
-    {
-        
-    }
     
     #endregion
 
@@ -968,7 +962,6 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
 
     void HandleRetreatConfirmed(RetreatConfirmation window)
     {   
-        CombatManager.Instance.RemoveTerrainAndWeatherEffects(CombatManager.Instance.currentMission);
         Destroy(window.gameObject);
         OnCombatEnd(false);
     }
@@ -1079,6 +1072,8 @@ public class CombatUI : MonoBehaviour, IPointerClickHandler
     {
         DisableAllControls();
         ShowEndMessage(victory);
+        CombatManager.Instance.RemoveTerrainAndWeatherEffects(CombatManager.Instance.currentMission);
+        CombatManager.Instance.ResetEnemiesAfterCombat();
         AudioManager.Instance.PlayMusic("Menu");
         if (victory == false){
             CombatManager.Instance.SaveCombatResults(victory, "");

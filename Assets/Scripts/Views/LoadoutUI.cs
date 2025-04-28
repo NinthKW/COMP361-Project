@@ -176,6 +176,7 @@ public class LoadoutUI : MonoBehaviour
 
     void onSoldierButtonClicked(GameObject button)
     {
+        AudioManager.Instance.PlaySound("Tech Button Click"); // Play a sound when the button is clicked
         //Reset buttons
         bool hasPrevious = moveSelectedBackToGrid(soldierSelectedField, soldierField);
 
@@ -295,6 +296,7 @@ public class LoadoutUI : MonoBehaviour
 
     void onWeaponButtonClicked(GameObject button)
     {
+        AudioManager.Instance.PlaySound("Tech Button Click"); // Play a sound when the button is clicked
         //Check if its button in select field is 
         Debug.Log("Clicked " +  button.name);
         bool inSelectField = false;
@@ -428,6 +430,7 @@ public class LoadoutUI : MonoBehaviour
 
     void onEquipmentButtonClicked(GameObject button)
     {
+        AudioManager.Instance.PlaySound("Tech Button Click"); // Play a sound when the button is clicked
         //Check if its button in select field is 
         Debug.Log("Clicked " + button.name);
         bool inSelectField = false;

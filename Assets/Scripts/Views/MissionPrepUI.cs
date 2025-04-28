@@ -31,8 +31,6 @@ public class MissionPreparationUI : MonoBehaviour
     private List<FormationSlot> formationSlots = new List<FormationSlot>();
     private CharacterCard selectedCharacterCard;
     private FormationSlot selectedFormationSlot;
-    public bool assigningInProgress = false;
-
     void Start()
     {
         if (CombatManager.Instance == null)
@@ -43,23 +41,6 @@ public class MissionPreparationUI : MonoBehaviour
         CombatManager.Instance.UpdateInitialEnemies(CombatManager.Instance.currentMission);
         InitializeUI();
         SetupButtons();
-    }
-
-    void Update()
-    {
-        // 如果在空白处点击（不在任何UI上），取消所有选中
-        if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
-        {
-            Debug.Log("Clicked outside of UI, deselecting all.");
-            if (selectedCharacterCard != null)
-            {
-                selectedCharacterCard.SetSelected(false);
-                selectedCharacterCard = null;
-            }
-            selectedFormationSlot = null;
-            UpdateButtonStates();
-        }
-
     }
 
     void InitializeUI()
@@ -86,7 +67,7 @@ public class MissionPreparationUI : MonoBehaviour
         }
 
         // 加载可用士兵
-        foreach (var soldier in CombatManager.Instance.GetAvailableSoldiers())
+        foreach (var soldier in GameManager.Instance.currentGame.soldiersData)
         {
             var card = Instantiate(soldierCardPrefab, availableSoldiersPanel).GetComponent<CharacterCard>();
             card.Initialize(soldier, this);
@@ -222,14 +203,19 @@ public class MissionPreparationUI : MonoBehaviour
         // Assign按钮状态
         bool canAssign = selectedCharacterCard != null && selectedFormationSlot != null;
         assignButton.interactable = canAssign;
+        foreach (var soldierCard in characterCards)
+        {
+            if (soldierCard.Character.IsDead())
+            {
+                soldierCard.GetComponent<Button>().interactable = false;
+            }
+        }
     }
 
     public void OnAssignButtonClicked()
     {
-        assigningInProgress = true;
         if (selectedFormationSlot == null || selectedCharacterCard == null) 
         {
-            assigningInProgress = false;
             return;
         }
         
@@ -243,7 +229,6 @@ public class MissionPreparationUI : MonoBehaviour
         AssignSoldierToSlot((Soldier) selectedCharacterCard.Character, selectedFormationSlot);
         
         // 重置选择
-        assigningInProgress = false;
         ClearSelection();
     }
 
@@ -265,7 +250,6 @@ public class MissionPreparationUI : MonoBehaviour
 
     public void ClearSelection()
     {
-        if (assigningInProgress) return;
         if (selectedCharacterCard != null)
         {
             selectedCharacterCard.SetSelected(false);

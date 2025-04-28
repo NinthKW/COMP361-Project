@@ -14,7 +14,7 @@ namespace Assets.Scripts.Model
         public static Game Instance;
         public Resources resourcesData;
         public List<Mission> MissionsData;
-        public List<Character> soldiersData;
+        public List<Soldier> soldiersData;
         public List<Base> basesData;
         public List<SoldierEquipment> soldierEquipmentData; //empty on new game
         public List<Tech> techData;
@@ -28,7 +28,7 @@ namespace Assets.Scripts.Model
             // Resources
             this.resourcesData = new Resources();
             this.MissionsData = new List<Mission>();
-            this.soldiersData = new List<Character>();
+            this.soldiersData = new List<Soldier>();
             this.basesData = new List<Base>();
             this.techData = new List<Tech>();
             this.inventory = new Inventory();
@@ -36,7 +36,7 @@ namespace Assets.Scripts.Model
 
             maxSoldier = 5;
             
-            string dbPath = "URI=file:" + Application.streamingAssetsPath + "/database.db";
+            string dbPath = "URI=file:" + Application.streamingAssetsPath + "/database_init.db";
             // Bases
             using (var connection = new SqliteConnection(dbPath))
             {
@@ -212,9 +212,7 @@ namespace Assets.Scripts.Model
                             int soldierId = int.Parse(reader["soldier_id"].ToString());
                             string name = reader["name"].ToString();
                             // Override soldier level to 1 for a new game.
-                            // int level = 1;
-                            // Let level = 10 for testing
-                            int level = 10;
+                            int level = 1;
                             int health = int.Parse(reader["hp"].ToString());
                             int maxHealth = int.Parse(reader["max_hp"].ToString());
                             int attack = int.Parse(reader["atk"].ToString());
@@ -315,6 +313,7 @@ namespace Assets.Scripts.Model
                 }
                 connection.Close();
             }
+            SaveGameData(); // Save the initial game state to the database
         }
 
 
@@ -545,9 +544,9 @@ namespace Assets.Scripts.Model
             //MissionManager.Instance.missions = this.MissionsData;
 
             // Soldiers
-            this.soldiersData = new List<Character>();
+            this.soldiersData = new List<Soldier>();
             // Needed for SoldierEquipment
-            Dictionary<int, Character> soldierMap = new Dictionary<int, Character>();
+            Dictionary<int, Soldier> soldierMap = new Dictionary<int, Soldier>();
             using (var connection = new SqliteConnection(dbPath))
             {
                 connection.Open();
@@ -569,6 +568,7 @@ namespace Assets.Scripts.Model
 
                             Role role = new Role(roleName);
                             Soldier soldier = new(name, role, level, health, attack, defense, maxHealth, soldierId, new EquipmentBonus(0, 0));
+                            Debug.Log($"Soldier {soldierId} loaded: {name}, Level: {level}, HP: {health}, ATK: {attack}, DEF: {defense}");
                             this.soldiersData.Add(soldier);
                             soldierMap.Add(soldierId, soldier);
                         }
@@ -686,7 +686,7 @@ namespace Assets.Scripts.Model
                             int weapon = int.Parse(reader["weapon_ID"].ToString());
                             int equipment = int.Parse(reader["equipment_ID"].ToString());
                             
-                            Character soldierObj;
+                            Soldier soldierObj;
                             Weapon weaponObj;
                             Equipment equipmentObj;
 
@@ -720,6 +720,7 @@ namespace Assets.Scripts.Model
 
         public void SaveGameData()
         {
+            Debug.Log("Saving game data...");
             string dbPath = "URI=file:" + Application.streamingAssetsPath + "/database.db";
 
             // resources
@@ -1062,14 +1063,7 @@ namespace Assets.Scripts.Model
 
         public List<Soldier> GetSoldiers()
         {
-            List<Soldier> soldiers = new ();
-            foreach (var character in this.soldiersData)
-            {
-                if (character is Soldier soldier)
-                {
-                    soldiers.Add(soldier);
-                }
-            }
+            List<Soldier> soldiers = new(this.soldiersData);
             return soldiers;
         }
     }

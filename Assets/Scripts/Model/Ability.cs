@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.Scripts.Controller;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 
@@ -63,12 +64,19 @@ namespace Assets.Scripts.Model
                 }
             }
         }
+
+        public virtual void Reset()
+        {
+            CooldownCounter = 0;
+            DurationCounter = 0;
+        }
     }
 
     #region Attack abilities
     public class SniperDamageAbility : Ability
     {
         public int DamageAmount { get; private set; }
+        private Character _caster; // Store the caster reference to access its stats
 
         // Optionally store the base damage amount if you want to apply modifiers temporarily.
 
@@ -76,19 +84,21 @@ namespace Assets.Scripts.Model
         {
             base.Initialize(name, cost, cooldown, 0, description, "Damage", caster);
             UpdateAbilityValues(caster);
+            _caster = caster; // Store the caster reference
         }
 
         public override bool Activate(List<Character> targets)
         {
             if (!base.Activate(targets)) return false;
-            foreach (var target in targets)
+            var enemy = targets.FirstOrDefault(t => t != null && !t.IsDead());
+            if (enemy != null)
             {
-                if (target != null && !target.IsDead())
-                {
-                    target.Health -= DamageAmount + target.Def + target.MaxHealth / 5;
-                    if (target.Health < 0) target.Health = 0;
-                }
+                int temp = _caster.Atk;
+                _caster.Atk = DamageAmount;
+                CombatManager.Instance.ProcessAttack(_caster, enemy);
+                _caster.Atk = temp;
             }
+
             Debug.Log($"{targets.FirstOrDefault(t => t != null)?.Name} took {DamageAmount} damage!");
             return true;
         }
@@ -119,8 +129,10 @@ namespace Assets.Scripts.Model
             var enemy = targets.FirstOrDefault(t => t != null && !t.IsDead());
             if (enemy != null)
             {
-                enemy.Health -= DamageAmount;
-                if (enemy.Health < 0) enemy.Health = 0;
+                int temp = _caster.Atk;
+                _caster.Atk = DamageAmount;
+                CombatManager.Instance.ProcessAttack(_caster, enemy);
+                _caster.Atk = temp;
             }
             else
             {
@@ -131,6 +143,7 @@ namespace Assets.Scripts.Model
             if (_caster != null && _caster.Health < _caster.MaxHealth)
             {
                 _caster.Health = Mathf.Min(_caster.Health + HealAmount, _caster.MaxHealth);
+                CombatUI.Instance.ShowHealText(_caster, HealAmount);
             }
             return true;
         }
@@ -168,7 +181,6 @@ namespace Assets.Scripts.Model
                     {
                         CombatUI.Instance.ShowHealText(target, HealAmount);
                     }
-
                 }
             }
             return true;
@@ -321,7 +333,7 @@ namespace Assets.Scripts.Model
             base.Initialize(name, cost, cooldown, duration, description, "TauntAll", caster);
             UpdateAbilityValues(caster);
             tauntBuff = new Buff("Taunt", TauntDuration, false, 
-                                (target) => target.Def += BuffDefAmount);
+                                null, (target) => target.Def = BuffDefAmount);
         }
 
         public override bool Activate(List<Character> targets)
@@ -335,6 +347,7 @@ namespace Assets.Scripts.Model
                     tauntBuff.BuffedCharacter = target;
                     tauntBuff.Duration = TauntDuration;
                     target.Buffs.Add(this, tauntBuff);
+                    tauntBuff.Apply(tauntBuff.EffectOnStart, target);
                     Debug.Log($"{target.Name} is taunting for {TauntDuration} turns and defense increased by {BuffDefAmount}!");
                 }
             }
@@ -344,7 +357,7 @@ namespace Assets.Scripts.Model
         public override void UpdateAbilityValues(Character caster)
         {
             TauntDuration = Mathf.Max(2, 2 + caster.Level / 4); // Ensure at least 2 turns of taunt
-            BuffDefAmount = caster.Def;
+            BuffDefAmount = caster.Def * 3;
         }
     }
     #endregion
@@ -382,7 +395,7 @@ namespace Assets.Scripts.Model
         {
             if (target == null || target.IsDead()) return;
             if (IsExpired()) return; // Buff is expired
-            if (EffectOnStart != null && target != null && !Start)
+            if (EffectOnStart != null && target != null && Start)
             {
                 EffectOnStart(target);
                 Start = false;
