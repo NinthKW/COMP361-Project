@@ -467,7 +467,9 @@ namespace Assets.Scripts.Controller
 
             // 1. add money
             int currentMoney = ResourceManager.Instance.GetResourceAmount(1); // 1是Money
+            Debug.Log($"Current money before reward: {currentMoney}");
             ResourceManager.Instance.UpdateResourceAmount(1, currentMoney + mission.rewardMoney);
+            Debug.Log($"Current money after reward: {ResourceManager.Instance.GetResourceAmount(1)}");
 
             // 2. add resources
             if (mission.rewardResourceId >= 0 && mission.rewardResourceId <= 6) // 只加合法的资源
