@@ -9,7 +9,7 @@ namespace Assets.Scripts.Controller
         public static ResourceGenerationManager Instance;
         public List<ResourceGenerationBuilding> Buildings = new List<ResourceGenerationBuilding>();
         [SerializeField] private float timer = 0f;
-        [SerializeField] private float generationInterval = 60.0f;
+        [SerializeField] private float generationInterval = 10.0f;
 
         void Awake()
         {
@@ -47,12 +47,12 @@ namespace Assets.Scripts.Controller
         //Add all resource generation amounts to list
         public void populate()
         {
-            Buildings.Add(new ResourceGenerationBuilding(0, 10));
-            Buildings.Add(new ResourceGenerationBuilding(1, 20));
-            Buildings.Add(new ResourceGenerationBuilding(2, 30));
-            Buildings.Add(new ResourceGenerationBuilding(3, 40));
-            Buildings.Add(new ResourceGenerationBuilding(4, 50));
-            Buildings.Add(new ResourceGenerationBuilding(5, 60));
+            Buildings.Add(new ResourceGenerationBuilding(0, 5));
+            Buildings.Add(new ResourceGenerationBuilding(1, 10));
+            Buildings.Add(new ResourceGenerationBuilding(2, 5));
+            Buildings.Add(new ResourceGenerationBuilding(3, 5));
+            Buildings.Add(new ResourceGenerationBuilding(4, 5));
+            Buildings.Add(new ResourceGenerationBuilding(5, 5));
         }
 
     }
