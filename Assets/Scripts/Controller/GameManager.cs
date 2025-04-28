@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Assets.Scripts.Model;
 using System;
+using Assets.Scripts.Utils;
+using System.IO;
 
 namespace Assets.Scripts.Controller 
 {
@@ -11,6 +13,8 @@ namespace Assets.Scripts.Controller
     {
         public static GameManager Instance;
         public GameState currentState;
+        
+        [NonSerialized]
         public Game currentGame;
         private Dictionary<int, int> tempResourceAmounts = new Dictionary<int, int>();
 
@@ -24,6 +28,11 @@ namespace Assets.Scripts.Controller
             else
             {
                 Destroy(gameObject);
+            }
+
+            if (!File.Exists(DBUtils.PersistentDBPath))
+            {
+                File.Copy(DBUtils.TemplateDBPath, DBUtils.PersistentDBPath);
             }
 
             // if (AudioManager.Instance == null)
@@ -116,16 +125,26 @@ namespace Assets.Scripts.Controller
 
         public void NewGame()
         {
-            currentGame = new Game();
+            if (File.Exists(DBUtils.PersistentDBPath))
+            {
+                File.Delete(DBUtils.PersistentDBPath);
+            }
+            
+            File.Copy(DBUtils.TemplateDBPath, DBUtils.PersistentDBPath);
+
+            currentGame = new Game("URI=file:" + DBUtils.PersistentDBPath);
             Debug.Log("New game started with default settings.");
         }
+
         public void LoadGame()
         {
-            string dbPath = "URI=file:" + Application.streamingAssetsPath + "/database.db";
-    
-            currentGame = new Game(dbPath);
-            Debug.Log("Game loaded from database: " + dbPath);
+            if (!File.Exists(DBUtils.PersistentDBPath))
+            {
+                File.Copy(DBUtils.TemplateDBPath, DBUtils.PersistentDBPath);
+            }
 
+            currentGame = new Game("URI=file:" + DBUtils.PersistentDBPath);
+            Debug.Log("Game loaded from database.");
         }
 
         public void SaveGame()
