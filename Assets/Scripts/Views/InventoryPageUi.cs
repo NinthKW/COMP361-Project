@@ -34,12 +34,35 @@ public class InventoryPageUI : MonoBehaviour
         foreach (var e in InventoryManager.Instance.GetEquipments()) SpawnRow(e);
     }
 
-    void SpawnRow(Weapon w)    => CreateRow(w.isUnlocked, weaponsContainer,
-                                            $"{w.name} | DMG:{w.damage} | Cost:{w.cost}",
-                                            () => popup.Show(w));
-    void SpawnRow(Equipment e) => CreateRow(e.isUnlocked, equipmentsContainer,
-                                            $"{e.name} | HP:{e.hp} DEF:{e.def} | Cost:{e.cost}",
-                                            () => popup.Show(e));
+    //void SpawnRow(Weapon w)    => CreateRow(w.isUnlocked, weaponsContainer,
+     //                                       $"{w.name} | DMG:{w.damage} | Cost:{w.cost}",
+      //                                      () => popup.Show(w));
+    // void SpawnRow(Equipment e) => CreateRow(e.isUnlocked, equipmentsContainer,
+      //                                      $"{e.name} | HP:{e.hp} DEF:{e.def} | Cost:{e.cost}",
+       //                                     () => popup.Show(e));
+
+    void SpawnRow(Weapon w) => CreateRow(
+        w.isUnlocked,
+        weaponsContainer,
+        $"{w.name} | DMG:{w.damage} | Cost:{w.cost}",
+        () =>
+        {
+            Debug.Log($"[InventoryPageUI] Row clicked: {w.name}");
+            if (popup == null) Debug.LogError("[InventoryPageUI] popup is null!");
+            popup.Show(w);
+        });
+
+    void SpawnRow(Equipment e) => CreateRow(
+        e.isUnlocked,
+        equipmentsContainer,
+        $"{e.name} | HP:{e.hp} DEF:{e.def} | Cost:{e.cost}",
+        () =>
+        {
+            Debug.Log($"[InventoryPageUI] Row clicked: {e.name}");
+            if (popup == null) Debug.LogError("[InventoryPageUI] popup is null!");
+            popup.Show(e);
+        });
+
 
     void CreateRow(bool unlocked, Transform parent, string label, UnityEngine.Events.UnityAction click)
     {
