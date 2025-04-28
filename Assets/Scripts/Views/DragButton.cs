@@ -104,7 +104,7 @@ namespace Assets.Scripts
                     break;
             }
 
-
+            //not placed
             if (transform.parent == canvas.transform)
             {
                 building.placed = false;
@@ -120,7 +120,9 @@ namespace Assets.Scripts
                     }
                 }
 
-            } else if (transform.parent == grid2d.transform) {
+            } 
+            //placed
+            else if (transform.parent == grid2d.transform) {
                 building.placed = true;
                 building.x = (int) System.Math.Round(GetComponent<RectTransform>().anchoredPosition.x);
                 building.y = (int) System.Math.Round(GetComponent<RectTransform>().anchoredPosition.y);
