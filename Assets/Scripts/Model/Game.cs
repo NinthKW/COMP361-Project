@@ -407,7 +407,7 @@ namespace Assets.Scripts.Model
                             {
                                 Debug.LogError("Weapon not found for soldier equipment");
                             }
-                            if (!equipmentMap.TryGetValue(weapon, out equipmentObj) && equipment != -1) //negative id means unequipped
+                            if (!equipmentMap.TryGetValue(equipment, out equipmentObj) && equipment != -1) //negative id means unequipped
                             {
                                 Debug.LogError("Equipment not found for soldier equipment");
                             }
@@ -667,8 +667,22 @@ namespace Assets.Scripts.Model
                         }
 
                         command.Parameters.Add(new SqliteParameter("@soldier_ID", soldier.id));
-                        command.Parameters.Add(new SqliteParameter("@weapon_ID", soldierEquipment.weapon.weapon_id));
-                        command.Parameters.Add(new SqliteParameter("@equipment_ID", soldierEquipment.equipment.equipment_id));
+                        if (soldierEquipment.weapon == null)
+                        {
+                            command.Parameters.Add(new SqliteParameter("@weapon_ID", -1));
+                        }
+                        else
+                        {
+                            command.Parameters.Add(new SqliteParameter("@weapon_ID", soldierEquipment.weapon.weapon_id));
+                        }
+                        if (soldierEquipment.equipment == null)
+                        {
+                            command.Parameters.Add(new SqliteParameter("@equipment_ID", -1));
+                        }
+                        else
+                        {
+                            command.Parameters.Add(new SqliteParameter("@equipment_ID", soldierEquipment.equipment.equipment_id));
+                        }
                         command.ExecuteNonQuery();
                     }
                 }
