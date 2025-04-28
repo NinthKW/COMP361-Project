@@ -65,12 +65,15 @@ public class MissionSelectUI : MonoBehaviour
         selectedMission = mission;
         missionNameText.text = mission.name;
         AudioManager.Instance.PlaySound("Select");
-        
+        //Debug.Log("Selected mission: " + mission.name);
+        Debug.Log("Mission resourceid: " + mission.rewardResourceId);
+        string resourceName = ResourceManager.Instance.GetResourceName(mission.rewardResourceId);
+        Debug.Log("Resource name: " + resourceName);
         string details = $"Description: {mission.description}\n" +
                          $"Difficulty: {mission.difficulty}\n\n" +
                          $"Rewards:\n" +
                          $"- Money: {mission.rewardMoney}\n" +
-                         $"- Resources (ID): {mission.rewardResourceId} (Amount: {mission.rewardAmount})\n" +
+                         $"- Resource: {resourceName} (Amount: {mission.rewardAmount})\n" +
                          $"Terrain: {mission.terrain}\n" +
                          $"Weather: {mission.weather}";
 

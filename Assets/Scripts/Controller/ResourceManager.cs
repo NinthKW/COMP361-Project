@@ -39,16 +39,9 @@ namespace Assets.Scripts.Controller
 
         // Returns the name of a resource by id
         public string GetResourceName(int resourceId)
-        {
-            try
-            {
-                return resources.GetName(resourceId);
-            }
-            catch (System.Exception ex)
-            {
-                Debug.LogWarning("Error getting resource name for id " + resourceId + ": " + ex.Message);
-                return "";
-            }
+        {   
+            Debug.Log("GetResourceName called with id: " + resourceId);
+            return resources.GetName(resourceId);
         }
 
         // Returns the description of a resource by id

@@ -465,37 +465,19 @@ namespace Assets.Scripts.Controller
             mission.AssignedEnemies.FindAll(e => e.IsDead()).ForEach(e => e.Health = e.MaxHealth);
             Debug.Log($"Applying rewards for mission: {mission.name}");
 
-            using (var connection = new SqliteConnection(dbPath))
+            // 1. add money
+            int currentMoney = ResourceManager.Instance.GetResourceAmount(1); // 1是Money
+            ResourceManager.Instance.UpdateResourceAmount(1, currentMoney + mission.rewardMoney);
+
+            // 2. add resources
+            if (mission.rewardResourceId >= 0 && mission.rewardResourceId <= 6) // 只加合法的资源
             {
-                connection.Open();
-
-                // Update Money
-                using (var command = connection.CreateCommand())
-                {
-                    command.CommandText = @"
-                        UPDATE Resource 
-                        SET current_amount = current_amount + @rewardMoney 
-                        WHERE name = 'Money';
-                    ";
-                    command.Parameters.AddWithValue("@rewardMoney", mission.rewardMoney);
-                    command.ExecuteNonQuery();
-                }
-
-                // Update resource rewards
-                using (var command = connection.CreateCommand())
-                {
-                    command.CommandText = @"
-                        UPDATE Resource 
-                        SET current_amount = current_amount + @rewardAmount 
-                        WHERE resource_id = @rewardResourceId;
-                    ";
-                    command.Parameters.AddWithValue("@rewardAmount", mission.rewardAmount);
-                    command.Parameters.AddWithValue("@rewardResourceId", mission.rewardResourceId);
-                    command.ExecuteNonQuery();
-                }
-
-
-                connection.Close();
+                int currentResource = ResourceManager.Instance.GetResourceAmount(mission.rewardResourceId);
+                ResourceManager.Instance.UpdateResourceAmount(mission.rewardResourceId, currentResource + mission.rewardAmount);
+            }
+            else
+            {
+                Debug.LogWarning($"Invalid rewardResourceId: {mission.rewardResourceId}");
             }
 
             Debug.Log($"Rewards applied successfully: Money +{mission.rewardMoney}, Resource ID {mission.rewardResourceId} +{mission.rewardAmount}");
