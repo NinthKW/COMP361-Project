@@ -1,13 +1,8 @@
 using Assets.Scripts;
 using Assets.Scripts.Controller;
 using Assets.Scripts.Model;
-using Codice.Client.Common;
-using Codice.Client.Common.FsNodeReaders;
-using System.Collections;
 using System.Collections.Generic;
-using System.Net;
 using TMPro;
-using Unity.Plastic.Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.UI;
 
